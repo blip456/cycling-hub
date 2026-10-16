@@ -9,7 +9,8 @@ questions = [
  ('Q1','Which direction, or which mix (e.g. "A with B\'s metric colours")?'),
  ('Q2','Accent: teal (A), lime (B) or blue (C)?'),
  ('Q3','Metric colours: vivid (B), balanced (A) or muted (C)?'),
- ('Q4','Anything missing or still too much?'),
+ ('Q4','Background: soft splash (as in Mockups) or smoke (Alternative: smoke)? Stronger or weaker?'),
+ ('Q5','Anything missing or still too much?'),
 ]
 toc = ''.join(f'<a href="#{s}">Direction {l} · {html.escape(n)}</a>' for s,l,n in dirs)
 sections = ''
