@@ -23,7 +23,9 @@ B Graphite & Lime, C Deep Ocean), dark and light. Decision P23 in [`../../decisi
 | 5 | 1.4.3 Contrast (minimum) | C light, metric colours | Speed (4.3:1), heart rate (4.2:1) and elevation (4.2:1) were below 4.5:1 for small text. | Darkened to #257395, #B64366, #93610A (all 5.3:1 on white). |
 | 6 | 1.4.3 Contrast (minimum) | C light, "positive" green (AA badges, Fix pill) | 4.4:1 on the background gradient. | Darkened to #3A7A21 (5.3:1). |
 
-After the fixes the automated text check reports **0 failures** across all three directions.
+| 7 | 1.4.3 Contrast (minimum) | C light, smaller "Fix" label after the P24 cleanup | 4.1:1 at 11 px. | Text darkened to #2F6419. |
+
+After the fixes the automated text check reports **0 failures** across all three directions (re-run after the P24 cleanup).
 
 ## Passed without changes
 
