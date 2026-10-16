@@ -1,0 +1,526 @@
+<section class="direction dir-midnight-teal" id="midnight-teal">
+<style>
+.dir-midnight-teal{
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-family:var(--font);
+  background:#0B1220;color:#E6EDF5;
+  padding:56px 48px 64px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.dir-midnight-teal *,.dir-midnight-teal *::before,.dir-midnight-teal *::after{box-sizing:border-box}
+.dir-midnight-teal .theme-dark{
+  --bg:#0B1220;--surface:#111A2B;--raised:#18233A;--border:#27344C;
+  --text:#E6EDF5;--muted:#94A3B8;--accent:#2DD4BF;--on-accent:#042F2A;
+  --accent-tint:rgba(45,212,191,.12);--glow:0 0 0 1px rgba(45,212,191,.28),0 8px 32px -6px rgba(45,212,191,.28);
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px -12px rgba(0,0,0,.6);
+  --m-dist:#A3E635;--m-time:#C3D0E0;--m-speed:#60A5FA;--m-power:#A78BFA;--m-hr:#FB7185;--m-elev:#F59E0B;
+  --bar:#27344C;
+  background:var(--bg);color:var(--text);
+}
+.dir-midnight-teal .theme-light{
+  --bg:#F3F6F9;--surface:#FFFFFF;--raised:#E9EEF4;--border:#D3DCE6;
+  --text:#0E1726;--muted:#4F5D70;--accent:#0F766E;--on-accent:#FFFFFF;
+  --accent-tint:rgba(15,118,110,.09);--glow:0 0 0 1px rgba(15,118,110,.18),0 8px 24px -8px rgba(15,118,110,.30);
+  --shadow:0 1px 2px rgba(14,23,38,.05),0 8px 24px -14px rgba(14,23,38,.18);
+  --m-dist:#3F6212;--m-time:#475569;--m-speed:#1D4ED8;--m-power:#7C3AED;--m-hr:#E11D48;--m-elev:#B45309;
+  --bar:#D3DCE6;
+  background:var(--bg);color:var(--text);
+}
+.dir-midnight-teal .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.dir-midnight-teal .mt-wrap{max-width:1080px;margin:0 auto}
+.dir-midnight-teal .mt-eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#2DD4BF;font-weight:600;margin:0 0 10px}
+.dir-midnight-teal h2.mt-title{font-size:40px;line-height:1.1;font-weight:650;letter-spacing:-.02em;margin:0 0 14px}
+.dir-midnight-teal .mt-lede{font-size:17px;color:#C1CCDA;max-width:720px;margin:0 0 6px}
+.dir-midnight-teal .mt-insp{font-size:14px;color:#94A3B8;margin:8px 0 0}
+.dir-midnight-teal h3.mt-h{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#94A3B8;font-weight:600;margin:56px 0 16px;padding-top:24px;border-top:1px solid #1E2A3F}
+.dir-midnight-teal .mt-note{font-size:13px;color:#94A3B8;margin:10px 0 0;max-width:820px}
+
+/* palette */
+.dir-midnight-teal .mt-pal{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-palcard{border-radius:20px;padding:22px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.dir-midnight-teal .mt-palcard h4{margin:0 0 14px;font-size:15px;font-weight:600}
+.dir-midnight-teal .mt-sw{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.dir-midnight-teal .mt-chip{border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--surface)}
+.dir-midnight-teal .mt-chip i{display:block;height:46px}
+.dir-midnight-teal .mt-chip b{display:block;font-size:12px;font-weight:600;padding:7px 9px 0}
+.dir-midnight-teal .mt-chip span{display:block;font-size:11px;color:var(--muted);padding:0 9px 8px}
+.dir-midnight-teal .mt-ratios{margin:14px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.dir-midnight-teal .mt-ratios li{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--border)}
+.dir-midnight-teal .mt-ratios li strong{color:var(--text);font-weight:600}
+
+/* metrics */
+.dir-midnight-teal .mt-metrics{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dir-midnight-teal .mt-mchip{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px}
+.dir-midnight-teal .mt-mchip .dot{display:block;height:6px;border-radius:3px;margin-bottom:10px}
+.dir-midnight-teal .mt-mchip .v{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.dir-midnight-teal .mt-mchip .l{font-size:12px;color:var(--muted)}
+.dir-midnight-teal .mt-mchip .h{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* type */
+.dir-midnight-teal .mt-type{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+.dir-midnight-teal .mt-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.dir-midnight-teal .t-display{font-size:56px;font-weight:600;letter-spacing:-.035em;line-height:1}
+.dir-midnight-teal .t-display small{font-size:20px;color:var(--muted);font-weight:500;letter-spacing:0;margin-left:4px}
+.dir-midnight-teal .t-title{font-size:22px;font-weight:600;letter-spacing:-.01em;margin:18px 0 6px}
+.dir-midnight-teal .t-body{font-size:16px;margin:0 0 6px}
+.dir-midnight-teal .t-cap{font-size:13px;color:var(--muted)}
+.dir-midnight-teal .t-spec{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.7}
+.dir-midnight-teal .mt-tab{width:100%;border-collapse:collapse;font-size:15px}
+.dir-midnight-teal .mt-tab td{padding:7px 0;border-bottom:1px solid var(--border);text-align:right}
+.dir-midnight-teal .mt-tab td:first-child{text-align:left;color:var(--muted);font-size:13px}
+
+/* components */
+.dir-midnight-teal .mt-comp{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-comp .mt-box{display:flex;flex-direction:column;gap:20px}
+.dir-midnight-teal .mt-rowc{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.dir-midnight-teal .btn{height:44px;padding:0 22px;border-radius:999px;font:600 15px/44px var(--font);border:0;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.dir-midnight-teal .btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--glow)}
+.dir-midnight-teal .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);line-height:42px}
+.dir-midnight-teal .btn-block{width:100%;justify-content:center}
+.dir-midnight-teal .pill{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.01em}
+.dir-midnight-teal .pill-feature{background:var(--accent-tint);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 35%,transparent)}
+.dir-midnight-teal .pill-fix{background:color-mix(in srgb,var(--m-hr) 13%,transparent);color:var(--m-hr);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--m-hr) 35%,transparent)}
+.dir-midnight-teal .pill-tech{background:var(--raised);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border)}
+.dir-midnight-teal .pill-tag{background:var(--raised);color:var(--muted);height:22px;font-size:11px;padding:0 9px}
+.dir-midnight-teal .field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.dir-midnight-teal .field .input{height:48px;border-radius:12px;background:var(--raised);border:1px solid var(--border)}
+.dir-midnight-teal .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)}
+.dir-midnight-teal .field .help{font-size:13px;color:var(--muted);margin-top:6px}
+.dir-midnight-teal .status{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:12px 14px;font-size:14px;box-shadow:var(--shadow)}
+.dir-midnight-teal .status .ic{width:28px;height:28px;border-radius:50%;background:var(--accent-tint);display:grid;place-items:center;flex:none}
+.dir-midnight-teal .status .ic::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.dir-midnight-teal .status a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
+.dir-midnight-teal .status .sp{flex:1}
+.dir-midnight-teal .dock .status{font-size:13px;gap:10px;padding:12px}
+.dir-midnight-teal .dock .status .sp{white-space:nowrap}
+.dir-midnight-teal .status .x{color:var(--muted);font-size:18px;line-height:1;width:28px;text-align:center}
+
+/* phones */
+.dir-midnight-teal .mt-phones{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
+.dir-midnight-teal .mt-phwrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.dir-midnight-teal .mt-phwrap .cap{font-size:13px;color:#94A3B8}
+.dir-midnight-teal .phone{width:375px;height:760px;border-radius:48px;overflow:hidden;position:relative;border:8px solid #05080F;box-shadow:0 0 0 1px #2A3650,0 30px 60px -20px rgba(0,0,0,.7);display:flex;flex-direction:column;flex:none}
+.dir-midnight-teal .phone.theme-light{border-color:#1A2233}
+.dir-midnight-teal .sbar{height:44px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 6px;font-size:14px;font-weight:600}
+.dir-midnight-teal .sbar i{display:inline-block;width:56px;height:10px;border-radius:5px;background:currentColor;opacity:.75}
+.dir-midnight-teal .topbar{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 12px 0 6px}
+.dir-midnight-teal .hamb{width:44px;height:44px;display:grid;place-items:center;flex:none}
+.dir-midnight-teal .hamb span{display:block;width:20px;height:2px;border-radius:1px;background:var(--text);box-shadow:0 -6px 0 var(--text),0 6px 0 var(--text)}
+.dir-midnight-teal .topbar .tt{font-size:20px;font-weight:650;letter-spacing:-.01em;flex:1}
+.dir-midnight-teal .wm{font-size:13px;font-weight:650;letter-spacing:-.01em;color:var(--muted)}
+.dir-midnight-teal .wm b{color:var(--accent);font-weight:650}
+.dir-midnight-teal .scroll{flex:1;overflow:hidden;padding:4px 16px 0;position:relative}
+.dir-midnight-teal .week{display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px 12px}
+.dir-midnight-teal .week .w1{font-size:15px;font-weight:600}
+.dir-midnight-teal .week .w2{font-size:13px;color:var(--muted)}
+.dir-midnight-teal .seg-sm{display:flex;background:var(--raised);border-radius:999px;padding:3px;margin:0 0 6px;width:max-content}
+.dir-midnight-teal .seg-sm span{font-size:13px;font-weight:600;padding:0 14px;height:30px;line-height:30px;border-radius:999px;color:var(--muted)}
+.dir-midnight-teal .seg-sm span.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.dir-midnight-teal .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:14px 14px 12px;margin-bottom:10px;box-shadow:var(--shadow)}
+.dir-midnight-teal .card.hero{box-shadow:var(--glow);border-color:transparent;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 6%,var(--surface)),var(--surface) 60%)}
+.dir-midnight-teal .chead{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.dir-midnight-teal .thumb{width:44px;height:44px;border-radius:12px;background:var(--raised);flex:none;display:grid;place-items:center}
+.dir-midnight-teal .thumb svg{width:34px;height:34px}
+.dir-midnight-teal .thumb path{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dir-midnight-teal .cname{font-size:16px;font-weight:600;line-height:1.2}
+.dir-midnight-teal .cdate{font-size:13px;color:var(--muted)}
+.dir-midnight-teal .chead .meta{flex:1;min-width:0}
+.dir-midnight-teal .mgrid{display:grid;grid-template-columns:repeat(3,1fr);row-gap:10px;column-gap:8px}
+.dir-midnight-teal .m .v{font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.dir-midnight-teal .m .v small{font-size:12px;font-weight:500;color:var(--muted);margin-left:2px}
+.dir-midnight-teal .m .l{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.dir-midnight-teal .m .l::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.dir-midnight-teal .m.dist .v{color:var(--m-dist)} .dir-midnight-teal .m.dist .l::before{background:var(--m-dist)}
+.dir-midnight-teal .m.time .v{color:var(--m-time)} .dir-midnight-teal .m.time .l::before{background:var(--m-time)}
+.dir-midnight-teal .m.speed .v{color:var(--m-speed)} .dir-midnight-teal .m.speed .l::before{background:var(--m-speed)}
+.dir-midnight-teal .m.power .v{color:var(--m-power)} .dir-midnight-teal .m.power .l::before{background:var(--m-power)}
+.dir-midnight-teal .m.hr .v{color:var(--m-hr)} .dir-midnight-teal .m.hr .l::before{background:var(--m-hr)}
+.dir-midnight-teal .m.elev .v{color:var(--m-elev)} .dir-midnight-teal .m.elev .l::before{background:var(--m-elev)}
+.dir-midnight-teal .m .v.na{color:var(--muted)}
+.dir-midnight-teal .dock{position:absolute;left:12px;right:12px;bottom:14px}
+.dir-midnight-teal .fade{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(transparent,var(--bg) 70%)}
+.dir-midnight-teal .homebar{position:absolute;bottom:5px;left:50%;width:120px;height:4px;border-radius:2px;background:var(--text);opacity:.4;transform:translateX(-50%)}
+
+/* import */
+.dir-midnight-teal .imp-h{font-size:28px;font-weight:650;letter-spacing:-.02em;margin:10px 0 4px}
+.dir-midnight-teal .imp-f{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;margin-bottom:18px}
+.dir-midnight-teal .imp-f .ok{width:18px;height:18px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 0 10px rgba(45,212,191,.5)}
+.dir-midnight-teal .imp-f .ok::after{content:"";width:7px;height:4px;border-left:2px solid var(--on-accent);border-bottom:2px solid var(--on-accent);transform:rotate(-45deg) translate(1px,-1px)}
+.dir-midnight-teal .ogrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dir-midnight-teal .oc{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:14px 14px 12px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.dir-midnight-teal .oc .ot{font-size:13px;color:var(--muted);font-weight:500}
+.dir-midnight-teal .oc .on{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.dir-midnight-teal .oc.hero{grid-column:1 / -1;box-shadow:var(--glow);border-color:transparent;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,var(--surface)),var(--surface) 70%)}
+.dir-midnight-teal .oc.hero .on{font-size:52px;color:var(--text)}
+.dir-midnight-teal .oc.hero .ot{color:var(--accent);font-weight:600}
+.dir-midnight-teal .oc.warn .ot::after{content:" · View";color:var(--accent);font-weight:600}
+.dir-midnight-teal .oc.zero .on{color:var(--muted)}
+.dir-midnight-teal .imp-act{margin-top:18px}
+
+/* settings */
+.dir-midnight-teal .sg-label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 4px 8px}
+.dir-midnight-teal .group{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.dir-midnight-teal .row{min-height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:15px;gap:12px}
+.dir-midnight-teal .row + .row{border-top:1px solid var(--border)}
+.dir-midnight-teal .row .rv{color:var(--muted);font-size:15px}
+.dir-midnight-teal .row .chev{color:var(--muted);font-size:20px;line-height:1}
+.dir-midnight-teal .row.block{display:block;padding:12px 16px 14px}
+.dir-midnight-teal .row.block .rl{margin-bottom:10px}
+.dir-midnight-teal .greybar{display:block;width:150px;height:12px;border-radius:6px;background:var(--bar)}
+.dir-midnight-teal .seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--raised);border-radius:999px;padding:3px}
+.dir-midnight-teal .seg span{height:38px;line-height:38px;text-align:center;font-size:14px;font-weight:600;color:var(--muted);border-radius:999px}
+.dir-midnight-teal .seg span.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(14,23,38,.12),0 0 0 1px var(--border)}
+.dir-midnight-teal .row.danger{color:#B4233C;font-weight:600;justify-content:center}
+
+/* desktop */
+.dir-midnight-teal .desk-outer{width:900px;height:540px;margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px #2A3650,0 30px 60px -20px rgba(0,0,0,.7)}
+.dir-midnight-teal .desk{width:1000px;height:600px;transform:scale(.9);transform-origin:0 0;display:flex}
+.dir-midnight-teal .side{width:196px;flex:none;background:var(--surface);border-right:1px solid var(--border);padding:22px 14px;display:flex;flex-direction:column;gap:4px}
+.dir-midnight-teal .side .wm{font-size:17px;color:var(--text);padding:0 10px 22px}
+.dir-midnight-teal .nav{height:44px;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 12px;font-size:15px;color:var(--muted);font-weight:500}
+.dir-midnight-teal .nav i{width:18px;height:18px;border-radius:5px;border:2px solid currentColor;opacity:.8}
+.dir-midnight-teal .nav.on{background:var(--accent-tint);color:var(--accent);font-weight:600}
+.dir-midnight-teal .side .sp{flex:1}
+.dir-midnight-teal .side .ver{font-size:12px;color:var(--muted);padding:0 12px}
+.dir-midnight-teal .dmain{flex:1;min-width:0;padding:24px 24px;overflow:hidden;background:var(--bg)}
+.dir-midnight-teal .dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.dir-midnight-teal .dhead h4{margin:0;font-size:26px;font-weight:650;letter-spacing:-.02em}
+.dir-midnight-teal .dhead .r{display:flex;gap:10px;align-items:center}
+.dir-midnight-teal .tbl{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.dir-midnight-teal .tbl table{width:100%;border-collapse:collapse;font-size:13.5px}
+.dir-midnight-teal .tbl th{text-align:right;font-size:12px;font-weight:600;color:var(--muted);padding:12px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.dir-midnight-teal .tbl th:first-child,.dir-midnight-teal .tbl td:first-child{text-align:left}
+.dir-midnight-teal .tbl th span{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.dir-midnight-teal .tbl td{text-align:right;padding:0 10px;height:46px;border-bottom:1px solid var(--border);white-space:nowrap}
+.dir-midnight-teal .tbl tr.wk td{height:36px;font-size:12.5px;background:var(--raised);font-size:13px;color:var(--muted);font-weight:600}
+.dir-midnight-teal .tbl tr:last-child td{border-bottom:0}
+.dir-midnight-teal .tbl .rn{display:flex;align-items:center;gap:10px}
+.dir-midnight-teal .tbl .rn svg{width:22px;height:22px;flex:none}
+.dir-midnight-teal .tbl .rn path{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dir-midnight-teal .tbl .rn b{font-weight:600}
+.dir-midnight-teal .tbl .rn em{font-style:normal;color:var(--muted);font-size:12px;display:block}
+.dir-midnight-teal .tbl tr.sel td{background:var(--accent-tint)}
+.dir-midnight-teal .c-dist{color:var(--m-dist)} .dir-midnight-teal .c-time{color:var(--m-time)}
+.dir-midnight-teal .c-speed{color:var(--m-speed)} .dir-midnight-teal .c-power{color:var(--m-power)}
+.dir-midnight-teal .c-hr{color:var(--m-hr)} .dir-midnight-teal .c-elev{color:var(--m-elev)}
+.dir-midnight-teal .c-na{color:var(--muted)}
+.dir-midnight-teal .b-dist{background:var(--m-dist)} .dir-midnight-teal .b-time{background:var(--m-time)}
+.dir-midnight-teal .b-speed{background:var(--m-speed)} .dir-midnight-teal .b-power{background:var(--m-power)}
+.dir-midnight-teal .b-hr{background:var(--m-hr)} .dir-midnight-teal .b-elev{background:var(--m-elev)}
+
+/* why */
+.dir-midnight-teal .mt-why{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-why ul{margin:0;padding-left:18px;font-size:15px;color:#C1CCDA}
+.dir-midnight-teal .mt-why li{margin-bottom:8px}
+.dir-midnight-teal .mt-why h4{margin:0 0 12px;font-size:15px}
+</style>
+
+<div class="mt-wrap">
+
+  <!-- 1. Header -->
+  <p class="mt-eyebrow">Direction A</p>
+  <h2 class="mt-title">Direction A — Midnight Teal</h2>
+  <p class="mt-lede">A quiet instrument panel at night. Deep navy-ink surfaces (blue-black, never pure black) let the numbers glow softly, and one teal accent marks the thing that matters most on each screen with a faint halo. Calm and moody in the dark; crisp cool paper with ink text in the light.</p>
+  <p class="mt-insp">Inspired by Whoop and Oura night screens, with the metric-colour discipline of Apple Fitness. Font: Inter.</p>
+
+  <!-- 2. Palette -->
+  <h3 class="mt-h">Palette</h3>
+  <div class="mt-pal">
+    <div class="mt-palcard theme-dark">
+      <h4>Dark (default)</h4>
+      <div class="mt-sw">
+        <div class="mt-chip"><i style="background:#0B1220"></i><b>bg</b><span>#0B1220</span></div>
+        <div class="mt-chip"><i style="background:#111A2B"></i><b>surface</b><span>#111A2B</span></div>
+        <div class="mt-chip"><i style="background:#18233A"></i><b>surface-raised</b><span>#18233A</span></div>
+        <div class="mt-chip"><i style="background:#27344C"></i><b>border</b><span>#27344C</span></div>
+        <div class="mt-chip"><i style="background:#E6EDF5"></i><b>text</b><span>#E6EDF5</span></div>
+        <div class="mt-chip"><i style="background:#94A3B8"></i><b>text-muted</b><span>#94A3B8</span></div>
+        <div class="mt-chip"><i style="background:#2DD4BF;box-shadow:0 0 18px rgba(45,212,191,.5) inset"></i><b>accent</b><span>#2DD4BF</span></div>
+        <div class="mt-chip"><i style="background:#042F2A"></i><b>on-accent</b><span>#042F2A</span></div>
+      </div>
+      <ul class="mt-ratios num">
+        <li>text / bg <strong>15.87 : 1</strong></li>
+        <li>text-muted / bg <strong>7.30 : 1</strong> <span>(6.11 on surface-raised)</span></li>
+        <li>accent / bg (usable as text) <strong>10.06 : 1</strong></li>
+        <li>on-accent / accent <strong>7.81 : 1</strong></li>
+      </ul>
+    </div>
+    <div class="mt-palcard theme-light">
+      <h4>Light (equal quality)</h4>
+      <div class="mt-sw">
+        <div class="mt-chip"><i style="background:#F3F6F9"></i><b>bg</b><span>#F3F6F9</span></div>
+        <div class="mt-chip"><i style="background:#FFFFFF"></i><b>surface</b><span>#FFFFFF</span></div>
+        <div class="mt-chip"><i style="background:#E9EEF4"></i><b>surface-raised</b><span>#E9EEF4</span></div>
+        <div class="mt-chip"><i style="background:#D3DCE6"></i><b>border</b><span>#D3DCE6</span></div>
+        <div class="mt-chip"><i style="background:#0E1726"></i><b>text</b><span>#0E1726</span></div>
+        <div class="mt-chip"><i style="background:#4F5D70"></i><b>text-muted</b><span>#4F5D70</span></div>
+        <div class="mt-chip"><i style="background:#0F766E"></i><b>accent</b><span>#0F766E</span></div>
+        <div class="mt-chip"><i style="background:#FFFFFF"></i><b>on-accent</b><span>#FFFFFF</span></div>
+      </div>
+      <ul class="mt-ratios num">
+        <li>text / bg <strong>16.56 : 1</strong></li>
+        <li>text-muted / bg <strong>6.18 : 1</strong> <span>(5.75 on surface-raised)</span></li>
+        <li>accent / bg (usable as text) <strong>5.05 : 1</strong></li>
+        <li>on-accent / accent <strong>5.47 : 1</strong></li>
+      </ul>
+    </div>
+  </div>
+  <p class="mt-note">Borders (1.4 : 1) are decorative separators only; every control is also defined by fill or label. The teal glow is a 1 px teal ring plus a 32 px blur at 28 % opacity, used on at most one element per screen (the primary button or the hero card).</p>
+
+  <!-- 3. Metric colours -->
+  <h3 class="mt-h">Metric colours</h3>
+  <div class="mt-metrics">
+    <div class="mt-palcard theme-dark">
+      <h4>Dark · contrast vs surface #111A2B</h4>
+      <div class="mt-mrow num">
+        <div class="mt-mchip"><i class="dot b-dist"></i><div class="v c-dist">#A3E635</div><div class="l">Distance · lime</div><div class="h">11.5 : 1 · light tier</div></div>
+        <div class="mt-mchip"><i class="dot b-time"></i><div class="v c-time">#C3D0E0</div><div class="l">Moving time · ice</div><div class="h">11.1 : 1 · light tier</div></div>
+        <div class="mt-mchip"><i class="dot b-speed"></i><div class="v c-speed">#60A5FA</div><div class="l">Avg speed · sky</div><div class="h">6.9 : 1 · mid tier</div></div>
+        <div class="mt-mchip"><i class="dot b-power"></i><div class="v c-power">#A78BFA</div><div class="l">Avg power · violet</div><div class="h">6.4 : 1 · mid tier</div></div>
+        <div class="mt-mchip"><i class="dot b-hr"></i><div class="v c-hr">#FB7185</div><div class="l">Avg HR · rose</div><div class="h">6.5 : 1 · mid tier</div></div>
+        <div class="mt-mchip"><i class="dot b-elev"></i><div class="v c-elev">#F59E0B</div><div class="l">Elevation · amber</div><div class="h">8.1 : 1 · upper-mid</div></div>
+      </div>
+    </div>
+    <div class="mt-palcard theme-light">
+      <h4>Light · contrast vs surface #FFFFFF</h4>
+      <div class="mt-mrow num">
+        <div class="mt-mchip"><i class="dot b-dist"></i><div class="v c-dist">#3F6212</div><div class="l">Distance · lime</div><div class="h">7.1 : 1 · dark tier</div></div>
+        <div class="mt-mchip"><i class="dot b-time"></i><div class="v c-time">#475569</div><div class="l">Moving time · slate</div><div class="h">7.6 : 1 · dark tier</div></div>
+        <div class="mt-mchip"><i class="dot b-speed"></i><div class="v c-speed">#1D4ED8</div><div class="l">Avg speed · blue</div><div class="h">6.7 : 1</div></div>
+        <div class="mt-mchip"><i class="dot b-power"></i><div class="v c-power">#7C3AED</div><div class="l">Avg power · violet</div><div class="h">5.7 : 1</div></div>
+        <div class="mt-mchip"><i class="dot b-hr"></i><div class="v c-hr">#E11D48</div><div class="l">Avg HR · rose</div><div class="h">4.7 : 1 · lighter tier</div></div>
+        <div class="mt-mchip"><i class="dot b-elev"></i><div class="v c-elev">#B45309</div><div class="l">Elevation · amber</div><div class="h">5.0 : 1 · lighter tier</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="mt-note">No metric is teal or green-cyan, so the accent always means "action / focus", never data. All metric colours also pass 4.5 : 1, so they work as text, not just as graphics. Colour-vision safety: the risky pairs are separated by lightness, not hue alone. Lime (distance) sits in the lightest tier and rose (heart rate) in the mid tier in dark mode (relative luminance 0.65 vs 0.34), and the reverse holds in light mode (0.10 vs 0.17). Amber is a full step darker than lime in dark mode (0.44 vs 0.65). Sky / violet / rose differ along the blue–yellow axis that deutan and protan viewers keep. On top of that, a metric is never shown by colour alone: it always has a fixed position, a unit and a label.</p>
+
+  <!-- 4. Type -->
+  <h3 class="mt-h">Typography · Inter</h3>
+  <div class="mt-type theme-dark" style="background:transparent">
+    <div class="mt-box">
+      <div class="t-display num">142.6<small>km</small></div>
+      <div class="t-title">Sunday Long Ride</div>
+      <p class="t-body">Body text stays calm: 16 px, regular, generous line height. One sans-serif everywhere, including the wordmark.</p>
+      <div class="t-cap">Caption · Sun 12 Oct · 08:14 · Leuven</div>
+      <div class="t-spec num">Display 56 / 600 / −3.5 % · Title 22 / 600 · Body 16 / 400 · Caption 13 / 400 muted · Metric 17 / 600 tabular</div>
+    </div>
+    <div class="mt-box">
+      <div class="t-cap" style="margin-bottom:8px">Tabular numbers line up</div>
+      <table class="mt-tab num">
+        <tr><td>Distance</td><td class="c-dist">111.1 km</td></tr>
+        <tr><td>Moving time</td><td class="c-time">3:58:12</td></tr>
+        <tr><td>Avg speed</td><td class="c-speed">28.0 km/h</td></tr>
+        <tr><td>Avg power</td><td class="c-power">198 W</td></tr>
+        <tr><td>Avg heart rate</td><td class="c-hr">141 bpm</td></tr>
+        <tr><td>Elevation</td><td class="c-elev">1 018 m</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 5. Components -->
+  <h3 class="mt-h">Components</h3>
+  <div class="mt-comp">
+    <div class="mt-box theme-dark">
+      <div class="mt-rowc"><span class="btn btn-primary">View rides</span><span class="btn btn-secondary">Choose file</span></div>
+      <div class="mt-rowc"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">MTB</span><span class="pill pill-tag">Commute</span></div>
+      <div class="field"><label>Email</label><div class="input"></div><div class="help">The address the account was created with.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: teal ring.</div></div>
+      <div class="status"><span class="ic"></span><span class="sp">Updated to <span class="num">v0.2.0</span> · <a>See what's new</a></span><span class="x">×</span></div>
+    </div>
+    <div class="mt-box theme-light">
+      <div class="mt-rowc"><span class="btn btn-primary">View rides</span><span class="btn btn-secondary">Choose file</span></div>
+      <div class="mt-rowc"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">MTB</span><span class="pill pill-tag">Commute</span></div>
+      <div class="field"><label>Email</label><div class="input" style="background:#fff"></div><div class="help">The address the account was created with.</div></div>
+      <div class="field"><label>Password</label><div class="input focus" style="background:#fff"></div><div class="help">Focused state: teal ring.</div></div>
+      <div class="status"><span class="ic"></span><span class="sp">Updated to <span class="num">v0.2.0</span> · <a>See what's new</a></span><span class="x">×</span></div>
+    </div>
+  </div>
+
+  <!-- 6. Mockups -->
+  <h3 class="mt-h">Mockups · phone</h3>
+  <div class="mt-phones">
+
+    <!-- a. Rides list -->
+    <div class="mt-phwrap">
+      <div class="phone theme-dark">
+        <div class="sbar num"><span>9:41</span><i></i></div>
+        <div class="topbar"><div class="hamb"><span></span></div><div class="tt">Rides</div><div class="wm">Cycling <b>Hub</b></div></div>
+        <div class="scroll">
+          <div class="seg-sm"><span class="on">Week</span><span>Month</span></div>
+          <div class="week"><span class="w1">Week 41 · 6–12 Oct</span><span class="w2 num">4 rides · 210 km · 7:19 h</span></div>
+
+          <div class="card hero">
+            <div class="chead">
+              <div class="thumb"><svg viewBox="0 0 34 34"><path d="M6 26c2-6 4-9 8-10s5-6 8-9 6 0 6 4-4 6-5 10-4 7-9 7-9-1-8-2z"/></svg></div>
+              <div class="meta"><div class="cname">Sunday Long Ride</div><div class="cdate">Sun 12 Oct · 08:14</div></div>
+              <span class="pill pill-tag">Road</span>
+            </div>
+            <div class="mgrid num">
+              <div class="m dist"><div class="v">111.1<small>km</small></div><div class="l">Distance</div></div>
+              <div class="m time"><div class="v">3:58<small>h</small></div><div class="l">Moving time</div></div>
+              <div class="m speed"><div class="v">28.0<small>km/h</small></div><div class="l">Avg speed</div></div>
+              <div class="m power"><div class="v">198<small>W</small></div><div class="l">Avg power</div></div>
+              <div class="m hr"><div class="v">141<small>bpm</small></div><div class="l">Avg HR</div></div>
+              <div class="m elev"><div class="v">1018<small>m</small></div><div class="l">Elevation</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chead">
+              <div class="thumb"><svg viewBox="0 0 34 34"><path d="M5 24h7l3-8h6l2-6h6"/></svg></div>
+              <div class="meta"><div class="cname">Evening Ride</div><div class="cdate">Thu 9 Oct · 17:42</div></div>
+              <span class="pill pill-tag">Commute</span>
+            </div>
+            <div class="mgrid num">
+              <div class="m dist"><div class="v">18.4<small>km</small></div><div class="l">Distance</div></div>
+              <div class="m time"><div class="v">0:43<small>h</small></div><div class="l">Moving time</div></div>
+              <div class="m speed"><div class="v">25.7<small>km/h</small></div><div class="l">Avg speed</div></div>
+              <div class="m power"><div class="v na">—</div><div class="l">Avg power</div></div>
+              <div class="m hr"><div class="v na">—</div><div class="l">Avg HR</div></div>
+              <div class="m elev"><div class="v">62<small>m</small></div><div class="l">Elevation</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chead">
+              <div class="thumb"><svg viewBox="0 0 34 34"><path d="M17 6c6 0 11 4 11 10s-4 12-11 12S6 23 7 17s4-11 10-11z"/></svg></div>
+              <div class="meta"><div class="cname">Morning Ride</div><div class="cdate">Tue 7 Oct · 07:05</div></div>
+              <span class="pill pill-tag">MTB</span>
+            </div>
+            <div class="mgrid num">
+              <div class="m dist"><div class="v">42.3<small>km</small></div><div class="l">Distance</div></div>
+              <div class="m time"><div class="v">1:47<small>h</small></div><div class="l">Moving time</div></div>
+              <div class="m speed"><div class="v">23.7<small>km/h</small></div><div class="l">Avg speed</div></div>
+              <div class="m power"><div class="v">176<small>W</small></div><div class="l">Avg power</div></div>
+              <div class="m hr"><div class="v">149<small>bpm</small></div><div class="l">Avg HR</div></div>
+              <div class="m elev"><div class="v">486<small>m</small></div><div class="l">Elevation</div></div>
+            </div>
+          </div>
+          <div class="fade"></div>
+          <div class="dock"><div class="status"><span class="ic"></span><span class="sp">Updated to <span class="num">v0.2.0</span> · <a>See what's new</a></span><span class="x">×</span></div></div>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="cap">a · Rides list (B1a) · dark</div>
+    </div>
+
+    <!-- b. Import summary -->
+    <div class="mt-phwrap">
+      <div class="phone theme-dark">
+        <div class="sbar num"><span>9:41</span><i></i></div>
+        <div class="topbar"><div class="hamb"><span></span></div><div class="tt">Import</div><div class="wm">Cycling <b>Hub</b></div></div>
+        <div class="scroll">
+          <div class="imp-h">Import complete</div>
+          <div class="imp-f num"><span class="ok"></span>strava-export-2026-10-16.json · 280 activities</div>
+          <div class="ogrid num">
+            <div class="oc hero"><div class="ot">New rides</div><div class="on">233</div></div>
+            <div class="oc"><div class="ot">Updated</div><div class="on">3</div></div>
+            <div class="oc"><div class="ot">Unchanged</div><div class="on">2</div></div>
+            <div class="oc"><div class="ot">Not a ride</div><div class="on">41</div></div>
+            <div class="oc warn"><div class="ot">Skipped (errors)</div><div class="on" style="color:var(--m-hr)">1</div></div>
+            <div class="oc zero" style="grid-column:1 / -1;min-height:64px;flex-direction:row;align-items:center"><div class="ot">Deleted earlier</div><div class="on" style="font-size:26px">0</div></div>
+          </div>
+          <div class="imp-act"><span class="btn btn-primary btn-block">View rides</span></div>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="cap">b · Import summary (C3) · dark</div>
+    </div>
+
+    <!-- c. Settings -->
+    <div class="mt-phwrap">
+      <div class="phone theme-light">
+        <div class="sbar num"><span>9:41</span><i></i></div>
+        <div class="topbar"><div class="hamb"><span></span></div><div class="tt">Settings</div><div class="wm">Cycling <b>Hub</b></div></div>
+        <div class="scroll">
+          <div class="sg-label">Account</div>
+          <div class="group"><div class="row"><span>Email</span><span class="greybar"></span></div></div>
+          <div class="sg-label">Display</div>
+          <div class="group">
+            <div class="row block"><div class="rl">Appearance</div><div class="seg"><span class="on">System</span><span>Light</span><span>Dark</span></div></div>
+            <div class="row"><span>Units</span><span class="rv">Metric (km, m)</span></div>
+            <div class="row"><span>Time zone</span><span class="rv">Europe/Brussels</span></div>
+          </div>
+          <div class="sg-label">About</div>
+          <div class="group">
+            <div class="row"><span>Version</span><span class="rv num">0.1.0</span></div>
+            <div class="row"><span>What's new</span><span class="chev">›</span></div>
+            <div class="row"><span>What's next</span><span class="chev">›</span></div>
+          </div>
+          <div class="group" style="margin-top:16px"><div class="row danger">Sign out</div></div>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="cap">c · Settings (G1) · light</div>
+    </div>
+  </div>
+
+  <!-- d. Desktop -->
+  <h3 class="mt-h">Mockup · desktop (X1, dark, 1000 × 600 at 90 %)</h3>
+  <div class="desk-outer">
+    <div class="desk theme-dark">
+      <aside class="side">
+        <div class="wm">Cycling <b>Hub</b></div>
+        <div class="nav on"><i></i>Rides</div>
+        <div class="nav"><i></i>Import</div>
+        <div class="nav"><i></i>Settings</div>
+        <div class="sp"></div>
+        <div class="ver num">v0.1.0</div>
+      </aside>
+      <div class="dmain">
+        <div class="dhead">
+          <h4>Rides</h4>
+          <div class="r"><div class="seg-sm" style="margin:0"><span class="on">Week</span><span>Month</span></div><span class="btn btn-secondary">Hide commutes</span></div>
+        </div>
+        <div class="tbl">
+          <table class="num">
+            <thead><tr>
+              <th>Ride</th>
+              <th><span class="b-dist"></span>Distance</th>
+              <th><span class="b-time"></span>Moving time</th>
+              <th><span class="b-speed"></span>Avg speed</th>
+              <th><span class="b-power"></span>Avg power</th>
+              <th><span class="b-hr"></span>Avg HR</th>
+              <th><span class="b-elev"></span>Elevation</th>
+            </tr></thead>
+            <tbody>
+              <tr class="wk"><td>Week 41 · 6–12 Oct · 4</td><td>210.0 km</td><td>7:19 h</td><td></td><td></td><td></td><td>1 626 m</td></tr>
+              <tr class="sel"><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M6 26c2-6 4-9 8-10s5-6 8-9 6 0 6 4-4 6-5 10-4 7-9 7-9-1-8-2z"/></svg><div><b>Sunday Long Ride</b><em>Sun 12 Oct · Road</em></div></div></td><td class="c-dist">111.1 km</td><td class="c-time">3:58</td><td class="c-speed">28.0 km/h</td><td class="c-power">198 W</td><td class="c-hr">141 bpm</td><td class="c-elev">1 018 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M5 24h7l3-8h6l2-6h6"/></svg><div><b>Evening Ride</b><em>Thu 9 Oct · Commute</em></div></div></td><td class="c-dist">18.4 km</td><td class="c-time">0:43</td><td class="c-speed">25.7 km/h</td><td class="c-na">—</td><td class="c-na">—</td><td class="c-elev">62 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M5 22h8l4-9 4 9h8"/></svg><div><b>Lunch Ride</b><em>Wed 8 Oct · Road</em></div></div></td><td class="c-dist">38.2 km</td><td class="c-time">1:21</td><td class="c-speed">28.3 km/h</td><td class="c-power">212 W</td><td class="c-hr">152 bpm</td><td class="c-elev">60 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M17 6c6 0 11 4 11 10s-4 12-11 12S6 23 7 17s4-11 10-11z"/></svg><div><b>Morning Ride</b><em>Tue 7 Oct · MTB</em></div></div></td><td class="c-dist">42.3 km</td><td class="c-time">1:47</td><td class="c-speed">23.7 km/h</td><td class="c-power">176 W</td><td class="c-hr">149 bpm</td><td class="c-elev">486 m</td></tr>
+              <tr class="wk"><td>Week 40 · 29 Sep–5 Oct · 3</td><td>164.8 km</td><td>5:47 h</td><td></td><td></td><td></td><td>1 240 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M6 10c5 0 7 4 11 4s6-5 11-3-1 10-6 12-11 4-14 1-6-14-2-14z"/></svg><div><b>Sunday Long Ride</b><em>Sun 5 Oct · Road</em></div></div></td><td class="c-dist">96.5 km</td><td class="c-time">3:24</td><td class="c-speed">28.4 km/h</td><td class="c-power">191 W</td><td class="c-hr">138 bpm</td><td class="c-elev">874 m</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Why -->
+  <h3 class="mt-h">Why pick this / trade-offs</h3>
+  <div class="mt-why">
+    <div>
+      <h4>Why pick it</h4>
+      <ul>
+        <li>The closest match to the "quiet instrument panel": navy-ink is softer on the eyes than pure black, and the six metric colours read like gauges on it.</li>
+        <li>One accent, one glow per screen: it is always clear where to tap or look first, without decoration.</li>
+        <li>Every colour, metrics included, passes 4.5 : 1 in both themes, so the same tokens work for text, charts and future zones.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Trade-offs</h4>
+      <ul>
+        <li>Moody and a bit "night-time": less energetic than a lime-led direction, and the teal sits close to many health apps.</li>
+        <li>Six saturated metric colours on dark navy can feel busy in dense tables; on desktop we may need to tone them down to the dot only.</li>
+        <li>The glow needs care in light mode (it becomes a soft teal shadow) and must stay off in reduced-transparency settings.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</section>
