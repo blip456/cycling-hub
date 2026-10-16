@@ -32,6 +32,23 @@ After the fixes the automated text check reports **0 failures** across all three
 Text that sits directly on the new gradient backgrounds was measured pixel by pixel (text hidden, worst
 5 % of background pixels, `pixel-contrast-check.cjs`): 72 elements, **0 failures**, lowest ratio 5.5:1.
 
+## Restraint pass (P28)
+
+New metric colours, contrast on their surface (dark / light):
+
+| Direction | Metric | Dark | Light |
+| --------- | ------ | ---- | ----- |
+| A | Avg power (gold) | #FACC15 · 11.4:1 | #806200 · 5.7:1 |
+| A | Elevation (earth) | #D6A97A · 8.1:1 | #6B4A2B · 8.0:1 |
+| B | Elevation (earth) | #E0B98C · 9.7:1 | #6B4A2B · 8.0:1 |
+| C | Avg power (gold) | #E9CD4C · 10.8:1 | #806200 · 5.7:1 |
+| C | Moving time (grey) | #C8CBD0 · 10.5:1 | #5A5F66 · 6.4:1 |
+| C | Elevation (earth) | #D6A97A · 8.0:1 | #6B4A2B · 8.0:1 |
+
+With card outlines removed, card edges are a tone step only. That is allowed (cards are not controls, 1.4.11 does not apply); input borders, focus rings and the selected segment keep their 3:1 boundaries from fixes 1–4.
+
+Pixel check of text on the splash after this pass: pending (re-run of `pixel-contrast-check.cjs`).
+
 ## Passed without changes
 
 - **Text and muted text:** at least 5.4:1 in both themes of every direction; the main text colour 15–17:1.
@@ -47,5 +64,5 @@ Text that sits directly on the new gradient backgrounds was measured pixel by pi
 
 - Screen-reader labels and focus order (the mockups have no real interaction yet).
 - Text resize to 200 % and reflow at 320 px wide (1.4.4, 1.4.10).
-- The faded last ride behind the bottom status card is decorative: in the app the list must stay
-  scrollable so no ride is permanently hidden (2.4.11 Focus not obscured).
+- The last ride sits partly behind the bottom status card: in the app the list must stay scrollable
+  (bottom padding the height of the card) so no ride is permanently hidden (2.4.11 Focus not obscured).

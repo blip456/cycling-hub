@@ -97,11 +97,11 @@ def make(pal, theme, W, H, spots, seeds, top=None):
     return svg(W, H, L, spots, top, F)
 
 CFG = {
-  'midnight-teal': dict(dark=['#2DD4BF', '#67E8F9', '#A78BFA', '#F9A8D4'], light=['#14B8A6', '#22D3EE', '#8B5CF6', '#F472B6'],
+  'midnight-teal': dict(dark=['#2DD4BF', '#67E8F9', '#60A5FA', '#A3E635'], light=['#14B8A6', '#22D3EE', '#3B82F6', '#84CC16'],
                         desk='.dmain', dW=804, seeds=(3, 11, 23)),
-  'graphite-lime': dict(dark=['#C6F432', '#2ED3E6', '#4D8EFF', '#B57BFF'], light=['#A3E635', '#22D3EE', '#3B82F6', '#A855F7'],
+  'graphite-lime': dict(dark=['#C6F432', '#2ED3E6', '#4D8EFF', '#5EEAD4'], light=['#A3E635', '#22D3EE', '#3B82F6', '#2DD4BF'],
                         desk='.main', dW=800, seeds=(41, 53, 67)),
-  'deep-ocean':    dict(dark=['#5B9BFF', '#56D2AC', '#9483F0', '#F5B47A'], light=['#3B82F6', '#2DBE97', '#8B5CF6', '#FDBA74'],
+  'deep-ocean':    dict(dark=['#5B9BFF', '#56D2AC', '#9DD9F0', '#F5B47A'], light=['#3B82F6', '#2DBE97', '#38BDF8', '#FDBA74'],
                         desk='.desk', dW=1000, seeds=(71, 83, 97)),
 }
 SPOTS = {

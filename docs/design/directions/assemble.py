@@ -9,7 +9,7 @@ questions = [
  ('Q1','Which direction, or which mix (e.g. "A with B\'s metric colours")?'),
  ('Q2','Accent: teal (A), lime (B) or blue (C)?'),
  ('Q3','Metric colours: vivid (B), balanced (A) or muted (C)?'),
- ('Q4','Background: soft splash (as in Mockups) or smoke (Alternative: smoke)? Stronger or weaker?'),
+ ('Q4','Background: soft splash (as in Mockups), smoke (Alternative: smoke) or flat (switch at the top)? Stronger or weaker?'),
  ('Q5','Anything missing or still too much?'),
 ]
 toc = ''.join(f'<a href="#{s}">Direction {l} · {html.escape(n)}</a>' for s,l,n in dirs)
@@ -28,7 +28,8 @@ RESP = r'''
  .page h1{font-size:24px}
  .page .direction{border-radius:16px;margin-top:32px}
  .page section.direction{padding:32px 16px 40px!important}
- .page section.direction .dir-title{font-size:28px!important}
+ .page section.direction .dir-title,.page section.direction .mt-title{font-size:40px!important;line-height:1.05!important}
+ .page section.direction h3{margin-top:64px!important}
  .page .dir-midnight-teal .mt-pal,.page .dir-midnight-teal .mt-metrics,.page .dir-midnight-teal .mt-type,.page .dir-midnight-teal .mt-comp,.page .dir-midnight-teal .mt-why,
  .page .dir-graphite-lime .two,
  .page .dir-deep-ocean .two,.page .dir-deep-ocean .why{grid-template-columns:1fr!important}
@@ -52,22 +53,31 @@ RESP = r'''
 @media (max-width:360px){ .page section.direction .phone{zoom:.76} }
 '''
 page = f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Cycling Hub — design directions V1</title>
+<title>Cycling Hub design directions V1</title>
 <style>
-.page{{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1d2330;max-width:1240px;margin:0 auto;padding:32px 20px 80px;line-height:1.5}}
-.page h1{{font-size:30px;margin:0 0 6px}} .page .lead{{color:#4a5263;max-width:760px}}
+.page{{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1d2330;max-width:1240px;margin:0 auto;padding:32px 20px 80px;line-height:1.5;font-size:16px}}
+.page h1{{font-size:30px;margin:0 0 6px}} .page .lead{{color:#2f3644;max-width:60ch;margin:0 0 4px}}
 .page nav.toc{{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 28px}} .page nav.toc a{{padding:10px 4px;color:#1d2330;text-decoration:underline;text-underline-offset:3px;font-weight:600}}
 .page .direction{{margin:48px 0 0;border-radius:24px;overflow:hidden}}
-.page .fb{{margin:16px 0 0;background:#f4f6f9;border:1px solid #d7dce4;border-radius:16px;padding:16px}}
+.page .fb{{margin:16px 0 0;background:#eef1f5;border-radius:16px;padding:16px}}
 .page .fb label{{display:block;font-weight:600;margin-bottom:8px}} .page .fb textarea{{width:100%;box-sizing:border-box;font:inherit;border:1px solid #b9c0cc;border-radius:12px;padding:10px;background:#fff}}
 .page .help{{color:#5a6273;font-size:13px;margin:6px 0 0}}
 .page h2.sec{{margin:64px 0 8px;font-size:24px}}
 .page .send{{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}} .page .send a,.page .send button{{min-height:44px;padding:0 20px;border-radius:12px;border:0;font:inherit;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}}
 .page .send .p{{background:#1d2330;color:#fff}} .page .send .s{{background:#e9edf3;color:#1d2330}}
+.page .bgsw{{display:inline-flex;align-items:center;gap:4px;margin:20px 0 0;background:#e9edf3;border-radius:12px;padding:4px}}
+.page .bgsw span{{padding:0 12px 0 8px;font-weight:600}}
+.page .bgsw button{{min-height:44px;padding:0 18px;border:0;border-radius:10px;background:transparent;font:inherit;font-weight:600;color:#1d2330;cursor:pointer}}
+.page .bgsw button[aria-pressed="true"]{{background:#1d2330;color:#fff}}
+.page .bgsw button:focus-visible{{outline:2px solid #1d2330;outline-offset:2px}}
+/* Flat background option (Q4): drops the splash, keeps smoke as its own alternative */
+body.bg-flat section.direction .phone:not(.smoke),body.bg-flat .dir-midnight-teal .dmain:not(.smoke),
+body.bg-flat .dir-graphite-lime .main:not(.smoke),body.bg-flat .dir-deep-ocean .desk:not(.smoke){{background:var(--bg)!important}}
 {RESP}</style></head><body style="margin:0;background:#fbfcfd"><div class="page">
-<h1>Cycling Hub — design directions V1</h1>
+<h1>Cycling Hub design directions V1</h1>
 <p class="lead">Three directions on your brief. Pick one, or mix parts.</p>
 <p class="lead">All three pass WCAG 2.2 AA.</p>
+<div class="bgsw" role="group" aria-label="Background in the mockups"><span>Background in the mockups</span><button type="button" data-bg="splash" aria-pressed="true">Splash</button><button type="button" data-bg="flat" aria-pressed="false">Flat</button></div>
 <nav class="toc">{toc}<a href="#questions">Questions &amp; send</a></nav>
 {sections}
 <h2 class="sec" id="questions">Questions</h2>
@@ -86,6 +96,8 @@ document.getElementById('status').textContent=tas.filter(t=>t.value.trim()).leng
 document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(body()).then(()=>document.getElementById('status').textContent='Copied. Paste it in the chat with Claude.');
 document.getElementById('clear').onclick=()=>{{if(confirm('Clear all feedback?')){{localStorage.removeItem(K);tas.forEach(t=>t.value='');for(const k in st)delete st[k];upd()}}}};
 upd();
+const BK=K+'-bg';const setBg=v=>{{document.body.classList.toggle('bg-flat',v==='flat');document.querySelectorAll('.bgsw button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.bg===v)));localStorage.setItem(BK,v)}};
+document.querySelectorAll('.bgsw button').forEach(b=>b.onclick=()=>setBg(b.dataset.bg));setBg(localStorage.getItem(BK)||'splash');
 </script></body></html>'''
 out = root/'directions'/'index.html'
 out.write_text(page)
