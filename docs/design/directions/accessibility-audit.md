@@ -27,6 +27,11 @@ B Graphite & Lime, C Deep Ocean), dark and light. Decision P23 in [`../../decisi
 
 After the fixes the automated text check reports **0 failures** across all three directions (re-run after the P24 cleanup).
 
+## Gradient splash backgrounds (P25)
+
+Text that sits directly on the new gradient backgrounds was measured pixel by pixel (text hidden, worst
+5 % of background pixels, `pixel-contrast-check.cjs`): 72 elements, **0 failures**, lowest ratio 5.5:1.
+
 ## Passed without changes
 
 - **Text and muted text:** at least 5.4:1 in both themes of every direction; the main text colour 15–17:1.
