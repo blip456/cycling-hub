@@ -45,6 +45,7 @@ Source: `docs/wireframes/V1/feedback-product-owner.md` (PO is the only reviewer)
 | P19 | Weather per ride       | **Parked**: temperature, wind speed and direction per ride. Discovery before Sprint 2 (a free historical weather API using start time and location).                                       | B-PO1 (optional).                                                                                       |
 | P20 | Design vibe            | **Calm & analytical, dark-first with equal-quality light mode, blue/teal and green/lime accents, one clean sans, balanced density, soft rounded shapes, subtle touches, fixed colour per metric, subtle motion, wordmark only.** Full brief in `docs/design/brief.md`. | 16 Oct 2026, design question round. References: Apple Fitness / Health, Whoop / Oura. |
 | P21 | No glows or halos      | **No glows, halos or accent-tinted shadows/gradients** on buttons, cards, dots or focus states. Emphasis comes from fill and border only; focus is a solid accent outline. | 16 Oct 2026, PO feedback on design directions V1 ("the halo on the button is too much"). Refines P20. |
+| P22 | Dark surface tone      | **Dark surfaces are near-neutral charcoal/ink with at most a faint cool hint, not navy or dark blue.** | 16 Oct 2026, PO feedback on design directions V1 ("too dark blue … prefer less blue tones"). Refines P20; applied to directions A and C (B was already neutral). |
 
 ## Authentication
 

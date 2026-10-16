@@ -3,7 +3,7 @@
 .dir-deep-ocean{
   --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   font-family:var(--font);
-  background:linear-gradient(180deg,#0F1829 0%,#0A111F 100%);
+  background:linear-gradient(180deg,#16181E 0%,#0F1116 100%);
   color:#E6EDF7;
   padding:56px 40px 64px;
   box-sizing:border-box;
@@ -15,38 +15,38 @@
 
 /* ---------- theme tokens ---------- */
 .dir-deep-ocean .theme-dark{
-  --bg:#0B1322; --bg-top:#0F1829; --bg-bottom:#0A111F;
-  --surface:#121C2D; --raised:#1A2639; --border:#26344A;
-  --text:#E6EDF7; --muted:#97A6BA; --accent:#5B9BFF; --on-accent:#06101F;
+  --bg:#111318; --bg-top:#16181E; --bg-bottom:#0F1116;
+  --surface:#191C22; --raised:#23262C; --border:#30343B;
+  --text:#E6EDF7; --muted:#A1A5AB; --accent:#5B9BFF; --on-accent:#0D1015;
   --accent-soft:rgba(91,155,255,.14); --positive:#8FD07A;
   --m-dist:#56D2AC; --m-time:#ECEEC4; --m-speed:#9DD9F0; --m-power:#9483F0; --m-hr:#D85A80; --m-elev:#CF9849;
-  --shadow:0 1px 0 rgba(255,255,255,.035) inset,0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(2,6,14,.45);
-  --shadow-raised:0 1px 0 rgba(255,255,255,.05) inset,0 2px 4px rgba(0,0,0,.35),0 16px 40px rgba(2,6,14,.55);
+  --shadow:0 1px 0 rgba(255,255,255,.035) inset,0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(5,6,8,.45);
+  --shadow-raised:0 1px 0 rgba(255,255,255,.05) inset,0 2px 4px rgba(0,0,0,.35),0 16px 40px rgba(5,6,8,.55);
   --glow:none;
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
 .dir-deep-ocean .theme-light{
   --bg:#F2F5F9; --bg-top:#F6F8FB; --bg-bottom:#ECF0F6;
-  --surface:#FFFFFF; --raised:#FFFFFF; --border:#D8E0EA;
-  --text:#0F1A2A; --muted:#536175; --accent:#2457D6; --on-accent:#FFFFFF;
+  --surface:#FFFFFF; --raised:#FFFFFF; --border:#DDDFE2;
+  --text:#171A1F; --muted:#5C6067; --accent:#2457D6; --on-accent:#FFFFFF;
   --accent-soft:rgba(36,87,214,.09); --positive:#3C7D22;
   --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#2A82A8; --m-power:#5C46D0; --m-hr:#D24D76; --m-elev:#A9700C;
-  --shadow:0 1px 2px rgba(15,26,42,.06),0 8px 24px rgba(30,60,120,.07);
-  --shadow-raised:0 2px 4px rgba(15,26,42,.06),0 16px 40px rgba(30,60,120,.11);
+  --shadow:0 1px 2px rgba(23,26,31,.06),0 8px 24px rgba(55,62,85,.07);
+  --shadow-raised:0 2px 4px rgba(23,26,31,.06),0 16px 40px rgba(55,62,85,.11);
   --glow:none;
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
 
 /* ---------- presentation chrome ---------- */
-.dir-deep-ocean .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#97A6BA;margin:0 0 10px}
+.dir-deep-ocean .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#A1A5AB;margin:0 0 10px}
 .dir-deep-ocean h2.dir-title{font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-.02em;margin:0 0 16px;color:#E6EDF7}
 .dir-deep-ocean h2.dir-title span{color:#5B9BFF}
-.dir-deep-ocean .mood{font-size:17px;max-width:760px;color:#C9D4E3;margin:0 0 8px}
-.dir-deep-ocean .inspired{font-size:14px;color:#97A6BA;margin:0}
-.dir-deep-ocean h3.sec{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#97A6BA;font-weight:600;margin:56px 0 16px;padding-top:24px;border-top:1px solid #1E2A3E}
-.dir-deep-ocean .note{font-size:13px;color:#97A6BA;margin:10px 0 0;max-width:900px}
+.dir-deep-ocean .mood{font-size:17px;max-width:760px;color:#D0D3D8;margin:0 0 8px}
+.dir-deep-ocean .inspired{font-size:14px;color:#A1A5AB;margin:0}
+.dir-deep-ocean h3.sec{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#A1A5AB;font-weight:600;margin:56px 0 16px;padding-top:24px;border-top:1px solid #272A31}
+.dir-deep-ocean .note{font-size:13px;color:#A1A5AB;margin:10px 0 0;max-width:900px}
 .dir-deep-ocean .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .dir-deep-ocean .panel{border-radius:20px;padding:24px;background:var(--page);border:1px solid var(--border);box-shadow:var(--shadow)}
 .dir-deep-ocean .panel-h{font-size:13px;font-weight:600;margin:0 0 16px;color:var(--muted);letter-spacing:.04em}
@@ -107,9 +107,9 @@
 
 /* ---------- phone ---------- */
 .dir-deep-ocean .mocks{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
-.dir-deep-ocean .mock-cap{font-size:13px;color:#97A6BA;margin:0 0 10px}
+.dir-deep-ocean .mock-cap{font-size:13px;color:#A1A5AB;margin:0 0 10px}
 .dir-deep-ocean .phone{width:375px;height:760px;border-radius:44px;background:var(--page);position:relative;overflow:hidden;
-  box-shadow:0 0 0 8px #05080E,0 0 0 9px #2A3448,0 30px 60px rgba(0,0,0,.5);color:var(--text)}
+  box-shadow:0 0 0 8px #07080A,0 0 0 9px #31343B,0 30px 60px rgba(0,0,0,.5);color:var(--text)}
 .dir-deep-ocean .phone .inner{padding:30px 16px 0}
 .dir-deep-ocean .topbar{display:flex;align-items:center;height:48px;gap:6px;margin:0 -4px 6px}
 .dir-deep-ocean .hamb{width:44px;height:44px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
@@ -167,14 +167,14 @@
 .dir-deep-ocean .grey-bar{width:150px;height:10px;border-radius:6px;background:var(--border)}
 .dir-deep-ocean .seg{display:flex;background:var(--bg-bottom);border:1px solid var(--border);border-radius:999px;padding:3px;margin:4px 0 12px;height:44px}
 .dir-deep-ocean .seg span{flex:1;display:flex;align-items:center;justify-content:center;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted)}
-.dir-deep-ocean .seg span.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(15,26,42,.12),0 0 0 1px var(--border)}
+.dir-deep-ocean .seg span.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(23,26,31,.12),0 0 0 1px var(--border)}
 .dir-deep-ocean .li.col{flex-direction:column;align-items:stretch;padding-top:12px;gap:4px}
 .dir-deep-ocean .signout{margin-top:16px}
 
 /* ---------- desktop ---------- */
-.dir-deep-ocean .desk-scale{width:900px;height:540px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px #2A3448,0 30px 60px rgba(0,0,0,.5)}
+.dir-deep-ocean .desk-scale{width:900px;height:540px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px #31343B,0 30px 60px rgba(0,0,0,.5)}
 .dir-deep-ocean .desk{width:1000px;height:600px;transform:scale(.9);transform-origin:0 0;display:flex;background:var(--page);color:var(--text)}
-.dir-deep-ocean .side{width:204px;flex:none;background:rgba(18,28,45,.6);border-right:1px solid var(--border);padding:22px 14px;display:flex;flex-direction:column}
+.dir-deep-ocean .side{width:204px;flex:none;background:rgba(25,28,34,.6);border-right:1px solid var(--border);padding:22px 14px;display:flex;flex-direction:column}
 .dir-deep-ocean .side .wordmark{font-size:16px;color:var(--text);padding:0 10px 24px}
 .dir-deep-ocean .nav{display:flex;align-items:center;height:44px;padding:0 12px;border-radius:12px;font-size:15px;color:var(--muted);gap:12px}
 .dir-deep-ocean .nav i{width:16px;height:16px;border-radius:5px;border:1.6px solid currentColor;flex:none}
@@ -205,7 +205,7 @@
 
 /* trade-offs */
 .dir-deep-ocean .why{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.dir-deep-ocean .why ul{margin:0;padding-left:18px;font-size:15px;color:#C9D4E3}
+.dir-deep-ocean .why ul{margin:0;padding-left:18px;font-size:15px;color:#D0D3D8}
 .dir-deep-ocean .why li{margin-bottom:8px}
 .dir-deep-ocean .why h5{font-size:14px;margin:0 0 10px;color:#E6EDF7;font-weight:600}
 </style>
@@ -214,23 +214,23 @@
   <!-- 1. Header -->
   <p class="kicker">Design direction · Cycling Hub</p>
   <h2 class="dir-title">Direction C — <span>Deep Ocean</span></h2>
-  <p class="mood">The quietest of the three. Blue-tinted slate surfaces that fade very slightly from top to bottom, cards that float on soft layered shadows instead of borders, and one cobalt accent that only marks what you can act on. The numbers stay the loudest thing on the screen, in muted, sea-washed metric colours.</p>
+  <p class="mood">The quietest of the three. Cool charcoal surfaces (only a faint blue hint) that fade very slightly from top to bottom, cards that float on soft layered shadows instead of borders, and one cobalt accent that only marks what you can act on. The numbers stay the loudest thing on the screen, in muted, sea-washed metric colours.</p>
   <p class="inspired">Inspired by Oura's soft depth, Apple Health's calm data tables and the colour of the North Sea at dusk. Font: Inter, one family everywhere.</p>
 
   <!-- 2. Palette -->
   <h3 class="sec">Palette</h3>
   <div class="two">
     <div class="panel theme-dark">
-      <p class="panel-h">Dark (default) · background is a gradient #0F1829 → #0A111F</p>
+      <p class="panel-h">Dark (default) · background is a gradient #16181E → #0F1116</p>
       <div class="sw-grid">
-        <div class="sw"><i style="background:#0B1322"></i><b>bg</b><code>#0B1322</code></div>
-        <div class="sw"><i style="background:#121C2D"></i><b>surface</b><code>#121C2D</code></div>
-        <div class="sw"><i style="background:#1A2639"></i><b>surface-raised</b><code>#1A2639</code></div>
-        <div class="sw"><i style="background:#26344A"></i><b>border</b><code>#26344A</code></div>
+        <div class="sw"><i style="background:#111318"></i><b>bg</b><code>#111318</code></div>
+        <div class="sw"><i style="background:#191C22"></i><b>surface</b><code>#191C22</code></div>
+        <div class="sw"><i style="background:#23262C"></i><b>surface-raised</b><code>#23262C</code></div>
+        <div class="sw"><i style="background:#30343B"></i><b>border</b><code>#30343B</code></div>
         <div class="sw"><i style="background:#E6EDF7"></i><b>text</b><code>#E6EDF7</code></div>
-        <div class="sw"><i style="background:#97A6BA"></i><b>text-muted</b><code>#97A6BA</code></div>
+        <div class="sw"><i style="background:#A1A5AB"></i><b>text-muted</b><code>#A1A5AB</code></div>
         <div class="sw"><i style="background:#5B9BFF"></i><b>accent · azure</b><code>#5B9BFF</code></div>
-        <div class="sw"><i style="background:#06101F"></i><b>on-accent</b><code>#06101F</code></div>
+        <div class="sw"><i style="background:#0D1015"></i><b>on-accent</b><code>#0D1015</code></div>
       </div>
       <ul class="ratios">
         <li><span>text / bg</span><span>15.1 : 1 <em>AA</em></span></li>
@@ -245,10 +245,10 @@
       <div class="sw-grid">
         <div class="sw"><i style="background:#F2F5F9"></i><b>bg</b><code>#F2F5F9</code></div>
         <div class="sw"><i style="background:#FFFFFF"></i><b>surface</b><code>#FFFFFF</code></div>
-        <div class="sw"><i style="background:#FFFFFF;box-shadow:inset 0 -10px 18px rgba(30,60,120,.08)"></i><b>surface-raised</b><code>#FFFFFF + shadow</code></div>
-        <div class="sw"><i style="background:#D8E0EA"></i><b>border</b><code>#D8E0EA</code></div>
-        <div class="sw"><i style="background:#0F1A2A"></i><b>text</b><code>#0F1A2A</code></div>
-        <div class="sw"><i style="background:#536175"></i><b>text-muted</b><code>#536175</code></div>
+        <div class="sw"><i style="background:#FFFFFF;box-shadow:inset 0 -10px 18px rgba(55,62,85,.08)"></i><b>surface-raised</b><code>#FFFFFF + shadow</code></div>
+        <div class="sw"><i style="background:#DDDFE2"></i><b>border</b><code>#DDDFE2</code></div>
+        <div class="sw"><i style="background:#171A1F"></i><b>text</b><code>#171A1F</code></div>
+        <div class="sw"><i style="background:#5C6067"></i><b>text-muted</b><code>#5C6067</code></div>
         <div class="sw"><i style="background:#2457D6"></i><b>accent · cobalt</b><code>#2457D6</code></div>
         <div class="sw"><i style="background:#FFFFFF"></i><b>on-accent</b><code>#FFFFFF</code></div>
       </div>
@@ -261,13 +261,13 @@
       </ul>
     </div>
   </div>
-  <p class="note">Ratios are measured against the lighter end of each background gradient (worst case for dark mode is #0F1829, for light mode #ECF0F6). The calm green is a secondary "positive" colour for status only (import success, Fix pills). It never sits next to metric values.</p>
+  <p class="note">Ratios are measured against the lighter end of each background gradient (worst case for dark mode is #16181E, for light mode #ECF0F6). The calm green is a secondary "positive" colour for status only (import success, Fix pills). It never sits next to metric values.</p>
 
   <!-- 3. Metric colours -->
   <h3 class="sec">Metric colours</h3>
   <div class="two">
     <div class="panel theme-dark">
-      <p class="panel-h">Dark · contrast against surface #121C2D</p>
+      <p class="panel-h">Dark · contrast against surface #191C22</p>
       <div class="met-grid">
         <div class="met"><span class="ring c-dist"></span><div><b>Distance · sea green</b><code>#56D2AC · 9.1 : 1</code></div></div>
         <div class="met"><span class="ring c-time"></span><div><b>Moving time · pale ivory</b><code>#ECEEC4 · 14.3 : 1</code></div></div>
@@ -410,7 +410,7 @@
     <!-- c. Settings light -->
     <div>
       <p class="mock-cap">c · Settings (G1) · light</p>
-      <div class="phone theme-light" style="box-shadow:0 0 0 8px #05080E,0 0 0 9px #2A3448,0 30px 60px rgba(0,0,0,.5)"><div class="inner">
+      <div class="phone theme-light" style="box-shadow:0 0 0 8px #07080A,0 0 0 9px #31343B,0 30px 60px rgba(0,0,0,.5)"><div class="inner">
         <div class="topbar"><span class="hamb"><i></i><i></i><i></i></span><span class="ttl">Settings</span><span class="wordmark"><b>Cycling</b> Hub</span></div>
         <div class="grp-l">Account</div>
         <div class="grp"><div class="li"><span class="k">Email</span><span class="grey-bar"></span></div></div>

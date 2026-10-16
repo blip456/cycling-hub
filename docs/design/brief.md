@@ -7,7 +7,7 @@ from the options they produce.
 | Topic             | PO's choice                                                                                              |
 | ----------------- | -------------------------------------------------------------------------------------------------------- |
 | Overall feel      | **Calm & analytical**: a quiet instrument panel, whitespace, muted surfaces, the numbers do the talking. |
-| Colour base       | **Deep & dark-first**: rich dark surfaces (ink, navy, charcoal) with a bright accent.                    |
+| Colour base       | **Deep & dark-first**: rich dark surfaces with a bright accent. **Near-neutral charcoal/ink, not navy**: at most a faint cool hint (P22).                    |
 | Accent families   | **Blue / teal** and **green / lime** (orange avoided: it reads as Strava).                               |
 | Typography        | **One clean sans-serif everywhere**, tabular numbers for metrics.                                        |
 | Density (phone)   | **Balanced**: like the B1a cards, about six metrics per ride in two rows.                                |
