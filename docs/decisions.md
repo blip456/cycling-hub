@@ -12,7 +12,7 @@ Questions asked but not answered yet (a row is removed once it becomes a decisio
 | #   | Question                                                                                     | Asked       | Options / notes                                                                                                                                         |
 | --- | -------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Q1  | When does the Chrome extension start exporting power, heart rate, data streams and real UTC times (export format v2)? | 15 Oct 2026 | (a) agree the v2 format now, build Sprint 1 for v1 and v2, extend the extension in parallel · (b) extension first, then Sprint 1 · (c) Sprint 1 on v1 only |
-| Q2  | Wireframes V1 feedback (41 open questions in `docs/wireframes/V1/`).                         | 15 Oct 2026 | PO reviews when back home.                                                                                                                              |
+| Q2  | Confirm the 8 suggested decisions from the wireframe V1 feedback.                           | 16 Oct 2026 | See note 4 in `docs/wireframes/V1/feedback-product-owner.md`.                                                                                           |
 
 ## Product
 
