@@ -60,12 +60,12 @@ def make(pal, theme, W, H, spots, seeds, top=None):
     c0, c1, c2, c3 = pal
     dark = theme == 'dark'
     L = [
-        dict(seed=seeds[0], freq=(0.0026, 0.0055), warp=(0.0035, 240), band=HAZE, blur=5,
-             stops=[(0, c0), (.5, c1), (1, c2)], angle=(0, 0, .9, .5), op=.42 if dark else .30),
-        dict(seed=seeds[1], freq=(0.0032, 0.0075), warp=(0.0030, 300), band=VEINS, blur=1.1, oct=2,
-             stops=[(0, c1), (.35, c2), (.7, c3), (1, c0)], angle=(.1, 0, .7, .45), op=.95 if dark else .85),
-        dict(seed=seeds[2], freq=(0.0045, 0.0100), warp=(0.0040, 220), band=VEINS2, blur=.9, oct=2,
-             stops=[(0, c3), (.4, c0), (.75, c1), (1, c2)], angle=(.8, .1, .2, .5), op=.75 if dark else .65),
+        dict(seed=seeds[0], freq=(0.0026, 0.0055), warp=(0.0035, 240), band=HAZE, blur=8,
+             stops=[(0, c0), (.5, c1), (1, c2)], angle=(0, 0, .9, .5), op=.30 if dark else .22),
+        dict(seed=seeds[1], freq=(0.0032, 0.0075), warp=(0.0030, 300), band=VEINS, blur=2.8, oct=2,
+             stops=[(0, c1), (.35, c2), (.7, c3), (1, c0)], angle=(.1, 0, .7, .45), op=.36 if dark else .32),
+        dict(seed=seeds[2], freq=(0.0045, 0.0100), warp=(0.0040, 220), band=VEINS2, blur=2.4, oct=2,
+             stops=[(0, c3), (.4, c0), (.75, c1), (1, c2)], angle=(.8, .1, .2, .5), op=.26 if dark else .24),
     ]
     return svg(W, H, L, spots, top)
 
