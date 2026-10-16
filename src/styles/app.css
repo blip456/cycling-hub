@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Tailwind theme mapped to the design tokens (tokens.css). Default palette removed so every colour is a token. */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-border: var(--border);
+  --color-input-border: var(--input-border);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  /* Derived: a step above --surface in both themes (light --raised equals --surface). For secondary
+     buttons and hovers until the design system defines its own token. */
+  --color-subtle: color-mix(in srgb, var(--text) 8%, var(--surface));
+  --color-m-dist: var(--m-dist);
+  --color-m-time: var(--m-time);
+  --color-m-speed: var(--m-speed);
+  --color-m-power: var(--m-power);
+  --color-m-hr: var(--m-hr);
+  --color-m-elev: var(--m-elev);
+
+  --shadow-card: var(--shadow);
+  --shadow-raised: var(--shadow-raised);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: light) {
+    html:not([data-theme]) {
+      color-scheme: light;
+    }
+  }
+  body {
+    @apply bg-bg font-sans text-text antialiased;
+    line-height: 1.45;
+    min-height: 100dvh;
+  }
+  /* P21/P23: solid 2 px accent focus ring, no glow. */
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Phone drawer (native modal <dialog>) */
+.drawer::backdrop {
+  background: rgb(0 0 0 / 0.5);
+}
+.drawer[open] {
+  animation: drawer-in 180ms ease-out;
+}
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}

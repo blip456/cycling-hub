@@ -1,0 +1,94 @@
+# Supabase CLI config for local development (`supabase start`) and CI (`supabase db reset`, `supabase test db`).
+# Hosted projects (cycling-hub-dev, cycling-hub-prod) are configured in the dashboard with the same auth
+# settings: sign-ups off, site URL + redirect URLs, minimum password length 12 (A1, A3).
+project_id = "cycling-hub"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 17
+
+[db.pooler]
+enabled = false
+
+[db.migrations]
+enabled = true
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+# Only Postgres, the API gateway and Auth are needed (no realtime, storage or edge functions yet).
+[realtime]
+enabled = false
+
+[studio]
+enabled = true
+port = 54323
+
+# Catches auth emails (password reset) locally on http://127.0.0.1:54324
+[local_smtp]
+enabled = true
+port = 54324
+
+[storage]
+enabled = false
+
+[edge_runtime]
+enabled = false
+
+[analytics]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = [
+  "http://localhost:5173/reset-password",
+  "http://127.0.0.1:5173/reset-password",
+  "http://localhost:4173/reset-password",
+  "http://127.0.0.1:4173/reset-password",
+]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+# A1: one account, created in the dashboard. No public sign-ups.
+enable_signup = false
+enable_anonymous_sign_ins = false
+enable_manual_linking = false
+# A5 screen: "At least 12 characters."
+minimum_password_length = 12
+password_requirements = ""
+
+[auth.rate_limit]
+email_sent = 2
+sign_in_sign_ups = 30
+token_verifications = 30
+
+[auth.email]
+# Must stay true: in the CLI this switches the whole email provider (sign-in included) on or off.
+# Sign-ups are blocked by `[auth] enable_signup = false` above.
+enable_signup = true
+double_confirm_changes = true
+# The only user is created confirmed by the owner, so no confirmation mail is needed.
+enable_confirmations = false
+secure_password_change = false
+# A4 screen: resend is available after 60 s.
+max_frequency = "60s"
+otp_length = 6
+# A3 screen: "The link works once and expires after 1 hour."
+otp_expiry = 3600
+
+[auth.sms]
+enable_signup = false
+
+[auth.mfa.totp]
+enroll_enabled = false
+verify_enabled = false
