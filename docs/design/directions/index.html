@@ -58,7 +58,7 @@
 .dir-midnight-teal .theme-dark{
   --bg:#0B1220;--surface:#111A2B;--raised:#18233A;--border:#27344C;
   --text:#E6EDF5;--muted:#94A3B8;--accent:#2DD4BF;--on-accent:#042F2A;
-  --accent-tint:rgba(45,212,191,.12);--glow:0 0 0 1px rgba(45,212,191,.28),0 8px 32px -6px rgba(45,212,191,.28);
+  --accent-tint:rgba(45,212,191,.12);--glow:none;
   --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px -12px rgba(0,0,0,.6);
   --m-dist:#A3E635;--m-time:#C3D0E0;--m-speed:#60A5FA;--m-power:#A78BFA;--m-hr:#FB7185;--m-elev:#F59E0B;
   --bar:#27344C;
@@ -67,7 +67,7 @@
 .dir-midnight-teal .theme-light{
   --bg:#F3F6F9;--surface:#FFFFFF;--raised:#E9EEF4;--border:#D3DCE6;
   --text:#0E1726;--muted:#4F5D70;--accent:#0F766E;--on-accent:#FFFFFF;
-  --accent-tint:rgba(15,118,110,.09);--glow:0 0 0 1px rgba(15,118,110,.18),0 8px 24px -8px rgba(15,118,110,.30);
+  --accent-tint:rgba(15,118,110,.09);--glow:none;
   --shadow:0 1px 2px rgba(14,23,38,.05),0 8px 24px -14px rgba(14,23,38,.18);
   --m-dist:#3F6212;--m-time:#475569;--m-speed:#1D4ED8;--m-power:#7C3AED;--m-hr:#E11D48;--m-elev:#B45309;
   --bar:#D3DCE6;
@@ -132,11 +132,11 @@
 .dir-midnight-teal .pill-tag{background:var(--raised);color:var(--muted);height:22px;font-size:11px;padding:0 9px}
 .dir-midnight-teal .field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
 .dir-midnight-teal .field .input{height:48px;border-radius:12px;background:var(--raised);border:1px solid var(--border)}
-.dir-midnight-teal .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)}
+.dir-midnight-teal .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent)}
 .dir-midnight-teal .field .help{font-size:13px;color:var(--muted);margin-top:6px}
 .dir-midnight-teal .status{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:12px 14px;font-size:14px;box-shadow:var(--shadow)}
 .dir-midnight-teal .status .ic{width:28px;height:28px;border-radius:50%;background:var(--accent-tint);display:grid;place-items:center;flex:none}
-.dir-midnight-teal .status .ic::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.dir-midnight-teal .status .ic::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:none}
 .dir-midnight-teal .status a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
 .dir-midnight-teal .status .sp{flex:1}
 .dir-midnight-teal .dock .status{font-size:13px;gap:10px;padding:12px}
@@ -165,7 +165,7 @@
 .dir-midnight-teal .seg-sm span{font-size:13px;font-weight:600;padding:0 14px;height:30px;line-height:30px;border-radius:999px;color:var(--muted)}
 .dir-midnight-teal .seg-sm span.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
 .dir-midnight-teal .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:14px 14px 12px;margin-bottom:10px;box-shadow:var(--shadow)}
-.dir-midnight-teal .card.hero{box-shadow:var(--glow);border-color:transparent;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 6%,var(--surface)),var(--surface) 60%)}
+.dir-midnight-teal .card.hero{border-color:color-mix(in srgb,var(--accent) 40%,var(--border));background:var(--surface)}
 .dir-midnight-teal .chead{display:flex;gap:12px;align-items:center;margin-bottom:12px}
 .dir-midnight-teal .thumb{width:44px;height:44px;border-radius:12px;background:var(--raised);flex:none;display:grid;place-items:center}
 .dir-midnight-teal .thumb svg{width:34px;height:34px}
@@ -192,13 +192,13 @@
 /* import */
 .dir-midnight-teal .imp-h{font-size:28px;font-weight:650;letter-spacing:-.02em;margin:10px 0 4px}
 .dir-midnight-teal .imp-f{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;margin-bottom:18px}
-.dir-midnight-teal .imp-f .ok{width:18px;height:18px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 0 10px rgba(45,212,191,.5)}
+.dir-midnight-teal .imp-f .ok{width:18px;height:18px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:none}
 .dir-midnight-teal .imp-f .ok::after{content:"";width:7px;height:4px;border-left:2px solid var(--on-accent);border-bottom:2px solid var(--on-accent);transform:rotate(-45deg) translate(1px,-1px)}
 .dir-midnight-teal .ogrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .dir-midnight-teal .oc{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:14px 14px 12px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
 .dir-midnight-teal .oc .ot{font-size:13px;color:var(--muted);font-weight:500}
 .dir-midnight-teal .oc .on{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
-.dir-midnight-teal .oc.hero{grid-column:1 / -1;box-shadow:var(--glow);border-color:transparent;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,var(--surface)),var(--surface) 70%)}
+.dir-midnight-teal .oc.hero{grid-column:1 / -1;border-color:color-mix(in srgb,var(--accent) 40%,var(--border));background:var(--surface)}
 .dir-midnight-teal .oc.hero .on{font-size:52px;color:var(--text)}
 .dir-midnight-teal .oc.hero .ot{color:var(--accent);font-weight:600}
 .dir-midnight-teal .oc.warn .ot::after{content:" · View";color:var(--accent);font-weight:600}
@@ -268,7 +268,7 @@
   <!-- 1. Header -->
   <p class="mt-eyebrow">Direction A</p>
   <h2 class="mt-title">Direction A — Midnight Teal</h2>
-  <p class="mt-lede">A quiet instrument panel at night. Deep navy-ink surfaces (blue-black, never pure black) let the numbers glow softly, and one teal accent marks the thing that matters most on each screen with a faint halo. Calm and moody in the dark; crisp cool paper with ink text in the light.</p>
+  <p class="mt-lede">A quiet instrument panel at night. Deep navy-ink surfaces (blue-black, never pure black) let the numbers stand out, and one teal accent marks the thing that matters most on each screen. Calm and moody in the dark; crisp cool paper with ink text in the light.</p>
   <p class="mt-insp">Inspired by Whoop and Oura night screens, with the metric-colour discipline of Apple Fitness. Font: Inter.</p>
 
   <!-- 2. Palette -->
@@ -283,7 +283,7 @@
         <div class="mt-chip"><i style="background:#27344C"></i><b>border</b><span>#27344C</span></div>
         <div class="mt-chip"><i style="background:#E6EDF5"></i><b>text</b><span>#E6EDF5</span></div>
         <div class="mt-chip"><i style="background:#94A3B8"></i><b>text-muted</b><span>#94A3B8</span></div>
-        <div class="mt-chip"><i style="background:#2DD4BF;box-shadow:0 0 18px rgba(45,212,191,.5) inset"></i><b>accent</b><span>#2DD4BF</span></div>
+        <div class="mt-chip"><i style="background:#2DD4BF;box-shadow:none"></i><b>accent</b><span>#2DD4BF</span></div>
         <div class="mt-chip"><i style="background:#042F2A"></i><b>on-accent</b><span>#042F2A</span></div>
       </div>
       <ul class="mt-ratios num">
@@ -313,7 +313,7 @@
       </ul>
     </div>
   </div>
-  <p class="mt-note">Borders (1.4 : 1) are decorative separators only; every control is also defined by fill or label. The teal glow is a 1 px teal ring plus a 32 px blur at 28 % opacity, used on at most one element per screen (the primary button or the hero card).</p>
+  <p class="mt-note">Borders (1.4 : 1) are decorative separators only; every control is also defined by fill or label. No glows or halos: emphasis comes from the teal fill alone.</p>
 
   <!-- 3. Metric colours -->
   <h3 class="mt-h">Metric colours</h3>
@@ -554,7 +554,7 @@
       <h4>Why pick it</h4>
       <ul>
         <li>The closest match to the "quiet instrument panel": navy-ink is softer on the eyes than pure black, and the six metric colours read like gauges on it.</li>
-        <li>One accent, one glow per screen: it is always clear where to tap or look first, without decoration.</li>
+        <li>One accent per screen: it is always clear where to tap or look first, without decoration.</li>
         <li>Every colour, metrics included, passes 4.5 : 1 in both themes, so the same tokens work for text, charts and future zones.</li>
       </ul>
     </div>
@@ -563,7 +563,7 @@
       <ul>
         <li>Moody and a bit "night-time": less energetic than a lime-led direction, and the teal sits close to many health apps.</li>
         <li>Six saturated metric colours on dark navy can feel busy in dense tables; on desktop we may need to tone them down to the dot only.</li>
-        <li>The glow needs care in light mode (it becomes a soft teal shadow) and must stay off in reduced-transparency settings.</li>
+        <li>Without glow, the dark surfaces rely on small lightness steps between layers; they need care on low-quality screens.</li>
       </ul>
     </div>
   </div>
@@ -596,7 +596,7 @@
 .dir-graphite-lime .theme-dark {
   --bg: #0E0F10; --surface: #17181A; --raised: #202124; --border: #2E3033;
   --text: #F2F2F0; --muted: #A0A3A8; --accent: #C6F432; --accent-text: #C6F432; --on-accent: #0E0F10;
-  --accent-soft: rgba(198,244,50,.12); --glow: 0 0 0 1px rgba(198,244,50,.35), 0 0 24px rgba(198,244,50,.18);
+  --accent-soft: rgba(198,244,50,.12); --glow: none;
   --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
   --m-dist: #4D8EFF; --m-time: #C2C5CA; --m-speed: #2ED3E6; --m-power: #FF9F1C; --m-hr: #FF4F8B; --m-elev: #B57BFF;
   background: var(--bg); color: var(--text);
@@ -604,7 +604,7 @@
 .dir-graphite-lime .theme-light {
   --bg: #F4F4F2; --surface: #FFFFFF; --raised: #ECECEA; --border: #D8D8D4;
   --text: #141515; --muted: #5C5F64; --accent: #C6F432; --accent-text: #4D6B00; --on-accent: #141515;
-  --accent-soft: rgba(198,244,50,.35); --glow: 0 0 0 1px rgba(77,107,0,.35), 0 4px 14px rgba(120,160,0,.18);
+  --accent-soft: rgba(198,244,50,.35); --glow: none;
   --shadow: 0 1px 2px rgba(20,21,21,.06), 0 6px 18px rgba(20,21,21,.06);
   --m-dist: #1F5FDB; --m-time: #6A6E74; --m-speed: #08798A; --m-power: #AD5A00; --m-hr: #CC1A62; --m-elev: #7A3FD9;
   background: var(--bg); color: var(--text);
@@ -673,11 +673,11 @@
 .dir-graphite-lime .pill-tag { background: var(--raised); color: var(--muted); height: 22px; font-size: 11px; padding: 0 9px; }
 .dir-graphite-lime .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
 .dir-graphite-lime .field .input { height: 44px; border-radius: 12px; border: 1px solid var(--border); background: var(--raised); }
-.dir-graphite-lime .field .input.focus { border-color: var(--accent-text); box-shadow: 0 0 0 3px var(--accent-soft); }
+.dir-graphite-lime .field .input.focus { border-color: var(--accent-text); box-shadow: 0 0 0 2px var(--accent); }
 .dir-graphite-lime .field .help { font-size: 12px; color: var(--muted); margin-top: 6px; }
 .dir-graphite-lime .status-card { display: flex; align-items: center; gap: 12px; background: var(--raised); border: 1px solid var(--border);
   border-radius: 16px; padding: 12px 14px; box-shadow: var(--shadow); font-size: 14px; }
-.dir-graphite-lime .status-card .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); flex: none; }
+.dir-graphite-lime .status-card .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: none; flex: none; }
 .dir-graphite-lime .status-card .link { color: var(--accent-text); font-weight: 600; margin-left: auto; white-space: nowrap; }
 .dir-graphite-lime .comp-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 18px; }
 
@@ -724,7 +724,7 @@
 .dir-graphite-lime .oc { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px 14px 16px; min-height: 104px; display: flex; flex-direction: column; }
 .dir-graphite-lime .oc .ot { font-size: 13px; color: var(--muted); font-weight: 500; }
 .dir-graphite-lime .oc .on { font-size: 40px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin-top: auto; line-height: 1; }
-.dir-graphite-lime .oc.hero { grid-column: span 2; border-color: rgba(198,244,50,.35); background: linear-gradient(180deg, rgba(198,244,50,.07), rgba(198,244,50,0) 70%), var(--surface); }
+.dir-graphite-lime .oc.hero { grid-column: span 2; border-color: rgba(198,244,50,.35); background: var(--surface); }
 .dir-graphite-lime .oc.hero .on { font-size: 56px; }
 .dir-graphite-lime .oc.hero .ot { color: var(--accent-text); font-weight: 600; }
 .dir-graphite-lime .oc.warn .ot::after { content: " · 1 reason listed"; color: var(--muted); font-weight: 400; }
@@ -1107,7 +1107,7 @@
   --m-dist:#56D2AC; --m-time:#ECEEC4; --m-speed:#9DD9F0; --m-power:#9483F0; --m-hr:#D85A80; --m-elev:#CF9849;
   --shadow:0 1px 0 rgba(255,255,255,.035) inset,0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(2,6,14,.45);
   --shadow-raised:0 1px 0 rgba(255,255,255,.05) inset,0 2px 4px rgba(0,0,0,.35),0 16px 40px rgba(2,6,14,.55);
-  --glow:0 6px 22px rgba(91,155,255,.28);
+  --glow:none;
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
@@ -1119,7 +1119,7 @@
   --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#2A82A8; --m-power:#5C46D0; --m-hr:#D24D76; --m-elev:#A9700C;
   --shadow:0 1px 2px rgba(15,26,42,.06),0 8px 24px rgba(30,60,120,.07);
   --shadow-raised:0 2px 4px rgba(15,26,42,.06),0 16px 40px rgba(30,60,120,.11);
-  --glow:0 6px 18px rgba(36,87,214,.22);
+  --glow:none;
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
@@ -1182,10 +1182,10 @@
 .dir-deep-ocean .pill-tag{height:22px;padding:0 9px;font-size:11px;font-weight:500;background:var(--raised);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border)}
 .dir-deep-ocean .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
 .dir-deep-ocean .field .input{height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.08) inset}
-.dir-deep-ocean .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.dir-deep-ocean .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .dir-deep-ocean .field .help{font-size:12px;color:var(--muted);margin-top:6px}
 .dir-deep-ocean .status-card{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:12px 12px 12px 16px;box-shadow:var(--shadow-raised);font-size:14px}
-.dir-deep-ocean .status-card .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);flex:none}
+.dir-deep-ocean .status-card .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 1px var(--accent);flex:none}
 .dir-deep-ocean .status-card .msg{flex:1;color:var(--text)}
 .dir-deep-ocean .status-card .msg a{color:var(--accent);font-weight:600;text-decoration:none}
 .dir-deep-ocean .status-card .x{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px}
@@ -1222,7 +1222,7 @@
 
 /* import */
 .dir-deep-ocean .imp-h{padding:14px 4px 18px}
-.dir-deep-ocean .imp-h .check{width:44px;height:44px;border-radius:50%;background:rgba(143,208,122,.12);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 24px rgba(143,208,122,.15)}
+.dir-deep-ocean .imp-h .check{width:44px;height:44px;border-radius:50%;background:rgba(143,208,122,.12);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:none}
 .dir-deep-ocean .imp-h .check path{fill:none;stroke:var(--positive);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .dir-deep-ocean .imp-h h4{font-size:26px;line-height:32px;font-weight:600;letter-spacing:-.015em;margin:0 0 4px}
 .dir-deep-ocean .imp-h p{margin:0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -1394,14 +1394,14 @@
       <div class="row"><span class="btn btn-primary">Import rides</span><span class="btn btn-secondary">Cancel</span></div>
       <div class="row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">Commute</span><span class="pill pill-tag">MTB</span></div>
       <div class="field"><label>Email</label><div class="input"></div><div class="help">The address you sign in with.</div></div>
-      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border with a soft halo.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border, no halo.</div></div>
       <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
     </div>
     <div class="panel theme-light comp">
       <div class="row"><span class="btn btn-primary">Import rides</span><span class="btn btn-secondary">Cancel</span></div>
       <div class="row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">Commute</span><span class="pill pill-tag">MTB</span></div>
       <div class="field"><label>Email</label><div class="input"></div><div class="help">The address you sign in with.</div></div>
-      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border with a soft halo.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border, no halo.</div></div>
       <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
     </div>
   </div>

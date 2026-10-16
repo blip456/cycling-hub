@@ -22,7 +22,7 @@
   --m-dist:#56D2AC; --m-time:#ECEEC4; --m-speed:#9DD9F0; --m-power:#9483F0; --m-hr:#D85A80; --m-elev:#CF9849;
   --shadow:0 1px 0 rgba(255,255,255,.035) inset,0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(2,6,14,.45);
   --shadow-raised:0 1px 0 rgba(255,255,255,.05) inset,0 2px 4px rgba(0,0,0,.35),0 16px 40px rgba(2,6,14,.55);
-  --glow:0 6px 22px rgba(91,155,255,.28);
+  --glow:none;
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
@@ -34,7 +34,7 @@
   --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#2A82A8; --m-power:#5C46D0; --m-hr:#D24D76; --m-elev:#A9700C;
   --shadow:0 1px 2px rgba(15,26,42,.06),0 8px 24px rgba(30,60,120,.07);
   --shadow-raised:0 2px 4px rgba(15,26,42,.06),0 16px 40px rgba(30,60,120,.11);
-  --glow:0 6px 18px rgba(36,87,214,.22);
+  --glow:none;
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
@@ -97,10 +97,10 @@
 .dir-deep-ocean .pill-tag{height:22px;padding:0 9px;font-size:11px;font-weight:500;background:var(--raised);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border)}
 .dir-deep-ocean .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
 .dir-deep-ocean .field .input{height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.08) inset}
-.dir-deep-ocean .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.dir-deep-ocean .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .dir-deep-ocean .field .help{font-size:12px;color:var(--muted);margin-top:6px}
 .dir-deep-ocean .status-card{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:12px 12px 12px 16px;box-shadow:var(--shadow-raised);font-size:14px}
-.dir-deep-ocean .status-card .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);flex:none}
+.dir-deep-ocean .status-card .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 1px var(--accent);flex:none}
 .dir-deep-ocean .status-card .msg{flex:1;color:var(--text)}
 .dir-deep-ocean .status-card .msg a{color:var(--accent);font-weight:600;text-decoration:none}
 .dir-deep-ocean .status-card .x{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px}
@@ -137,7 +137,7 @@
 
 /* import */
 .dir-deep-ocean .imp-h{padding:14px 4px 18px}
-.dir-deep-ocean .imp-h .check{width:44px;height:44px;border-radius:50%;background:rgba(143,208,122,.12);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 24px rgba(143,208,122,.15)}
+.dir-deep-ocean .imp-h .check{width:44px;height:44px;border-radius:50%;background:rgba(143,208,122,.12);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:none}
 .dir-deep-ocean .imp-h .check path{fill:none;stroke:var(--positive);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .dir-deep-ocean .imp-h h4{font-size:26px;line-height:32px;font-weight:600;letter-spacing:-.015em;margin:0 0 4px}
 .dir-deep-ocean .imp-h p{margin:0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -309,14 +309,14 @@
       <div class="row"><span class="btn btn-primary">Import rides</span><span class="btn btn-secondary">Cancel</span></div>
       <div class="row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">Commute</span><span class="pill pill-tag">MTB</span></div>
       <div class="field"><label>Email</label><div class="input"></div><div class="help">The address you sign in with.</div></div>
-      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border with a soft halo.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border, no halo.</div></div>
       <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
     </div>
     <div class="panel theme-light comp">
       <div class="row"><span class="btn btn-primary">Import rides</span><span class="btn btn-secondary">Cancel</span></div>
       <div class="row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">Commute</span><span class="pill pill-tag">MTB</span></div>
       <div class="field"><label>Email</label><div class="input"></div><div class="help">The address you sign in with.</div></div>
-      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border with a soft halo.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border, no halo.</div></div>
       <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
     </div>
   </div>

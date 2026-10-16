@@ -12,7 +12,7 @@ from the options they produce.
 | Typography        | **One clean sans-serif everywhere**, tabular numbers for metrics.                                        |
 | Density (phone)   | **Balanced**: like the B1a cards, about six metrics per ride in two rows.                                |
 | Shapes            | **Soft & rounded**: 12–20 px radius, pill buttons, soft shadows or glows.                                |
-| Personality       | **Subtle touches**: route-shape thumbnails from the polyline, a tasteful accent glow, friendly empty states. No illustrations or motivational copy. |
+| Personality       | **Subtle touches**: route-shape thumbnails from the polyline, friendly empty states. **No glows or halos** (P21). No illustrations or motivational copy. |
 | References        | **Apple Fitness / Health** and **Whoop / Oura**.                                                         |
 | Light mode        | **Equal quality** to dark mode (used on a laptop and outdoors), not a derived inversion.                 |
 | Metric colours    | **Fixed colour per metric everywhere** (e.g. power, heart rate, speed, distance), like Apple Fitness rings; reused later for charts and zones. |
