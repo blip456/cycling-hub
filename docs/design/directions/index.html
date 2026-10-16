@@ -1,0 +1,1575 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cycling Hub — design directions V1</title>
+<style>
+.page{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#1d2330;max-width:1240px;margin:0 auto;padding:32px 20px 80px;line-height:1.5}
+.page h1{font-size:30px;margin:0 0 6px} .page .lead{color:#4a5263;max-width:760px}
+.page nav.toc{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 28px} .page nav.toc a{padding:10px 16px;border-radius:999px;background:#e9edf3;color:#1d2330;text-decoration:none;font-weight:600}
+.page .direction{margin:48px 0 0;border-radius:24px;overflow:hidden}
+.page .fb{margin:16px 0 0;background:#f4f6f9;border:1px solid #d7dce4;border-radius:16px;padding:16px}
+.page .fb label{display:block;font-weight:600;margin-bottom:8px} .page .fb textarea{width:100%;box-sizing:border-box;font:inherit;border:1px solid #b9c0cc;border-radius:12px;padding:10px;background:#fff}
+.page .help{color:#5a6273;font-size:13px;margin:6px 0 0}
+.page h2.sec{margin:64px 0 8px;font-size:24px}
+.page .send{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px} .page .send a,.page .send button{min-height:44px;padding:0 20px;border-radius:999px;border:0;font:inherit;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none}
+.page .send .p{background:#1d2330;color:#fff} .page .send .s{background:#e9edf3;color:#1d2330}
+</style></head><body style="margin:0;background:#fbfcfd"><div class="page">
+<h1>Cycling Hub — design directions V1</h1>
+<p class="lead">Three high-level directions built on your design brief (calm &amp; analytical, dark-first with an equally good light mode, blue/teal or green/lime accents, one clean sans, soft rounded shapes, fixed colour per metric). They differ in surface tone, accent and how vivid the metric colours are. Pick one, or combine parts. Numbers are sample data. After you choose, the wireframes become real designs plus <code>DESIGN.md</code> and design tokens.</p>
+<nav class="toc"><a href="#midnight-teal">Direction A · Midnight Teal</a><a href="#graphite-lime">Direction B · Graphite &amp; Lime</a><a href="#deep-ocean">Direction C · Deep Ocean</a><a href="#questions">Questions &amp; send</a></nav>
+<section class="direction dir-midnight-teal" id="midnight-teal">
+<style>
+.dir-midnight-teal{
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-family:var(--font);
+  background:#0B1220;color:#E6EDF5;
+  padding:56px 48px 64px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+.dir-midnight-teal *,.dir-midnight-teal *::before,.dir-midnight-teal *::after{box-sizing:border-box}
+.dir-midnight-teal .theme-dark{
+  --bg:#0B1220;--surface:#111A2B;--raised:#18233A;--border:#27344C;
+  --text:#E6EDF5;--muted:#94A3B8;--accent:#2DD4BF;--on-accent:#042F2A;
+  --accent-tint:rgba(45,212,191,.12);--glow:0 0 0 1px rgba(45,212,191,.28),0 8px 32px -6px rgba(45,212,191,.28);
+  --shadow:0 1px 0 rgba(255,255,255,.03) inset,0 8px 24px -12px rgba(0,0,0,.6);
+  --m-dist:#A3E635;--m-time:#C3D0E0;--m-speed:#60A5FA;--m-power:#A78BFA;--m-hr:#FB7185;--m-elev:#F59E0B;
+  --bar:#27344C;
+  background:var(--bg);color:var(--text);
+}
+.dir-midnight-teal .theme-light{
+  --bg:#F3F6F9;--surface:#FFFFFF;--raised:#E9EEF4;--border:#D3DCE6;
+  --text:#0E1726;--muted:#4F5D70;--accent:#0F766E;--on-accent:#FFFFFF;
+  --accent-tint:rgba(15,118,110,.09);--glow:0 0 0 1px rgba(15,118,110,.18),0 8px 24px -8px rgba(15,118,110,.30);
+  --shadow:0 1px 2px rgba(14,23,38,.05),0 8px 24px -14px rgba(14,23,38,.18);
+  --m-dist:#3F6212;--m-time:#475569;--m-speed:#1D4ED8;--m-power:#7C3AED;--m-hr:#E11D48;--m-elev:#B45309;
+  --bar:#D3DCE6;
+  background:var(--bg);color:var(--text);
+}
+.dir-midnight-teal .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+.dir-midnight-teal .mt-wrap{max-width:1080px;margin:0 auto}
+.dir-midnight-teal .mt-eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#2DD4BF;font-weight:600;margin:0 0 10px}
+.dir-midnight-teal h2.mt-title{font-size:40px;line-height:1.1;font-weight:650;letter-spacing:-.02em;margin:0 0 14px}
+.dir-midnight-teal .mt-lede{font-size:17px;color:#C1CCDA;max-width:720px;margin:0 0 6px}
+.dir-midnight-teal .mt-insp{font-size:14px;color:#94A3B8;margin:8px 0 0}
+.dir-midnight-teal h3.mt-h{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#94A3B8;font-weight:600;margin:56px 0 16px;padding-top:24px;border-top:1px solid #1E2A3F}
+.dir-midnight-teal .mt-note{font-size:13px;color:#94A3B8;margin:10px 0 0;max-width:820px}
+
+/* palette */
+.dir-midnight-teal .mt-pal{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-palcard{border-radius:20px;padding:22px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.dir-midnight-teal .mt-palcard h4{margin:0 0 14px;font-size:15px;font-weight:600}
+.dir-midnight-teal .mt-sw{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.dir-midnight-teal .mt-chip{border-radius:12px;border:1px solid var(--border);overflow:hidden;background:var(--surface)}
+.dir-midnight-teal .mt-chip i{display:block;height:46px}
+.dir-midnight-teal .mt-chip b{display:block;font-size:12px;font-weight:600;padding:7px 9px 0}
+.dir-midnight-teal .mt-chip span{display:block;font-size:11px;color:var(--muted);padding:0 9px 8px}
+.dir-midnight-teal .mt-ratios{margin:14px 0 0;padding:0;list-style:none;font-size:13px;color:var(--muted)}
+.dir-midnight-teal .mt-ratios li{display:flex;justify-content:space-between;padding:5px 0;border-top:1px solid var(--border)}
+.dir-midnight-teal .mt-ratios li strong{color:var(--text);font-weight:600}
+
+/* metrics */
+.dir-midnight-teal .mt-metrics{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dir-midnight-teal .mt-mchip{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px}
+.dir-midnight-teal .mt-mchip .dot{display:block;height:6px;border-radius:3px;margin-bottom:10px}
+.dir-midnight-teal .mt-mchip .v{font-size:20px;font-weight:600;letter-spacing:-.01em}
+.dir-midnight-teal .mt-mchip .l{font-size:12px;color:var(--muted)}
+.dir-midnight-teal .mt-mchip .h{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* type */
+.dir-midnight-teal .mt-type{display:grid;grid-template-columns:1.2fr 1fr;gap:20px}
+.dir-midnight-teal .mt-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:24px;box-shadow:var(--shadow)}
+.dir-midnight-teal .t-display{font-size:56px;font-weight:600;letter-spacing:-.035em;line-height:1}
+.dir-midnight-teal .t-display small{font-size:20px;color:var(--muted);font-weight:500;letter-spacing:0;margin-left:4px}
+.dir-midnight-teal .t-title{font-size:22px;font-weight:600;letter-spacing:-.01em;margin:18px 0 6px}
+.dir-midnight-teal .t-body{font-size:16px;margin:0 0 6px}
+.dir-midnight-teal .t-cap{font-size:13px;color:var(--muted)}
+.dir-midnight-teal .t-spec{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.7}
+.dir-midnight-teal .mt-tab{width:100%;border-collapse:collapse;font-size:15px}
+.dir-midnight-teal .mt-tab td{padding:7px 0;border-bottom:1px solid var(--border);text-align:right}
+.dir-midnight-teal .mt-tab td:first-child{text-align:left;color:var(--muted);font-size:13px}
+
+/* components */
+.dir-midnight-teal .mt-comp{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-comp .mt-box{display:flex;flex-direction:column;gap:20px}
+.dir-midnight-teal .mt-rowc{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.dir-midnight-teal .btn{height:44px;padding:0 22px;border-radius:999px;font:600 15px/44px var(--font);border:0;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.dir-midnight-teal .btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--glow)}
+.dir-midnight-teal .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);line-height:42px}
+.dir-midnight-teal .btn-block{width:100%;justify-content:center}
+.dir-midnight-teal .pill{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.01em}
+.dir-midnight-teal .pill-feature{background:var(--accent-tint);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 35%,transparent)}
+.dir-midnight-teal .pill-fix{background:color-mix(in srgb,var(--m-hr) 13%,transparent);color:var(--m-hr);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--m-hr) 35%,transparent)}
+.dir-midnight-teal .pill-tech{background:var(--raised);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border)}
+.dir-midnight-teal .pill-tag{background:var(--raised);color:var(--muted);height:22px;font-size:11px;padding:0 9px}
+.dir-midnight-teal .field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.dir-midnight-teal .field .input{height:48px;border-radius:12px;background:var(--raised);border:1px solid var(--border)}
+.dir-midnight-teal .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-tint)}
+.dir-midnight-teal .field .help{font-size:13px;color:var(--muted);margin-top:6px}
+.dir-midnight-teal .status{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:12px 14px;font-size:14px;box-shadow:var(--shadow)}
+.dir-midnight-teal .status .ic{width:28px;height:28px;border-radius:50%;background:var(--accent-tint);display:grid;place-items:center;flex:none}
+.dir-midnight-teal .status .ic::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.dir-midnight-teal .status a{color:var(--accent);font-weight:600;text-decoration:none;white-space:nowrap}
+.dir-midnight-teal .status .sp{flex:1}
+.dir-midnight-teal .dock .status{font-size:13px;gap:10px;padding:12px}
+.dir-midnight-teal .dock .status .sp{white-space:nowrap}
+.dir-midnight-teal .status .x{color:var(--muted);font-size:18px;line-height:1;width:28px;text-align:center}
+
+/* phones */
+.dir-midnight-teal .mt-phones{display:flex;gap:32px;flex-wrap:wrap;justify-content:center}
+.dir-midnight-teal .mt-phwrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.dir-midnight-teal .mt-phwrap .cap{font-size:13px;color:#94A3B8}
+.dir-midnight-teal .phone{width:375px;height:760px;border-radius:48px;overflow:hidden;position:relative;border:8px solid #05080F;box-shadow:0 0 0 1px #2A3650,0 30px 60px -20px rgba(0,0,0,.7);display:flex;flex-direction:column;flex:none}
+.dir-midnight-teal .phone.theme-light{border-color:#1A2233}
+.dir-midnight-teal .sbar{height:44px;flex:none;display:flex;justify-content:space-between;align-items:flex-end;padding:0 26px 6px;font-size:14px;font-weight:600}
+.dir-midnight-teal .sbar i{display:inline-block;width:56px;height:10px;border-radius:5px;background:currentColor;opacity:.75}
+.dir-midnight-teal .topbar{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 12px 0 6px}
+.dir-midnight-teal .hamb{width:44px;height:44px;display:grid;place-items:center;flex:none}
+.dir-midnight-teal .hamb span{display:block;width:20px;height:2px;border-radius:1px;background:var(--text);box-shadow:0 -6px 0 var(--text),0 6px 0 var(--text)}
+.dir-midnight-teal .topbar .tt{font-size:20px;font-weight:650;letter-spacing:-.01em;flex:1}
+.dir-midnight-teal .wm{font-size:13px;font-weight:650;letter-spacing:-.01em;color:var(--muted)}
+.dir-midnight-teal .wm b{color:var(--accent);font-weight:650}
+.dir-midnight-teal .scroll{flex:1;overflow:hidden;padding:4px 16px 0;position:relative}
+.dir-midnight-teal .week{display:flex;justify-content:space-between;align-items:baseline;padding:8px 2px 12px}
+.dir-midnight-teal .week .w1{font-size:15px;font-weight:600}
+.dir-midnight-teal .week .w2{font-size:13px;color:var(--muted)}
+.dir-midnight-teal .seg-sm{display:flex;background:var(--raised);border-radius:999px;padding:3px;margin:0 0 6px;width:max-content}
+.dir-midnight-teal .seg-sm span{font-size:13px;font-weight:600;padding:0 14px;height:30px;line-height:30px;border-radius:999px;color:var(--muted)}
+.dir-midnight-teal .seg-sm span.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.dir-midnight-teal .card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:14px 14px 12px;margin-bottom:10px;box-shadow:var(--shadow)}
+.dir-midnight-teal .card.hero{box-shadow:var(--glow);border-color:transparent;background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 6%,var(--surface)),var(--surface) 60%)}
+.dir-midnight-teal .chead{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.dir-midnight-teal .thumb{width:44px;height:44px;border-radius:12px;background:var(--raised);flex:none;display:grid;place-items:center}
+.dir-midnight-teal .thumb svg{width:34px;height:34px}
+.dir-midnight-teal .thumb path{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dir-midnight-teal .cname{font-size:16px;font-weight:600;line-height:1.2}
+.dir-midnight-teal .cdate{font-size:13px;color:var(--muted)}
+.dir-midnight-teal .chead .meta{flex:1;min-width:0}
+.dir-midnight-teal .mgrid{display:grid;grid-template-columns:repeat(3,1fr);row-gap:10px;column-gap:8px}
+.dir-midnight-teal .m .v{font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.dir-midnight-teal .m .v small{font-size:12px;font-weight:500;color:var(--muted);margin-left:2px}
+.dir-midnight-teal .m .l{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.dir-midnight-teal .m .l::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.dir-midnight-teal .m.dist .v{color:var(--m-dist)} .dir-midnight-teal .m.dist .l::before{background:var(--m-dist)}
+.dir-midnight-teal .m.time .v{color:var(--m-time)} .dir-midnight-teal .m.time .l::before{background:var(--m-time)}
+.dir-midnight-teal .m.speed .v{color:var(--m-speed)} .dir-midnight-teal .m.speed .l::before{background:var(--m-speed)}
+.dir-midnight-teal .m.power .v{color:var(--m-power)} .dir-midnight-teal .m.power .l::before{background:var(--m-power)}
+.dir-midnight-teal .m.hr .v{color:var(--m-hr)} .dir-midnight-teal .m.hr .l::before{background:var(--m-hr)}
+.dir-midnight-teal .m.elev .v{color:var(--m-elev)} .dir-midnight-teal .m.elev .l::before{background:var(--m-elev)}
+.dir-midnight-teal .m .v.na{color:var(--muted)}
+.dir-midnight-teal .dock{position:absolute;left:12px;right:12px;bottom:14px}
+.dir-midnight-teal .fade{position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(transparent,var(--bg) 70%)}
+.dir-midnight-teal .homebar{position:absolute;bottom:5px;left:50%;width:120px;height:4px;border-radius:2px;background:var(--text);opacity:.4;transform:translateX(-50%)}
+
+/* import */
+.dir-midnight-teal .imp-h{font-size:28px;font-weight:650;letter-spacing:-.02em;margin:10px 0 4px}
+.dir-midnight-teal .imp-f{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:center;margin-bottom:18px}
+.dir-midnight-teal .imp-f .ok{width:18px;height:18px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 0 10px rgba(45,212,191,.5)}
+.dir-midnight-teal .imp-f .ok::after{content:"";width:7px;height:4px;border-left:2px solid var(--on-accent);border-bottom:2px solid var(--on-accent);transform:rotate(-45deg) translate(1px,-1px)}
+.dir-midnight-teal .ogrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dir-midnight-teal .oc{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:14px 14px 12px;min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.dir-midnight-teal .oc .ot{font-size:13px;color:var(--muted);font-weight:500}
+.dir-midnight-teal .oc .on{font-size:34px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.dir-midnight-teal .oc.hero{grid-column:1 / -1;box-shadow:var(--glow);border-color:transparent;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 10%,var(--surface)),var(--surface) 70%)}
+.dir-midnight-teal .oc.hero .on{font-size:52px;color:var(--text)}
+.dir-midnight-teal .oc.hero .ot{color:var(--accent);font-weight:600}
+.dir-midnight-teal .oc.warn .ot::after{content:" · View";color:var(--accent);font-weight:600}
+.dir-midnight-teal .oc.zero .on{color:var(--muted)}
+.dir-midnight-teal .imp-act{margin-top:18px}
+
+/* settings */
+.dir-midnight-teal .sg-label{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:16px 4px 8px}
+.dir-midnight-teal .group{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.dir-midnight-teal .row{min-height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:15px;gap:12px}
+.dir-midnight-teal .row + .row{border-top:1px solid var(--border)}
+.dir-midnight-teal .row .rv{color:var(--muted);font-size:15px}
+.dir-midnight-teal .row .chev{color:var(--muted);font-size:20px;line-height:1}
+.dir-midnight-teal .row.block{display:block;padding:12px 16px 14px}
+.dir-midnight-teal .row.block .rl{margin-bottom:10px}
+.dir-midnight-teal .greybar{display:block;width:150px;height:12px;border-radius:6px;background:var(--bar)}
+.dir-midnight-teal .seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--raised);border-radius:999px;padding:3px}
+.dir-midnight-teal .seg span{height:38px;line-height:38px;text-align:center;font-size:14px;font-weight:600;color:var(--muted);border-radius:999px}
+.dir-midnight-teal .seg span.on{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(14,23,38,.12),0 0 0 1px var(--border)}
+.dir-midnight-teal .row.danger{color:#B4233C;font-weight:600;justify-content:center}
+
+/* desktop */
+.dir-midnight-teal .desk-outer{width:900px;height:540px;margin:0 auto;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px #2A3650,0 30px 60px -20px rgba(0,0,0,.7)}
+.dir-midnight-teal .desk{width:1000px;height:600px;transform:scale(.9);transform-origin:0 0;display:flex}
+.dir-midnight-teal .side{width:196px;flex:none;background:var(--surface);border-right:1px solid var(--border);padding:22px 14px;display:flex;flex-direction:column;gap:4px}
+.dir-midnight-teal .side .wm{font-size:17px;color:var(--text);padding:0 10px 22px}
+.dir-midnight-teal .nav{height:44px;border-radius:12px;display:flex;align-items:center;gap:12px;padding:0 12px;font-size:15px;color:var(--muted);font-weight:500}
+.dir-midnight-teal .nav i{width:18px;height:18px;border-radius:5px;border:2px solid currentColor;opacity:.8}
+.dir-midnight-teal .nav.on{background:var(--accent-tint);color:var(--accent);font-weight:600}
+.dir-midnight-teal .side .sp{flex:1}
+.dir-midnight-teal .side .ver{font-size:12px;color:var(--muted);padding:0 12px}
+.dir-midnight-teal .dmain{flex:1;min-width:0;padding:24px 24px;overflow:hidden;background:var(--bg)}
+.dir-midnight-teal .dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.dir-midnight-teal .dhead h4{margin:0;font-size:26px;font-weight:650;letter-spacing:-.02em}
+.dir-midnight-teal .dhead .r{display:flex;gap:10px;align-items:center}
+.dir-midnight-teal .tbl{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+.dir-midnight-teal .tbl table{width:100%;border-collapse:collapse;font-size:13.5px}
+.dir-midnight-teal .tbl th{text-align:right;font-size:12px;font-weight:600;color:var(--muted);padding:12px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.dir-midnight-teal .tbl th:first-child,.dir-midnight-teal .tbl td:first-child{text-align:left}
+.dir-midnight-teal .tbl th span{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.dir-midnight-teal .tbl td{text-align:right;padding:0 10px;height:46px;border-bottom:1px solid var(--border);white-space:nowrap}
+.dir-midnight-teal .tbl tr.wk td{height:36px;font-size:12.5px;background:var(--raised);font-size:13px;color:var(--muted);font-weight:600}
+.dir-midnight-teal .tbl tr:last-child td{border-bottom:0}
+.dir-midnight-teal .tbl .rn{display:flex;align-items:center;gap:10px}
+.dir-midnight-teal .tbl .rn svg{width:22px;height:22px;flex:none}
+.dir-midnight-teal .tbl .rn path{fill:none;stroke:var(--accent);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dir-midnight-teal .tbl .rn b{font-weight:600}
+.dir-midnight-teal .tbl .rn em{font-style:normal;color:var(--muted);font-size:12px;display:block}
+.dir-midnight-teal .tbl tr.sel td{background:var(--accent-tint)}
+.dir-midnight-teal .c-dist{color:var(--m-dist)} .dir-midnight-teal .c-time{color:var(--m-time)}
+.dir-midnight-teal .c-speed{color:var(--m-speed)} .dir-midnight-teal .c-power{color:var(--m-power)}
+.dir-midnight-teal .c-hr{color:var(--m-hr)} .dir-midnight-teal .c-elev{color:var(--m-elev)}
+.dir-midnight-teal .c-na{color:var(--muted)}
+.dir-midnight-teal .b-dist{background:var(--m-dist)} .dir-midnight-teal .b-time{background:var(--m-time)}
+.dir-midnight-teal .b-speed{background:var(--m-speed)} .dir-midnight-teal .b-power{background:var(--m-power)}
+.dir-midnight-teal .b-hr{background:var(--m-hr)} .dir-midnight-teal .b-elev{background:var(--m-elev)}
+
+/* why */
+.dir-midnight-teal .mt-why{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-midnight-teal .mt-why ul{margin:0;padding-left:18px;font-size:15px;color:#C1CCDA}
+.dir-midnight-teal .mt-why li{margin-bottom:8px}
+.dir-midnight-teal .mt-why h4{margin:0 0 12px;font-size:15px}
+</style>
+
+<div class="mt-wrap">
+
+  <!-- 1. Header -->
+  <p class="mt-eyebrow">Direction A</p>
+  <h2 class="mt-title">Direction A — Midnight Teal</h2>
+  <p class="mt-lede">A quiet instrument panel at night. Deep navy-ink surfaces (blue-black, never pure black) let the numbers glow softly, and one teal accent marks the thing that matters most on each screen with a faint halo. Calm and moody in the dark; crisp cool paper with ink text in the light.</p>
+  <p class="mt-insp">Inspired by Whoop and Oura night screens, with the metric-colour discipline of Apple Fitness. Font: Inter.</p>
+
+  <!-- 2. Palette -->
+  <h3 class="mt-h">Palette</h3>
+  <div class="mt-pal">
+    <div class="mt-palcard theme-dark">
+      <h4>Dark (default)</h4>
+      <div class="mt-sw">
+        <div class="mt-chip"><i style="background:#0B1220"></i><b>bg</b><span>#0B1220</span></div>
+        <div class="mt-chip"><i style="background:#111A2B"></i><b>surface</b><span>#111A2B</span></div>
+        <div class="mt-chip"><i style="background:#18233A"></i><b>surface-raised</b><span>#18233A</span></div>
+        <div class="mt-chip"><i style="background:#27344C"></i><b>border</b><span>#27344C</span></div>
+        <div class="mt-chip"><i style="background:#E6EDF5"></i><b>text</b><span>#E6EDF5</span></div>
+        <div class="mt-chip"><i style="background:#94A3B8"></i><b>text-muted</b><span>#94A3B8</span></div>
+        <div class="mt-chip"><i style="background:#2DD4BF;box-shadow:0 0 18px rgba(45,212,191,.5) inset"></i><b>accent</b><span>#2DD4BF</span></div>
+        <div class="mt-chip"><i style="background:#042F2A"></i><b>on-accent</b><span>#042F2A</span></div>
+      </div>
+      <ul class="mt-ratios num">
+        <li>text / bg <strong>15.87 : 1</strong></li>
+        <li>text-muted / bg <strong>7.30 : 1</strong> <span>(6.11 on surface-raised)</span></li>
+        <li>accent / bg (usable as text) <strong>10.06 : 1</strong></li>
+        <li>on-accent / accent <strong>7.81 : 1</strong></li>
+      </ul>
+    </div>
+    <div class="mt-palcard theme-light">
+      <h4>Light (equal quality)</h4>
+      <div class="mt-sw">
+        <div class="mt-chip"><i style="background:#F3F6F9"></i><b>bg</b><span>#F3F6F9</span></div>
+        <div class="mt-chip"><i style="background:#FFFFFF"></i><b>surface</b><span>#FFFFFF</span></div>
+        <div class="mt-chip"><i style="background:#E9EEF4"></i><b>surface-raised</b><span>#E9EEF4</span></div>
+        <div class="mt-chip"><i style="background:#D3DCE6"></i><b>border</b><span>#D3DCE6</span></div>
+        <div class="mt-chip"><i style="background:#0E1726"></i><b>text</b><span>#0E1726</span></div>
+        <div class="mt-chip"><i style="background:#4F5D70"></i><b>text-muted</b><span>#4F5D70</span></div>
+        <div class="mt-chip"><i style="background:#0F766E"></i><b>accent</b><span>#0F766E</span></div>
+        <div class="mt-chip"><i style="background:#FFFFFF"></i><b>on-accent</b><span>#FFFFFF</span></div>
+      </div>
+      <ul class="mt-ratios num">
+        <li>text / bg <strong>16.56 : 1</strong></li>
+        <li>text-muted / bg <strong>6.18 : 1</strong> <span>(5.75 on surface-raised)</span></li>
+        <li>accent / bg (usable as text) <strong>5.05 : 1</strong></li>
+        <li>on-accent / accent <strong>5.47 : 1</strong></li>
+      </ul>
+    </div>
+  </div>
+  <p class="mt-note">Borders (1.4 : 1) are decorative separators only; every control is also defined by fill or label. The teal glow is a 1 px teal ring plus a 32 px blur at 28 % opacity, used on at most one element per screen (the primary button or the hero card).</p>
+
+  <!-- 3. Metric colours -->
+  <h3 class="mt-h">Metric colours</h3>
+  <div class="mt-metrics">
+    <div class="mt-palcard theme-dark">
+      <h4>Dark · contrast vs surface #111A2B</h4>
+      <div class="mt-mrow num">
+        <div class="mt-mchip"><i class="dot b-dist"></i><div class="v c-dist">#A3E635</div><div class="l">Distance · lime</div><div class="h">11.5 : 1 · light tier</div></div>
+        <div class="mt-mchip"><i class="dot b-time"></i><div class="v c-time">#C3D0E0</div><div class="l">Moving time · ice</div><div class="h">11.1 : 1 · light tier</div></div>
+        <div class="mt-mchip"><i class="dot b-speed"></i><div class="v c-speed">#60A5FA</div><div class="l">Avg speed · sky</div><div class="h">6.9 : 1 · mid tier</div></div>
+        <div class="mt-mchip"><i class="dot b-power"></i><div class="v c-power">#A78BFA</div><div class="l">Avg power · violet</div><div class="h">6.4 : 1 · mid tier</div></div>
+        <div class="mt-mchip"><i class="dot b-hr"></i><div class="v c-hr">#FB7185</div><div class="l">Avg HR · rose</div><div class="h">6.5 : 1 · mid tier</div></div>
+        <div class="mt-mchip"><i class="dot b-elev"></i><div class="v c-elev">#F59E0B</div><div class="l">Elevation · amber</div><div class="h">8.1 : 1 · upper-mid</div></div>
+      </div>
+    </div>
+    <div class="mt-palcard theme-light">
+      <h4>Light · contrast vs surface #FFFFFF</h4>
+      <div class="mt-mrow num">
+        <div class="mt-mchip"><i class="dot b-dist"></i><div class="v c-dist">#3F6212</div><div class="l">Distance · lime</div><div class="h">7.1 : 1 · dark tier</div></div>
+        <div class="mt-mchip"><i class="dot b-time"></i><div class="v c-time">#475569</div><div class="l">Moving time · slate</div><div class="h">7.6 : 1 · dark tier</div></div>
+        <div class="mt-mchip"><i class="dot b-speed"></i><div class="v c-speed">#1D4ED8</div><div class="l">Avg speed · blue</div><div class="h">6.7 : 1</div></div>
+        <div class="mt-mchip"><i class="dot b-power"></i><div class="v c-power">#7C3AED</div><div class="l">Avg power · violet</div><div class="h">5.7 : 1</div></div>
+        <div class="mt-mchip"><i class="dot b-hr"></i><div class="v c-hr">#E11D48</div><div class="l">Avg HR · rose</div><div class="h">4.7 : 1 · lighter tier</div></div>
+        <div class="mt-mchip"><i class="dot b-elev"></i><div class="v c-elev">#B45309</div><div class="l">Elevation · amber</div><div class="h">5.0 : 1 · lighter tier</div></div>
+      </div>
+    </div>
+  </div>
+  <p class="mt-note">No metric is teal or green-cyan, so the accent always means "action / focus", never data. All metric colours also pass 4.5 : 1, so they work as text, not just as graphics. Colour-vision safety: the risky pairs are separated by lightness, not hue alone. Lime (distance) sits in the lightest tier and rose (heart rate) in the mid tier in dark mode (relative luminance 0.65 vs 0.34), and the reverse holds in light mode (0.10 vs 0.17). Amber is a full step darker than lime in dark mode (0.44 vs 0.65). Sky / violet / rose differ along the blue–yellow axis that deutan and protan viewers keep. On top of that, a metric is never shown by colour alone: it always has a fixed position, a unit and a label.</p>
+
+  <!-- 4. Type -->
+  <h3 class="mt-h">Typography · Inter</h3>
+  <div class="mt-type theme-dark" style="background:transparent">
+    <div class="mt-box">
+      <div class="t-display num">142.6<small>km</small></div>
+      <div class="t-title">Sunday Long Ride</div>
+      <p class="t-body">Body text stays calm: 16 px, regular, generous line height. One sans-serif everywhere, including the wordmark.</p>
+      <div class="t-cap">Caption · Sun 12 Oct · 08:14 · Leuven</div>
+      <div class="t-spec num">Display 56 / 600 / −3.5 % · Title 22 / 600 · Body 16 / 400 · Caption 13 / 400 muted · Metric 17 / 600 tabular</div>
+    </div>
+    <div class="mt-box">
+      <div class="t-cap" style="margin-bottom:8px">Tabular numbers line up</div>
+      <table class="mt-tab num">
+        <tr><td>Distance</td><td class="c-dist">111.1 km</td></tr>
+        <tr><td>Moving time</td><td class="c-time">3:58:12</td></tr>
+        <tr><td>Avg speed</td><td class="c-speed">28.0 km/h</td></tr>
+        <tr><td>Avg power</td><td class="c-power">198 W</td></tr>
+        <tr><td>Avg heart rate</td><td class="c-hr">141 bpm</td></tr>
+        <tr><td>Elevation</td><td class="c-elev">1 018 m</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 5. Components -->
+  <h3 class="mt-h">Components</h3>
+  <div class="mt-comp">
+    <div class="mt-box theme-dark">
+      <div class="mt-rowc"><span class="btn btn-primary">View rides</span><span class="btn btn-secondary">Choose file</span></div>
+      <div class="mt-rowc"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">MTB</span><span class="pill pill-tag">Commute</span></div>
+      <div class="field"><label>Email</label><div class="input"></div><div class="help">The address the account was created with.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: teal ring.</div></div>
+      <div class="status"><span class="ic"></span><span class="sp">Updated to <span class="num">v0.2.0</span> · <a>See what's new</a></span><span class="x">×</span></div>
+    </div>
+    <div class="mt-box theme-light">
+      <div class="mt-rowc"><span class="btn btn-primary">View rides</span><span class="btn btn-secondary">Choose file</span></div>
+      <div class="mt-rowc"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">MTB</span><span class="pill pill-tag">Commute</span></div>
+      <div class="field"><label>Email</label><div class="input" style="background:#fff"></div><div class="help">The address the account was created with.</div></div>
+      <div class="field"><label>Password</label><div class="input focus" style="background:#fff"></div><div class="help">Focused state: teal ring.</div></div>
+      <div class="status"><span class="ic"></span><span class="sp">Updated to <span class="num">v0.2.0</span> · <a>See what's new</a></span><span class="x">×</span></div>
+    </div>
+  </div>
+
+  <!-- 6. Mockups -->
+  <h3 class="mt-h">Mockups · phone</h3>
+  <div class="mt-phones">
+
+    <!-- a. Rides list -->
+    <div class="mt-phwrap">
+      <div class="phone theme-dark">
+        <div class="sbar num"><span>9:41</span><i></i></div>
+        <div class="topbar"><div class="hamb"><span></span></div><div class="tt">Rides</div><div class="wm">Cycling <b>Hub</b></div></div>
+        <div class="scroll">
+          <div class="seg-sm"><span class="on">Week</span><span>Month</span></div>
+          <div class="week"><span class="w1">Week 41 · 6–12 Oct</span><span class="w2 num">4 rides · 210 km · 7:19 h</span></div>
+
+          <div class="card hero">
+            <div class="chead">
+              <div class="thumb"><svg viewBox="0 0 34 34"><path d="M6 26c2-6 4-9 8-10s5-6 8-9 6 0 6 4-4 6-5 10-4 7-9 7-9-1-8-2z"/></svg></div>
+              <div class="meta"><div class="cname">Sunday Long Ride</div><div class="cdate">Sun 12 Oct · 08:14</div></div>
+              <span class="pill pill-tag">Road</span>
+            </div>
+            <div class="mgrid num">
+              <div class="m dist"><div class="v">111.1<small>km</small></div><div class="l">Distance</div></div>
+              <div class="m time"><div class="v">3:58<small>h</small></div><div class="l">Moving time</div></div>
+              <div class="m speed"><div class="v">28.0<small>km/h</small></div><div class="l">Avg speed</div></div>
+              <div class="m power"><div class="v">198<small>W</small></div><div class="l">Avg power</div></div>
+              <div class="m hr"><div class="v">141<small>bpm</small></div><div class="l">Avg HR</div></div>
+              <div class="m elev"><div class="v">1018<small>m</small></div><div class="l">Elevation</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chead">
+              <div class="thumb"><svg viewBox="0 0 34 34"><path d="M5 24h7l3-8h6l2-6h6"/></svg></div>
+              <div class="meta"><div class="cname">Evening Ride</div><div class="cdate">Thu 9 Oct · 17:42</div></div>
+              <span class="pill pill-tag">Commute</span>
+            </div>
+            <div class="mgrid num">
+              <div class="m dist"><div class="v">18.4<small>km</small></div><div class="l">Distance</div></div>
+              <div class="m time"><div class="v">0:43<small>h</small></div><div class="l">Moving time</div></div>
+              <div class="m speed"><div class="v">25.7<small>km/h</small></div><div class="l">Avg speed</div></div>
+              <div class="m power"><div class="v na">—</div><div class="l">Avg power</div></div>
+              <div class="m hr"><div class="v na">—</div><div class="l">Avg HR</div></div>
+              <div class="m elev"><div class="v">62<small>m</small></div><div class="l">Elevation</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="chead">
+              <div class="thumb"><svg viewBox="0 0 34 34"><path d="M17 6c6 0 11 4 11 10s-4 12-11 12S6 23 7 17s4-11 10-11z"/></svg></div>
+              <div class="meta"><div class="cname">Morning Ride</div><div class="cdate">Tue 7 Oct · 07:05</div></div>
+              <span class="pill pill-tag">MTB</span>
+            </div>
+            <div class="mgrid num">
+              <div class="m dist"><div class="v">42.3<small>km</small></div><div class="l">Distance</div></div>
+              <div class="m time"><div class="v">1:47<small>h</small></div><div class="l">Moving time</div></div>
+              <div class="m speed"><div class="v">23.7<small>km/h</small></div><div class="l">Avg speed</div></div>
+              <div class="m power"><div class="v">176<small>W</small></div><div class="l">Avg power</div></div>
+              <div class="m hr"><div class="v">149<small>bpm</small></div><div class="l">Avg HR</div></div>
+              <div class="m elev"><div class="v">486<small>m</small></div><div class="l">Elevation</div></div>
+            </div>
+          </div>
+          <div class="fade"></div>
+          <div class="dock"><div class="status"><span class="ic"></span><span class="sp">Updated to <span class="num">v0.2.0</span> · <a>See what's new</a></span><span class="x">×</span></div></div>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="cap">a · Rides list (B1a) · dark</div>
+    </div>
+
+    <!-- b. Import summary -->
+    <div class="mt-phwrap">
+      <div class="phone theme-dark">
+        <div class="sbar num"><span>9:41</span><i></i></div>
+        <div class="topbar"><div class="hamb"><span></span></div><div class="tt">Import</div><div class="wm">Cycling <b>Hub</b></div></div>
+        <div class="scroll">
+          <div class="imp-h">Import complete</div>
+          <div class="imp-f num"><span class="ok"></span>strava-export-2026-10-16.json · 280 activities</div>
+          <div class="ogrid num">
+            <div class="oc hero"><div class="ot">New rides</div><div class="on">233</div></div>
+            <div class="oc"><div class="ot">Updated</div><div class="on">3</div></div>
+            <div class="oc"><div class="ot">Unchanged</div><div class="on">2</div></div>
+            <div class="oc"><div class="ot">Not a ride</div><div class="on">41</div></div>
+            <div class="oc warn"><div class="ot">Skipped (errors)</div><div class="on" style="color:var(--m-hr)">1</div></div>
+            <div class="oc zero" style="grid-column:1 / -1;min-height:64px;flex-direction:row;align-items:center"><div class="ot">Deleted earlier</div><div class="on" style="font-size:26px">0</div></div>
+          </div>
+          <div class="imp-act"><span class="btn btn-primary btn-block">View rides</span></div>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="cap">b · Import summary (C3) · dark</div>
+    </div>
+
+    <!-- c. Settings -->
+    <div class="mt-phwrap">
+      <div class="phone theme-light">
+        <div class="sbar num"><span>9:41</span><i></i></div>
+        <div class="topbar"><div class="hamb"><span></span></div><div class="tt">Settings</div><div class="wm">Cycling <b>Hub</b></div></div>
+        <div class="scroll">
+          <div class="sg-label">Account</div>
+          <div class="group"><div class="row"><span>Email</span><span class="greybar"></span></div></div>
+          <div class="sg-label">Display</div>
+          <div class="group">
+            <div class="row block"><div class="rl">Appearance</div><div class="seg"><span class="on">System</span><span>Light</span><span>Dark</span></div></div>
+            <div class="row"><span>Units</span><span class="rv">Metric (km, m)</span></div>
+            <div class="row"><span>Time zone</span><span class="rv">Europe/Brussels</span></div>
+          </div>
+          <div class="sg-label">About</div>
+          <div class="group">
+            <div class="row"><span>Version</span><span class="rv num">0.1.0</span></div>
+            <div class="row"><span>What's new</span><span class="chev">›</span></div>
+            <div class="row"><span>What's next</span><span class="chev">›</span></div>
+          </div>
+          <div class="group" style="margin-top:16px"><div class="row danger">Sign out</div></div>
+        </div>
+        <div class="homebar"></div>
+      </div>
+      <div class="cap">c · Settings (G1) · light</div>
+    </div>
+  </div>
+
+  <!-- d. Desktop -->
+  <h3 class="mt-h">Mockup · desktop (X1, dark, 1000 × 600 at 90 %)</h3>
+  <div class="desk-outer">
+    <div class="desk theme-dark">
+      <aside class="side">
+        <div class="wm">Cycling <b>Hub</b></div>
+        <div class="nav on"><i></i>Rides</div>
+        <div class="nav"><i></i>Import</div>
+        <div class="nav"><i></i>Settings</div>
+        <div class="sp"></div>
+        <div class="ver num">v0.1.0</div>
+      </aside>
+      <div class="dmain">
+        <div class="dhead">
+          <h4>Rides</h4>
+          <div class="r"><div class="seg-sm" style="margin:0"><span class="on">Week</span><span>Month</span></div><span class="btn btn-secondary">Hide commutes</span></div>
+        </div>
+        <div class="tbl">
+          <table class="num">
+            <thead><tr>
+              <th>Ride</th>
+              <th><span class="b-dist"></span>Distance</th>
+              <th><span class="b-time"></span>Moving time</th>
+              <th><span class="b-speed"></span>Avg speed</th>
+              <th><span class="b-power"></span>Avg power</th>
+              <th><span class="b-hr"></span>Avg HR</th>
+              <th><span class="b-elev"></span>Elevation</th>
+            </tr></thead>
+            <tbody>
+              <tr class="wk"><td>Week 41 · 6–12 Oct · 4</td><td>210.0 km</td><td>7:19 h</td><td></td><td></td><td></td><td>1 626 m</td></tr>
+              <tr class="sel"><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M6 26c2-6 4-9 8-10s5-6 8-9 6 0 6 4-4 6-5 10-4 7-9 7-9-1-8-2z"/></svg><div><b>Sunday Long Ride</b><em>Sun 12 Oct · Road</em></div></div></td><td class="c-dist">111.1 km</td><td class="c-time">3:58</td><td class="c-speed">28.0 km/h</td><td class="c-power">198 W</td><td class="c-hr">141 bpm</td><td class="c-elev">1 018 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M5 24h7l3-8h6l2-6h6"/></svg><div><b>Evening Ride</b><em>Thu 9 Oct · Commute</em></div></div></td><td class="c-dist">18.4 km</td><td class="c-time">0:43</td><td class="c-speed">25.7 km/h</td><td class="c-na">—</td><td class="c-na">—</td><td class="c-elev">62 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M5 22h8l4-9 4 9h8"/></svg><div><b>Lunch Ride</b><em>Wed 8 Oct · Road</em></div></div></td><td class="c-dist">38.2 km</td><td class="c-time">1:21</td><td class="c-speed">28.3 km/h</td><td class="c-power">212 W</td><td class="c-hr">152 bpm</td><td class="c-elev">60 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M17 6c6 0 11 4 11 10s-4 12-11 12S6 23 7 17s4-11 10-11z"/></svg><div><b>Morning Ride</b><em>Tue 7 Oct · MTB</em></div></div></td><td class="c-dist">42.3 km</td><td class="c-time">1:47</td><td class="c-speed">23.7 km/h</td><td class="c-power">176 W</td><td class="c-hr">149 bpm</td><td class="c-elev">486 m</td></tr>
+              <tr class="wk"><td>Week 40 · 29 Sep–5 Oct · 3</td><td>164.8 km</td><td>5:47 h</td><td></td><td></td><td></td><td>1 240 m</td></tr>
+              <tr><td><div class="rn"><svg viewBox="0 0 34 34"><path d="M6 10c5 0 7 4 11 4s6-5 11-3-1 10-6 12-11 4-14 1-6-14-2-14z"/></svg><div><b>Sunday Long Ride</b><em>Sun 5 Oct · Road</em></div></div></td><td class="c-dist">96.5 km</td><td class="c-time">3:24</td><td class="c-speed">28.4 km/h</td><td class="c-power">191 W</td><td class="c-hr">138 bpm</td><td class="c-elev">874 m</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Why -->
+  <h3 class="mt-h">Why pick this / trade-offs</h3>
+  <div class="mt-why">
+    <div>
+      <h4>Why pick it</h4>
+      <ul>
+        <li>The closest match to the "quiet instrument panel": navy-ink is softer on the eyes than pure black, and the six metric colours read like gauges on it.</li>
+        <li>One accent, one glow per screen: it is always clear where to tap or look first, without decoration.</li>
+        <li>Every colour, metrics included, passes 4.5 : 1 in both themes, so the same tokens work for text, charts and future zones.</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Trade-offs</h4>
+      <ul>
+        <li>Moody and a bit "night-time": less energetic than a lime-led direction, and the teal sits close to many health apps.</li>
+        <li>Six saturated metric colours on dark navy can feel busy in dense tables; on desktop we may need to tone them down to the dot only.</li>
+        <li>The glow needs care in light mode (it becomes a soft teal shadow) and must stay off in reduced-transparency settings.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<div class="fb"><label for="fb-midnight-teal">Your feedback on Direction A · Midnight Teal</label>
+<textarea id="fb-midnight-teal" data-key="Direction A (Midnight Teal)" rows="4"></textarea>
+<p class="help">What do you like, what not? Saved in this browser.</p></div><section class="direction dir-graphite-lime" id="graphite-lime">
+<style>
+.dir-graphite-lime {
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --page: #0A0A0B;
+  --page-text: #F2F2F0;
+  --page-muted: #A0A3A8;
+  --page-line: #2E3033;
+  font-family: var(--font);
+  background: var(--page);
+  color: var(--page-text);
+  padding: 56px 40px 72px;
+  line-height: 1.45;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+.dir-graphite-lime *, .dir-graphite-lime *::before, .dir-graphite-lime *::after { box-sizing: border-box; }
+.dir-graphite-lime .wrap { max-width: 1120px; margin: 0 auto; }
+
+/* ---------- theme tokens ---------- */
+.dir-graphite-lime .theme-dark {
+  --bg: #0E0F10; --surface: #17181A; --raised: #202124; --border: #2E3033;
+  --text: #F2F2F0; --muted: #A0A3A8; --accent: #C6F432; --accent-text: #C6F432; --on-accent: #0E0F10;
+  --accent-soft: rgba(198,244,50,.12); --glow: 0 0 0 1px rgba(198,244,50,.35), 0 0 24px rgba(198,244,50,.18);
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
+  --m-dist: #4D8EFF; --m-time: #C2C5CA; --m-speed: #2ED3E6; --m-power: #FF9F1C; --m-hr: #FF4F8B; --m-elev: #B57BFF;
+  background: var(--bg); color: var(--text);
+}
+.dir-graphite-lime .theme-light {
+  --bg: #F4F4F2; --surface: #FFFFFF; --raised: #ECECEA; --border: #D8D8D4;
+  --text: #141515; --muted: #5C5F64; --accent: #C6F432; --accent-text: #4D6B00; --on-accent: #141515;
+  --accent-soft: rgba(198,244,50,.35); --glow: 0 0 0 1px rgba(77,107,0,.35), 0 4px 14px rgba(120,160,0,.18);
+  --shadow: 0 1px 2px rgba(20,21,21,.06), 0 6px 18px rgba(20,21,21,.06);
+  --m-dist: #1F5FDB; --m-time: #6A6E74; --m-speed: #08798A; --m-power: #AD5A00; --m-hr: #CC1A62; --m-elev: #7A3FD9;
+  background: var(--bg); color: var(--text);
+}
+
+/* ---------- doc layout ---------- */
+.dir-graphite-lime h2.dir-title { font-size: 40px; letter-spacing: -.02em; margin: 0 0 12px; font-weight: 700; }
+.dir-graphite-lime h2.dir-title .lime { color: #C6F432; }
+.dir-graphite-lime .mood { max-width: 760px; color: var(--page-text); font-size: 17px; margin: 0 0 8px; }
+.dir-graphite-lime .inspired { color: var(--page-muted); margin: 0; font-size: 14px; }
+.dir-graphite-lime h3.sec { font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--page-muted);
+  margin: 56px 0 18px; font-weight: 600; border-top: 1px solid var(--page-line); padding-top: 22px; }
+.dir-graphite-lime h3.sec span { color: #C6F432; margin-right: 8px; }
+.dir-graphite-lime .note { color: var(--page-muted); font-size: 13px; margin: 10px 0 0; max-width: 900px; }
+.dir-graphite-lime .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dir-graphite-lime .panel { border-radius: 20px; padding: 22px; border: 1px solid var(--border); }
+.dir-graphite-lime .panel h4 { margin: 0 0 14px; font-size: 15px; font-weight: 600; }
+
+/* swatches */
+.dir-graphite-lime .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.dir-graphite-lime .sw { border-radius: 14px; border: 1px solid var(--border); overflow: hidden; background: var(--surface); }
+.dir-graphite-lime .sw .chip { height: 52px; border-bottom: 1px solid var(--border); }
+.dir-graphite-lime .sw .lbl { padding: 8px 10px; font-size: 12px; }
+.dir-graphite-lime .sw .lbl b { display: block; font-weight: 600; }
+.dir-graphite-lime .sw .lbl code { font-family: inherit; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dir-graphite-lime table.cr { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.dir-graphite-lime table.cr td { padding: 6px 0; border-bottom: 1px solid var(--border); }
+.dir-graphite-lime table.cr td:last-child { text-align: right; font-weight: 600; }
+.dir-graphite-lime .muted { color: var(--muted); }
+
+/* metrics */
+.dir-graphite-lime .metric-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.dir-graphite-lime .mtile { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+.dir-graphite-lime .mtile .bar { height: 6px; border-radius: 3px; margin-bottom: 10px; }
+.dir-graphite-lime .mtile .nm { font-size: 12px; color: var(--muted); }
+.dir-graphite-lime .mtile .val { font-size: 20px; font-weight: 650; font-variant-numeric: tabular-nums; margin: 2px 0; }
+.dir-graphite-lime .mtile code { font-family: inherit; font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; display: block; }
+.dir-graphite-lime .c-dist { color: var(--m-dist); } .dir-graphite-lime .b-dist { background: var(--m-dist); }
+.dir-graphite-lime .c-time { color: var(--m-time); } .dir-graphite-lime .b-time { background: var(--m-time); }
+.dir-graphite-lime .c-speed { color: var(--m-speed); } .dir-graphite-lime .b-speed { background: var(--m-speed); }
+.dir-graphite-lime .c-power { color: var(--m-power); } .dir-graphite-lime .b-power { background: var(--m-power); }
+.dir-graphite-lime .c-hr { color: var(--m-hr); } .dir-graphite-lime .b-hr { background: var(--m-hr); }
+.dir-graphite-lime .c-elev { color: var(--m-elev); } .dir-graphite-lime .b-elev { background: var(--m-elev); }
+
+/* type */
+.dir-graphite-lime .type-row { display: flex; align-items: baseline; gap: 18px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.dir-graphite-lime .type-row .tag { width: 120px; flex: none; font-size: 12px; color: var(--muted); }
+.dir-graphite-lime .t-display { font-size: 56px; font-weight: 700; letter-spacing: -.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .t-display small { font-size: 20px; font-weight: 500; color: var(--muted); letter-spacing: 0; margin-left: 4px; }
+.dir-graphite-lime .t-title { font-size: 22px; font-weight: 650; letter-spacing: -.01em; }
+.dir-graphite-lime .t-body { font-size: 15px; }
+.dir-graphite-lime .t-cap { font-size: 12px; color: var(--muted); letter-spacing: .02em; }
+.dir-graphite-lime .tnum { font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .numcol { font-size: 17px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; line-height: 1.5; }
+
+/* components */
+.dir-graphite-lime .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 22px;
+  border-radius: 999px; font: 600 15px/1 var(--font); border: 1px solid transparent; }
+.dir-graphite-lime .btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--glow); }
+.dir-graphite-lime .btn-secondary { background: transparent; color: var(--text); border-color: var(--border); }
+.dir-graphite-lime .btn-block { display: flex; width: 100%; }
+.dir-graphite-lime .pill { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.dir-graphite-lime .pill-feature { background: var(--accent); color: var(--on-accent); }
+.dir-graphite-lime .pill-fix { background: transparent; color: var(--text); border: 1px solid var(--muted); }
+.dir-graphite-lime .pill-tech { background: var(--raised); color: var(--muted); }
+.dir-graphite-lime .pill-tag { background: var(--raised); color: var(--muted); height: 22px; font-size: 11px; padding: 0 9px; }
+.dir-graphite-lime .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.dir-graphite-lime .field .input { height: 44px; border-radius: 12px; border: 1px solid var(--border); background: var(--raised); }
+.dir-graphite-lime .field .input.focus { border-color: var(--accent-text); box-shadow: 0 0 0 3px var(--accent-soft); }
+.dir-graphite-lime .field .help { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.dir-graphite-lime .status-card { display: flex; align-items: center; gap: 12px; background: var(--raised); border: 1px solid var(--border);
+  border-radius: 16px; padding: 12px 14px; box-shadow: var(--shadow); font-size: 14px; }
+.dir-graphite-lime .status-card .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); flex: none; }
+.dir-graphite-lime .status-card .link { color: var(--accent-text); font-weight: 600; margin-left: auto; white-space: nowrap; }
+.dir-graphite-lime .comp-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 18px; }
+
+/* phones */
+.dir-graphite-lime .phones { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; }
+.dir-graphite-lime .phone-cap { font-size: 13px; color: var(--page-muted); margin: 0 0 10px 6px; }
+.dir-graphite-lime .phone { width: 375px; height: 760px; border-radius: 48px; border: 10px solid #000; outline: 1px solid #3A3C40;
+  overflow: hidden; position: relative; display: flex; flex-direction: column; }
+.dir-graphite-lime .statusbar { height: 40px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 6px 26px 0;
+  font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .statusbar .notch { width: 96px; height: 26px; border-radius: 14px; background: #000; }
+.dir-graphite-lime .topbar { height: 52px; flex: none; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 6px; }
+.dir-graphite-lime .iconbtn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+.dir-graphite-lime .topbar .title { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.dir-graphite-lime .wordmark { font-weight: 700; font-size: 14px; letter-spacing: -.01em; margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+.dir-graphite-lime .wordmark i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
+.dir-graphite-lime .screen { flex: 1; overflow: hidden; padding: 4px 16px 16px; position: relative; }
+.dir-graphite-lime .week { display: flex; justify-content: space-between; align-items: baseline; padding: 2px 2px 10px; }
+.dir-graphite-lime .week .wk { font-weight: 650; font-size: 15px; }
+.dir-graphite-lime .week .tot { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .week .tot b { color: var(--text); font-weight: 600; }
+.dir-graphite-lime .seg-mini { display: flex; gap: 4px; background: var(--surface); border-radius: 999px; padding: 3px; width: max-content; margin: 0 0 8px; border: 1px solid var(--border); }
+.dir-graphite-lime .seg-mini span { font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 999px; color: var(--muted); }
+.dir-graphite-lime .seg-mini span.on { background: var(--raised); color: var(--text); }
+.dir-graphite-lime .ride { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 12px 14px 11px; margin-bottom: 10px; box-shadow: var(--shadow); }
+.dir-graphite-lime .ride-head { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.dir-graphite-lime .thumb { width: 40px; height: 40px; border-radius: 12px; background: var(--raised); flex: none; display: flex; align-items: center; justify-content: center; }
+.dir-graphite-lime .ride-name { font-weight: 650; font-size: 15px; }
+.dir-graphite-lime .ride-date { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .ride-head .pill-tag { margin-left: auto; }
+.dir-graphite-lime .mets { display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 6px; column-gap: 8px; }
+.dir-graphite-lime .met .v { font-size: 17px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.01em; line-height: 1.2; }
+.dir-graphite-lime .met .v small { font-size: 11px; font-weight: 500; margin-left: 2px; }
+.dir-graphite-lime .met .k { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+.dir-graphite-lime .met .k::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.dir-graphite-lime .met .v.none { color: var(--muted); }
+.dir-graphite-lime .bottom-card { position: absolute; left: 12px; right: 12px; bottom: 14px; }
+
+/* import summary */
+.dir-graphite-lime .imp-title { font-size: 28px; font-weight: 700; letter-spacing: -.02em; margin: 14px 2px 4px; display: flex; align-items: center; gap: 10px; }
+.dir-graphite-lime .imp-title .ok { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; box-shadow: var(--glow); }
+.dir-graphite-lime .imp-file { font-size: 13px; color: var(--muted); margin: 0 2px 20px; font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+.dir-graphite-lime .oc { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 14px 14px 16px; min-height: 104px; display: flex; flex-direction: column; }
+.dir-graphite-lime .oc .ot { font-size: 13px; color: var(--muted); font-weight: 500; }
+.dir-graphite-lime .oc .on { font-size: 40px; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; margin-top: auto; line-height: 1; }
+.dir-graphite-lime .oc.hero { grid-column: span 2; border-color: rgba(198,244,50,.35); background: linear-gradient(180deg, rgba(198,244,50,.07), rgba(198,244,50,0) 70%), var(--surface); }
+.dir-graphite-lime .oc.hero .on { font-size: 56px; }
+.dir-graphite-lime .oc.hero .ot { color: var(--accent-text); font-weight: 600; }
+.dir-graphite-lime .oc.warn .ot::after { content: " · 1 reason listed"; color: var(--muted); font-weight: 400; }
+.dir-graphite-lime .oc .zero { color: var(--muted); }
+
+/* settings */
+.dir-graphite-lime .set-h { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); font-weight: 600; margin: 18px 4px 8px; }
+.dir-graphite-lime .group { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; box-shadow: var(--shadow); }
+.dir-graphite-lime .row { min-height: 52px; padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); font-size: 15px; }
+.dir-graphite-lime .row:last-child { border-bottom: 0; }
+.dir-graphite-lime .row .rv { margin-left: auto; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; display: flex; align-items: center; gap: 6px; }
+.dir-graphite-lime .greybar { height: 10px; width: 150px; border-radius: 5px; background: var(--raised); margin-left: auto; }
+.dir-graphite-lime .seg { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--raised); border-radius: 999px; padding: 3px; width: 100%; }
+.dir-graphite-lime .seg span { height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-size: 14px; font-weight: 600; color: var(--muted); }
+.dir-graphite-lime .seg span.on { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 0 0 1px var(--border); }
+.dir-graphite-lime .seg span.on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-text); margin-right: 7px; }
+.dir-graphite-lime .row.col { flex-direction: column; align-items: stretch; gap: 8px; }
+.dir-graphite-lime .row .chev { color: var(--muted); }
+.dir-graphite-lime .signout { color: #B3261E; font-weight: 600; justify-content: center; }
+
+/* desktop */
+.dir-graphite-lime .desk-wrap { width: 900px; height: 540px; margin: 0 auto; }
+.dir-graphite-lime .desk { width: 1000px; height: 600px; transform: scale(.9); transform-origin: top left; border-radius: 18px; overflow: hidden;
+  border: 1px solid #3A3C40; display: grid; grid-template-columns: 196px 1fr; }
+.dir-graphite-lime .side { background: var(--bg); border-right: 1px solid var(--border); padding: 20px 12px; display: flex; flex-direction: column; gap: 4px; }
+.dir-graphite-lime .side .wordmark { margin: 0 10px 22px; font-size: 16px; }
+.dir-graphite-lime .nav { height: 44px; border-radius: 12px; display: flex; align-items: center; gap: 12px; padding: 0 12px; font-size: 15px; color: var(--muted); font-weight: 500; }
+.dir-graphite-lime .nav.on { background: var(--accent-soft); color: var(--text); font-weight: 600; box-shadow: inset 3px 0 0 var(--accent); }
+.dir-graphite-lime .nav.on svg { stroke: var(--accent); }
+.dir-graphite-lime .side .foot { margin-top: auto; font-size: 12px; color: var(--muted); padding: 0 12px; }
+.dir-graphite-lime .main { background: var(--bg); padding: 24px 22px; overflow: hidden; }
+.dir-graphite-lime .main-h { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.dir-graphite-lime .main-h h5 { font-size: 26px; margin: 0; font-weight: 700; letter-spacing: -.02em; }
+.dir-graphite-lime .main-h .seg-mini { margin: 0 0 0 auto; }
+.dir-graphite-lime .tbl { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+.dir-graphite-lime .tbl table { width: 100%; border-collapse: collapse; font-size: 13px; color: inherit; font-variant-numeric: tabular-nums; }
+.dir-graphite-lime .tbl th { text-align: right; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em; font-weight: 600; padding: 12px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.dir-graphite-lime .tbl th:first-child, .dir-graphite-lime .tbl td:first-child { text-align: left; }
+.dir-graphite-lime .tbl td { text-align: right; padding: 0 10px; height: 50px; font-size: 13px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.dir-graphite-lime .tbl td.m { font-weight: 600; }
+.dir-graphite-lime .tbl tr.wk td { height: 38px; background: var(--raised); color: var(--muted); font-size: 12px; font-weight: 600; }
+.dir-graphite-lime .tbl tr.wk td b { color: var(--text); }
+.dir-graphite-lime .tbl tr.sel td { background: rgba(255,255,255,.025); }
+.dir-graphite-lime .tbl .rn { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--text); }
+.dir-graphite-lime .tbl .rn > span:first-child { display: flex; flex-direction: column; line-height: 1.3; }
+.dir-graphite-lime .tbl .rn .d { color: var(--muted); font-size: 11.5px; font-weight: 400; }
+.dir-graphite-lime .tbl .none { color: var(--muted); font-weight: 400; }
+
+/* why */
+.dir-graphite-lime ul.why { margin: 0; padding-left: 20px; max-width: 900px; }
+.dir-graphite-lime ul.why li { margin-bottom: 8px; }
+.dir-graphite-lime ul.why li b { color: #C6F432; font-weight: 600; }
+</style>
+
+<div class="wrap">
+
+<!-- 1. Header -->
+<h2 class="dir-title">Direction B — Graphite <span class="lime">&amp;</span> Lime</h2>
+<p class="mood">Neutral graphite with no colour tint, so nothing competes with the data. One electric lime accent, used sparingly for the primary action, the active menu item and the moment an import lands. Vivid per-metric colours pop on the grey base: still a calm, roomy instrument panel, with a bit more energy than a navy or teal direction.</p>
+<p class="inspired">Inspired by Apple Fitness (vivid metric colours on true-dark), Whoop (graphite surfaces, a single bright signal colour) and the lime of a cycling jersey seen at dusk.</p>
+
+<!-- 2. Palette -->
+<h3 class="sec"><span>01</span>Palette</h3>
+<div class="two">
+  <div class="panel theme-dark">
+    <h4>Dark (default)</h4>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#0E0F10"></div><div class="lbl"><b>bg</b><code>#0E0F10</code></div></div>
+      <div class="sw"><div class="chip" style="background:#17181A"></div><div class="lbl"><b>surface</b><code>#17181A</code></div></div>
+      <div class="sw"><div class="chip" style="background:#202124"></div><div class="lbl"><b>surface-raised</b><code>#202124</code></div></div>
+      <div class="sw"><div class="chip" style="background:#2E3033"></div><div class="lbl"><b>border</b><code>#2E3033</code></div></div>
+      <div class="sw"><div class="chip" style="background:#F2F2F0"></div><div class="lbl"><b>text</b><code>#F2F2F0</code></div></div>
+      <div class="sw"><div class="chip" style="background:#A0A3A8"></div><div class="lbl"><b>text-muted</b><code>#A0A3A8</code></div></div>
+      <div class="sw"><div class="chip" style="background:#C6F432"></div><div class="lbl"><b>accent</b><code>#C6F432</code></div></div>
+      <div class="sw"><div class="chip" style="background:#0E0F10"></div><div class="lbl"><b>on-accent</b><code>#0E0F10</code></div></div>
+    </div>
+    <table class="cr">
+      <tr><td>text / bg</td><td>17.1 : 1</td></tr>
+      <tr><td>text-muted / bg</td><td>7.6 : 1</td></tr>
+      <tr><td>accent / bg (usable as text)</td><td>15.0 : 1</td></tr>
+      <tr><td>on-accent / accent</td><td>15.0 : 1</td></tr>
+    </table>
+  </div>
+  <div class="panel theme-light">
+    <h4>Light (equal quality)</h4>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#F4F4F2"></div><div class="lbl"><b>bg</b><code>#F4F4F2</code></div></div>
+      <div class="sw"><div class="chip" style="background:#FFFFFF"></div><div class="lbl"><b>surface</b><code>#FFFFFF</code></div></div>
+      <div class="sw"><div class="chip" style="background:#ECECEA"></div><div class="lbl"><b>surface-raised</b><code>#ECECEA</code></div></div>
+      <div class="sw"><div class="chip" style="background:#D8D8D4"></div><div class="lbl"><b>border</b><code>#D8D8D4</code></div></div>
+      <div class="sw"><div class="chip" style="background:#141515"></div><div class="lbl"><b>text</b><code>#141515</code></div></div>
+      <div class="sw"><div class="chip" style="background:#5C5F64"></div><div class="lbl"><b>text-muted</b><code>#5C5F64</code></div></div>
+      <div class="sw"><div class="chip" style="background:#C6F432"></div><div class="lbl"><b>accent (fill)</b><code>#C6F432</code></div></div>
+      <div class="sw"><div class="chip" style="background:#4D6B00"></div><div class="lbl"><b>accent-text</b><code>#4D6B00</code></div></div>
+    </div>
+    <table class="cr">
+      <tr><td>text / bg</td><td>16.6 : 1</td></tr>
+      <tr><td>text-muted / bg</td><td>5.8 : 1</td></tr>
+      <tr><td>accent #C6F432 / bg</td><td>1.2 : 1 · fills only</td></tr>
+      <tr><td>accent-text #4D6B00 / bg</td><td>5.6 : 1</td></tr>
+      <tr><td>on-accent #141515 / accent fill</td><td>14.3 : 1</td></tr>
+    </table>
+  </div>
+</div>
+<p class="note">Surfaces are pure neutral grey (R≈G≈B). Light mode is a warm-neutral off-white with near-black text, not an inversion: the same lime appears only as a fill with dark text on it, and links or selected states use the darker olive-lime #4D6B00.</p>
+
+<!-- 3. Metric colours -->
+<h3 class="sec"><span>02</span>Metric colours (fixed per metric)</h3>
+<div class="two">
+  <div class="panel theme-dark">
+    <h4>Dark · contrast vs surface #17181A</h4>
+    <div class="metric-grid">
+      <div class="mtile"><div class="bar b-dist"></div><div class="nm">Distance</div><div class="val c-dist">84.2</div><code>#4D8EFF · 5.6:1</code></div>
+      <div class="mtile"><div class="bar b-time"></div><div class="nm">Moving time</div><div class="val c-time">2:51</div><code>#C2C5CA · 10.3:1</code></div>
+      <div class="mtile"><div class="bar b-speed"></div><div class="nm">Avg speed</div><div class="val c-speed">29.5</div><code>#2ED3E6 · 9.8:1</code></div>
+      <div class="mtile"><div class="bar b-power"></div><div class="nm">Avg power</div><div class="val c-power">198</div><code>#FF9F1C · 8.7:1</code></div>
+      <div class="mtile"><div class="bar b-hr"></div><div class="nm">Avg HR</div><div class="val c-hr">142</div><code>#FF4F8B · 5.7:1</code></div>
+      <div class="mtile"><div class="bar b-elev"></div><div class="nm">Elevation</div><div class="val c-elev">612</div><code>#B57BFF · 6.1:1</code></div>
+    </div>
+  </div>
+  <div class="panel theme-light">
+    <h4>Light · contrast vs surface #FFFFFF</h4>
+    <div class="metric-grid">
+      <div class="mtile"><div class="bar b-dist"></div><div class="nm">Distance</div><div class="val c-dist">84.2</div><code>#1F5FDB · 5.7:1</code></div>
+      <div class="mtile"><div class="bar b-time"></div><div class="nm">Moving time</div><div class="val c-time">2:51</div><code>#6A6E74 · 5.1:1</code></div>
+      <div class="mtile"><div class="bar b-speed"></div><div class="nm">Avg speed</div><div class="val c-speed">29.5</div><code>#08798A · 5.1:1</code></div>
+      <div class="mtile"><div class="bar b-power"></div><div class="nm">Avg power</div><div class="val c-power">198</div><code>#AD5A00 · 5.0:1</code></div>
+      <div class="mtile"><div class="bar b-hr"></div><div class="nm">Avg HR</div><div class="val c-hr">142</div><code>#CC1A62 · 5.4:1</code></div>
+      <div class="mtile"><div class="bar b-elev"></div><div class="nm">Elevation</div><div class="val c-elev">612</div><code>#7A3FD9 · 6.0:1</code></div>
+    </div>
+  </div>
+</div>
+<p class="note">No metric is lime or yellow-green, so nothing collides with the accent. All metric colours pass 4.5:1 on surface in both themes, so they work as text, not only as graphics. Colour-vision safety: in dark mode the metrics sit in two lightness tiers (light: speed, moving time, power; mid: distance, heart rate, elevation). Within a tier the hues are split along the blue–yellow axis, which red-green deficiencies keep (cyan vs amber vs silver; blue vs pink vs violet). Moving time is a neutral silver/grey, readable in any vision type. Colour is never the only cue: every value keeps its label and its fixed position in the metric order.</p>
+
+<!-- 4. Type -->
+<h3 class="sec"><span>03</span>Type · Inter</h3>
+<div class="two">
+  <div class="panel theme-dark">
+    <div class="type-row"><span class="tag">Display number · 56 / 700</span><span class="t-display">210<small>km</small></span></div>
+    <div class="type-row"><span class="tag">Title · 22 / 650</span><span class="t-title">Sunday Long Ride</span></div>
+    <div class="type-row"><span class="tag">Body · 15 / 400</span><span class="t-body">Rides missing from a new export are left alone.</span></div>
+    <div class="type-row" style="border-bottom:0"><span class="tag">Caption · 12 / 400</span><span class="t-cap">Sun 12 Oct · 08:14 · Leuven</span></div>
+  </div>
+  <div class="panel theme-dark">
+    <h4>Tabular numbers (font-variant-numeric: tabular-nums)</h4>
+    <div style="display:flex; gap:28px">
+      <div class="numcol"><div class="c-dist">84.2 km</div><div class="c-dist">111.0 km</div><div class="c-dist">7.8 km</div></div>
+      <div class="numcol"><div class="c-time">2:51 h</div><div class="c-time">3:58 h</div><div class="c-time">0:19 h</div></div>
+      <div class="numcol"><div class="c-power">198 W</div><div class="c-power">211 W</div><div class="c-power muted">—</div></div>
+      <div class="numcol"><div class="c-hr">142 bpm</div><div class="c-hr">138 bpm</div><div class="c-hr muted">—</div></div>
+    </div>
+    <p class="note" style="margin-top:14px">One sans everywhere, wordmark included. Digits align in columns; units are 70 % size in the metric colour.</p>
+  </div>
+</div>
+
+<!-- 5. Components -->
+<h3 class="sec"><span>04</span>Components</h3>
+<div class="two">
+  <div class="panel theme-dark">
+    <h4>Dark</h4>
+    <div class="comp-row"><span class="btn btn-primary">View rides</span><span class="btn btn-secondary">Import another file</span></div>
+    <div class="comp-row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span></div>
+    <div class="field" style="margin-bottom:18px"><label>Display name</label><div class="input focus"></div><div class="help">Shown in the menu. Up to 40 characters.</div></div>
+    <div class="status-card"><span class="dot"></span><span>Updated to v0.2.0</span><span class="link">See what's new ›</span></div>
+  </div>
+  <div class="panel theme-light">
+    <h4>Light</h4>
+    <div class="comp-row"><span class="btn btn-primary">View rides</span><span class="btn btn-secondary">Import another file</span></div>
+    <div class="comp-row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span></div>
+    <div class="field" style="margin-bottom:18px"><label>Display name</label><div class="input"></div><div class="help">Shown in the menu. Up to 40 characters.</div></div>
+    <div class="status-card"><span class="dot"></span><span>Updated to v0.2.0</span><span class="link">See what's new ›</span></div>
+  </div>
+</div>
+<p class="note">Lime is reserved for the one primary action per screen and for "Feature" (new things). "Fix" is outlined, "Technical" is quiet grey. The field shows its focus ring in dark and rest state in light; it is empty, with the hint below it.</p>
+
+<!-- 6. Mockups -->
+<h3 class="sec"><span>05</span>Mockups</h3>
+<div class="phones">
+
+  <!-- a. Rides list (dark) -->
+  <div>
+    <p class="phone-cap">a · Rides list (B1a) · dark</p>
+    <div class="phone theme-dark">
+      <div class="statusbar"><span>9:41</span><span class="notch"></span><span>100%</span></div>
+      <div class="topbar">
+        <span class="iconbtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2F2F0" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+        <span class="title">Rides</span>
+        <span class="wordmark"><i></i>Cycling Hub</span>
+      </div>
+      <div class="screen">
+        <div class="seg-mini"><span class="on">Week</span><span>Month</span></div>
+        <div class="week"><span class="wk">Week 41 · 6–12 Oct</span><span class="tot"><b>4</b> rides · <b>210</b> km · <b>7:19</b> h</span></div>
+
+        <div class="ride">
+          <div class="ride-head">
+            <span class="thumb"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#C6F432" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 24c3-1 4-6 7-7s5 3 8 1 2-8 5-10 3 2 2 5-5 6-8 8-9 4-14 3z"/></svg></span>
+            <div><div class="ride-name">Sunday Long Ride</div><div class="ride-date">Sun 12 Oct · 08:14</div></div>
+            <span class="pill pill-tag">Road</span>
+          </div>
+          <div class="mets">
+            <div class="met"><div class="v c-dist">111.0<small>km</small></div><div class="k c-dist"><span class="muted">Distance</span></div></div>
+            <div class="met"><div class="v c-time">3:58<small>h</small></div><div class="k c-time"><span class="muted">Moving</span></div></div>
+            <div class="met"><div class="v c-speed">27.9<small>km/h</small></div><div class="k c-speed"><span class="muted">Avg speed</span></div></div>
+            <div class="met"><div class="v c-power">211<small>W</small></div><div class="k c-power"><span class="muted">Avg power</span></div></div>
+            <div class="met"><div class="v c-hr">138<small>bpm</small></div><div class="k c-hr"><span class="muted">Avg HR</span></div></div>
+            <div class="met"><div class="v c-elev">874<small>m</small></div><div class="k c-elev"><span class="muted">Elevation</span></div></div>
+          </div>
+        </div>
+
+        <div class="ride">
+          <div class="ride-head">
+            <span class="thumb"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#A0A3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 26 9 20l2-7 6-2 4-5 6 0"/></svg></span>
+            <div><div class="ride-name">Evening Ride</div><div class="ride-date">Thu 9 Oct · 17:42</div></div>
+            <span class="pill pill-tag">Commute</span>
+          </div>
+          <div class="mets">
+            <div class="met"><div class="v c-dist">14.6<small>km</small></div><div class="k c-dist"><span class="muted">Distance</span></div></div>
+            <div class="met"><div class="v c-time">0:38<small>h</small></div><div class="k c-time"><span class="muted">Moving</span></div></div>
+            <div class="met"><div class="v c-speed">23.1<small>km/h</small></div><div class="k c-speed"><span class="muted">Avg speed</span></div></div>
+            <div class="met"><div class="v none">—</div><div class="k c-power"><span class="muted">Avg power</span></div></div>
+            <div class="met"><div class="v none">—</div><div class="k c-hr"><span class="muted">Avg HR</span></div></div>
+            <div class="met"><div class="v c-elev">48<small>m</small></div><div class="k c-elev"><span class="muted">Elevation</span></div></div>
+          </div>
+        </div>
+
+        <div class="ride">
+          <div class="ride-head">
+            <span class="thumb"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#A0A3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 5c6 0 10 4 10 9s-5 6-6 10-7 4-10 1-5-6-3-10 3-10 9-10z"/></svg></span>
+            <div><div class="ride-name">Morning Ride</div><div class="ride-date">Tue 7 Oct · 07:05</div></div>
+            <span class="pill pill-tag">MTB</span>
+          </div>
+          <div class="mets">
+            <div class="met"><div class="v c-dist">42.3<small>km</small></div><div class="k c-dist"><span class="muted">Distance</span></div></div>
+            <div class="met"><div class="v c-time">1:52<small>h</small></div><div class="k c-time"><span class="muted">Moving</span></div></div>
+            <div class="met"><div class="v c-speed">22.7<small>km/h</small></div><div class="k c-speed"><span class="muted">Avg speed</span></div></div>
+            <div class="met"><div class="v c-power">176<small>W</small></div><div class="k c-power"><span class="muted">Avg power</span></div></div>
+            <div class="met"><div class="v c-hr">151<small>bpm</small></div><div class="k c-hr"><span class="muted">Avg HR</span></div></div>
+            <div class="met"><div class="v c-elev">612<small>m</small></div><div class="k c-elev"><span class="muted">Elevation</span></div></div>
+          </div>
+        </div>
+
+        <div class="bottom-card"><div class="status-card"><span class="dot"></span><span>Updated to v0.2.0</span><span class="link">See what's new ›</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- b. Import summary (dark) -->
+  <div>
+    <p class="phone-cap">b · Import summary (C3) · dark</p>
+    <div class="phone theme-dark">
+      <div class="statusbar"><span>9:41</span><span class="notch"></span><span>100%</span></div>
+      <div class="topbar">
+        <span class="iconbtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2F2F0" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+        <span class="title">Import</span>
+        <span class="wordmark"><i></i>Cycling Hub</span>
+      </div>
+      <div class="screen">
+        <div class="imp-title"><span class="ok"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0E0F10" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>Import complete</div>
+        <p class="imp-file">export_84213097.zip · 280 activities · 16 Oct, 10:02</p>
+        <div class="outcomes">
+          <div class="oc hero"><span class="ot">New rides</span><span class="on">233</span></div>
+          <div class="oc"><span class="ot">Updated</span><span class="on">3</span></div>
+          <div class="oc"><span class="ot">Unchanged</span><span class="on">2</span></div>
+          <div class="oc"><span class="ot">Not a ride</span><span class="on">41</span></div>
+          <div class="oc"><span class="ot">Skipped (errors)</span><span class="on">1</span></div>
+          <div class="oc" style="grid-column: span 2; min-height: 72px; flex-direction: row; align-items: center; justify-content: space-between;"><span class="ot">Deleted earlier</span><span class="on zero" style="margin:0; font-size:32px">0</span></div>
+        </div>
+        <span class="btn btn-primary btn-block">View rides</span>
+        <p class="imp-file" style="text-align:center; margin-top:14px">1 activity skipped · <span style="color:var(--accent-text); font-weight:600">See reasons ›</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- c. Settings (light) -->
+  <div>
+    <p class="phone-cap">c · Settings (G1) · light</p>
+    <div class="phone theme-light" style="border-color:#1B1C1E">
+      <div class="statusbar"><span>9:41</span><span class="notch"></span><span>100%</span></div>
+      <div class="topbar">
+        <span class="iconbtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#141515" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></span>
+        <span class="title">Settings</span>
+        <span class="wordmark"><i style="box-shadow:0 0 0 1px #4D6B00"></i>Cycling Hub</span>
+      </div>
+      <div class="screen">
+        <div class="set-h">Account</div>
+        <div class="group"><div class="row">Email<span class="greybar"></span></div></div>
+
+        <div class="set-h">Display</div>
+        <div class="group">
+          <div class="row col">Appearance
+            <div class="seg"><span class="on">System</span><span>Light</span><span>Dark</span></div>
+          </div>
+          <div class="row">Units<span class="rv">Metric (km, m) <span class="chev">›</span></span></div>
+          <div class="row">Time zone<span class="rv">Europe/Brussels <span class="chev">›</span></span></div>
+        </div>
+
+        <div class="set-h">About</div>
+        <div class="group">
+          <div class="row">Version<span class="rv">0.1.0</span></div>
+          <div class="row">What's new<span class="rv"><span class="pill pill-feature" style="height:22px">2 new</span><span class="chev">›</span></span></div>
+          <div class="row">What's next<span class="rv chev">›</span></div>
+        </div>
+
+        <div class="group" style="margin-top:18px"><div class="row signout">Sign out</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- d. Desktop -->
+<p class="phone-cap" style="margin-top:36px; text-align:center">d · Desktop rides table (X1) · dark · 1000 × 600 shown at 90 %</p>
+<div class="desk-wrap">
+  <div class="desk theme-dark">
+    <aside class="side">
+      <span class="wordmark"><i></i>Cycling Hub</span>
+      <div class="nav on"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A0A3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="16" r="4"/><circle cx="18" cy="16" r="4"/><path d="M6 16l4-8h5l3 8M10 8l2 8"/></svg>Rides</div>
+      <div class="nav"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A0A3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Import</div>
+      <div class="nav"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A0A3A8" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>Settings</div>
+      <div class="foot">v0.1.0</div>
+    </aside>
+    <div class="main">
+      <div class="main-h"><h5>Rides</h5><span class="seg-mini"><span class="on">Week</span><span>Month</span></span><span class="btn btn-secondary" style="height:40px">Hide commutes</span></div>
+      <div class="tbl">
+        <table>
+          <thead><tr>
+            <th class="muted">Ride</th><th class="c-dist">Distance</th><th class="c-time">Moving time</th><th class="c-speed">Avg speed</th><th class="c-power">Avg power</th><th class="c-hr">Avg HR</th><th class="c-elev">Elevation</th>
+          </tr></thead>
+          <tbody>
+            <tr class="wk"><td colspan="7">Week 41 · 6–12 Oct &nbsp;·&nbsp; <b>4</b> rides · <b>210</b> km · <b>7:19</b> h</td></tr>
+            <tr class="sel"><td><span class="rn"><span>Sunday Long Ride<span class="d">Sun 12 Oct</span></span><span class="pill pill-tag">Road</span></span></td><td class="m c-dist">111.0 km</td><td class="m c-time">3:58 h</td><td class="m c-speed">27.9 km/h</td><td class="m c-power">211 W</td><td class="m c-hr">138 bpm</td><td class="m c-elev">874 m</td></tr>
+            <tr><td><span class="rn"><span>Lunch Ride<span class="d">Fri 10 Oct</span></span></span></td><td class="m c-dist">41.3 km</td><td class="m c-time">1:31 h</td><td class="m c-speed">27.2 km/h</td><td class="m c-power">189 W</td><td class="m c-hr">144 bpm</td><td class="m c-elev">236 m</td></tr>
+            <tr><td><span class="rn"><span>Evening Ride<span class="d">Thu 9 Oct</span></span><span class="pill pill-tag">Commute</span></span></td><td class="m c-dist">14.6 km</td><td class="m c-time">0:38 h</td><td class="m c-speed">23.1 km/h</td><td class="m none">—</td><td class="m none">—</td><td class="m c-elev">48 m</td></tr>
+            <tr><td><span class="rn"><span>Morning Ride<span class="d">Tue 7 Oct</span></span><span class="pill pill-tag">MTB</span></span></td><td class="m c-dist">42.3 km</td><td class="m c-time">1:52 h</td><td class="m c-speed">22.7 km/h</td><td class="m c-power">176 W</td><td class="m c-hr">151 bpm</td><td class="m c-elev">612 m</td></tr>
+            <tr class="wk"><td colspan="7">Week 40 · 29 Sep–5 Oct &nbsp;·&nbsp; <b>3</b> rides · <b>168</b> km · <b>5:54</b> h</td></tr>
+            <tr><td><span class="rn"><span>Flandrien Loop<span class="d">Sun 5 Oct</span></span></span></td><td class="m c-dist">96.4 km</td><td class="m c-time">3:22 h</td><td class="m c-speed">28.6 km/h</td><td class="m c-power">204 W</td><td class="m c-hr">140 bpm</td><td class="m c-elev">702 m</td></tr>
+            <tr><td><span class="rn"><span>Indoor Session<span class="d">Wed 1 Oct</span></span><span class="pill pill-tag">Indoor</span></span></td><td class="m c-dist">30.1 km</td><td class="m c-time">1:00 h</td><td class="m c-speed">30.1 km/h</td><td class="m c-power">226 W</td><td class="m c-hr">149 bpm</td><td class="m none">—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Why -->
+<h3 class="sec"><span>06</span>Why pick this / trade-offs</h3>
+<ul class="why">
+  <li><b>Most legible data.</b> A colour-free grey base means six metric colours can be vivid without clashing with a tinted background; closest to the Apple Fitness feel.</li>
+  <li><b>Clear single signal.</b> Lime only marks the primary action, the active menu item and "Feature"/new, so it always means "act here" or "this is new".</li>
+  <li><b>Light mode needs two lime tokens.</b> Lime fails as text on light backgrounds (1.2:1), so light mode uses lime only as fill and #4D6B00 for text. That is one more rule to follow in code.</li>
+  <li><b>More energetic, slightly less calm.</b> Six saturated colours plus lime is the busiest of the directions; it relies on generous whitespace and muted labels to stay calm.</li>
+  <li><b>Neutral can feel generic.</b> Without a tinted surface, the identity rests on the lime and the wordmark dot rather than on an overall colour mood.</li>
+</ul>
+
+</div>
+</section>
+
+<div class="fb"><label for="fb-graphite-lime">Your feedback on Direction B · Graphite &amp; Lime</label>
+<textarea id="fb-graphite-lime" data-key="Direction B (Graphite &amp; Lime)" rows="4"></textarea>
+<p class="help">What do you like, what not? Saved in this browser.</p></div><section class="direction dir-deep-ocean" id="deep-ocean">
+<style>
+.dir-deep-ocean{
+  --font:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-family:var(--font);
+  background:linear-gradient(180deg,#0F1829 0%,#0A111F 100%);
+  color:#E6EDF7;
+  padding:56px 40px 64px;
+  box-sizing:border-box;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.45;
+}
+.dir-deep-ocean *,.dir-deep-ocean *::before,.dir-deep-ocean *::after{box-sizing:border-box}
+.dir-deep-ocean .wrap{max-width:1180px;margin:0 auto}
+
+/* ---------- theme tokens ---------- */
+.dir-deep-ocean .theme-dark{
+  --bg:#0B1322; --bg-top:#0F1829; --bg-bottom:#0A111F;
+  --surface:#121C2D; --raised:#1A2639; --border:#26344A;
+  --text:#E6EDF7; --muted:#97A6BA; --accent:#5B9BFF; --on-accent:#06101F;
+  --accent-soft:rgba(91,155,255,.14); --positive:#8FD07A;
+  --m-dist:#56D2AC; --m-time:#ECEEC4; --m-speed:#9DD9F0; --m-power:#9483F0; --m-hr:#D85A80; --m-elev:#CF9849;
+  --shadow:0 1px 0 rgba(255,255,255,.035) inset,0 1px 2px rgba(0,0,0,.35),0 10px 28px rgba(2,6,14,.45);
+  --shadow-raised:0 1px 0 rgba(255,255,255,.05) inset,0 2px 4px rgba(0,0,0,.35),0 16px 40px rgba(2,6,14,.55);
+  --glow:0 6px 22px rgba(91,155,255,.28);
+  --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+  color:var(--text);
+}
+.dir-deep-ocean .theme-light{
+  --bg:#F2F5F9; --bg-top:#F6F8FB; --bg-bottom:#ECF0F6;
+  --surface:#FFFFFF; --raised:#FFFFFF; --border:#D8E0EA;
+  --text:#0F1A2A; --muted:#536175; --accent:#2457D6; --on-accent:#FFFFFF;
+  --accent-soft:rgba(36,87,214,.09); --positive:#3C7D22;
+  --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#2A82A8; --m-power:#5C46D0; --m-hr:#D24D76; --m-elev:#A9700C;
+  --shadow:0 1px 2px rgba(15,26,42,.06),0 8px 24px rgba(30,60,120,.07);
+  --shadow-raised:0 2px 4px rgba(15,26,42,.06),0 16px 40px rgba(30,60,120,.11);
+  --glow:0 6px 18px rgba(36,87,214,.22);
+  --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+  color:var(--text);
+}
+
+/* ---------- presentation chrome ---------- */
+.dir-deep-ocean .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#97A6BA;margin:0 0 10px}
+.dir-deep-ocean h2.dir-title{font-size:40px;line-height:1.1;font-weight:600;letter-spacing:-.02em;margin:0 0 16px;color:#E6EDF7}
+.dir-deep-ocean h2.dir-title span{color:#5B9BFF}
+.dir-deep-ocean .mood{font-size:17px;max-width:760px;color:#C9D4E3;margin:0 0 8px}
+.dir-deep-ocean .inspired{font-size:14px;color:#97A6BA;margin:0}
+.dir-deep-ocean h3.sec{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#97A6BA;font-weight:600;margin:56px 0 16px;padding-top:24px;border-top:1px solid #1E2A3E}
+.dir-deep-ocean .note{font-size:13px;color:#97A6BA;margin:10px 0 0;max-width:900px}
+.dir-deep-ocean .two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-deep-ocean .panel{border-radius:20px;padding:24px;background:var(--page);border:1px solid var(--border);box-shadow:var(--shadow)}
+.dir-deep-ocean .panel-h{font-size:13px;font-weight:600;margin:0 0 16px;color:var(--muted);letter-spacing:.04em}
+
+/* palette */
+.dir-deep-ocean .sw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dir-deep-ocean .sw{border-radius:14px;overflow:hidden;border:1px solid var(--border);background:var(--surface)}
+.dir-deep-ocean .sw i{display:block;height:52px}
+.dir-deep-ocean .sw b{display:block;font-size:12px;font-weight:600;padding:8px 10px 0;color:var(--text)}
+.dir-deep-ocean .sw code{display:block;font-size:12px;padding:0 10px 9px;color:var(--muted);font-family:var(--font);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .ratios{margin:16px 0 0;padding:0;list-style:none;font-size:13px;color:var(--text);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .ratios li{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--border)}
+.dir-deep-ocean .ratios li span:last-child{color:var(--muted)}
+.dir-deep-ocean .ratios li em{font-style:normal;color:var(--positive);font-weight:600;margin-left:6px}
+
+/* metric swatches */
+.dir-deep-ocean .met-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.dir-deep-ocean .met{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.dir-deep-ocean .met .ring{width:30px;height:30px;border-radius:50%;border:4px solid currentColor;flex:none}
+.dir-deep-ocean .met b{display:block;font-size:13px;color:var(--text);font-weight:600}
+.dir-deep-ocean .met code{display:block;font-size:12px;color:var(--muted);font-family:var(--font);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .c-dist{color:var(--m-dist)} .dir-deep-ocean .c-time{color:var(--m-time)}
+.dir-deep-ocean .c-speed{color:var(--m-speed)} .dir-deep-ocean .c-power{color:var(--m-power)}
+.dir-deep-ocean .c-hr{color:var(--m-hr)} .dir-deep-ocean .c-elev{color:var(--m-elev)}
+
+/* type */
+.dir-deep-ocean .type-row{display:flex;align-items:baseline;gap:24px;padding:12px 0;border-top:1px solid var(--border)}
+.dir-deep-ocean .type-row .lbl{width:140px;flex:none;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .t-display{font-size:44px;line-height:1.05;font-weight:600;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
+.dir-deep-ocean .t-display small{font-size:18px;font-weight:500;color:var(--muted);letter-spacing:0;margin-left:4px}
+.dir-deep-ocean .t-title{font-size:22px;line-height:28px;font-weight:600;letter-spacing:-.01em}
+.dir-deep-ocean .t-body{font-size:15px;line-height:22px}
+.dir-deep-ocean .t-cap{font-size:12px;line-height:16px;color:var(--muted);letter-spacing:.02em}
+.dir-deep-ocean .tab{font-variant-numeric:tabular-nums;font-size:15px;line-height:22px}
+.dir-deep-ocean .tab span{display:inline-block;min-width:96px;text-align:right}
+
+/* components */
+.dir-deep-ocean .comp{display:flex;flex-direction:column;gap:20px}
+.dir-deep-ocean .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.dir-deep-ocean .btn{height:44px;padding:0 22px;border-radius:999px;font:600 15px/44px var(--font);border:0;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.dir-deep-ocean .btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:var(--glow)}
+.dir-deep-ocean .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+.dir-deep-ocean .btn-block{width:100%}
+.dir-deep-ocean .pill{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.01em}
+.dir-deep-ocean .pill-feature{background:var(--accent-soft);color:var(--accent)}
+.dir-deep-ocean .pill-fix{background:transparent;color:var(--positive);box-shadow:inset 0 0 0 1px var(--positive)}
+.dir-deep-ocean .pill-tech{background:var(--raised);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border)}
+.dir-deep-ocean .pill-tag{height:22px;padding:0 9px;font-size:11px;font-weight:500;background:var(--raised);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border)}
+.dir-deep-ocean .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.dir-deep-ocean .field .input{height:44px;border-radius:12px;background:var(--surface);border:1px solid var(--border);box-shadow:0 1px 2px rgba(0,0,0,.08) inset}
+.dir-deep-ocean .field .input.focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.dir-deep-ocean .field .help{font-size:12px;color:var(--muted);margin-top:6px}
+.dir-deep-ocean .status-card{display:flex;align-items:center;gap:12px;background:var(--raised);border:1px solid var(--border);border-radius:16px;padding:12px 12px 12px 16px;box-shadow:var(--shadow-raised);font-size:14px}
+.dir-deep-ocean .status-card .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);flex:none}
+.dir-deep-ocean .status-card .msg{flex:1;color:var(--text)}
+.dir-deep-ocean .status-card .msg a{color:var(--accent);font-weight:600;text-decoration:none}
+.dir-deep-ocean .status-card .x{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:18px}
+
+/* ---------- phone ---------- */
+.dir-deep-ocean .mocks{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.dir-deep-ocean .mock-cap{font-size:13px;color:#97A6BA;margin:0 0 10px}
+.dir-deep-ocean .phone{width:375px;height:760px;border-radius:44px;background:var(--page);position:relative;overflow:hidden;
+  box-shadow:0 0 0 8px #05080E,0 0 0 9px #2A3448,0 30px 60px rgba(0,0,0,.5);color:var(--text)}
+.dir-deep-ocean .phone .inner{padding:30px 16px 0}
+.dir-deep-ocean .topbar{display:flex;align-items:center;height:48px;gap:6px;margin:0 -4px 6px}
+.dir-deep-ocean .hamb{width:44px;height:44px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.dir-deep-ocean .hamb i{display:block;width:18px;height:2px;border-radius:2px;background:var(--text)}
+.dir-deep-ocean .topbar .ttl{font-size:20px;font-weight:600;letter-spacing:-.01em;flex:1}
+.dir-deep-ocean .wordmark{font-size:13px;font-weight:600;letter-spacing:-.01em;color:var(--muted)}
+.dir-deep-ocean .wordmark b{color:var(--accent);font-weight:700}
+.dir-deep-ocean .week{display:flex;justify-content:space-between;align-items:flex-end;padding:6px 4px 12px}
+.dir-deep-ocean .week .w1{font-size:15px;font-weight:600}
+.dir-deep-ocean .week .w2{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .ride{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:10px}
+.dir-deep-ocean .ride-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.dir-deep-ocean .thumb{width:44px;height:44px;border-radius:12px;background:var(--raised);border:1px solid var(--border);flex:none;display:flex;align-items:center;justify-content:center}
+.dir-deep-ocean .thumb svg{display:block}
+.dir-deep-ocean .thumb path{fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dir-deep-ocean .ride-h .nm{flex:1;min-width:0}
+.dir-deep-ocean .ride-h .nm b{display:block;font-size:16px;font-weight:600;letter-spacing:-.005em}
+.dir-deep-ocean .ride-h .nm span{display:block;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 8px;padding-top:10px;border-top:1px solid var(--border)}
+.dir-deep-ocean .mv{font-variant-numeric:tabular-nums;font-size:17px;font-weight:600;letter-spacing:-.01em;line-height:22px;white-space:nowrap}
+.dir-deep-ocean .mv small{font-size:11px;font-weight:500;color:var(--muted);margin-left:2px;letter-spacing:0}
+.dir-deep-ocean .mv.none{color:var(--muted);font-weight:500}
+.dir-deep-ocean .ml{font-size:11px;color:var(--muted);line-height:14px}
+.dir-deep-ocean .phone .status-card{position:absolute;left:12px;right:12px;bottom:20px}
+
+/* import */
+.dir-deep-ocean .imp-h{padding:14px 4px 18px}
+.dir-deep-ocean .imp-h .check{width:44px;height:44px;border-radius:50%;background:rgba(143,208,122,.12);display:flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 0 24px rgba(143,208,122,.15)}
+.dir-deep-ocean .imp-h .check path{fill:none;stroke:var(--positive);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.dir-deep-ocean .imp-h h4{font-size:26px;line-height:32px;font-weight:600;letter-spacing:-.015em;margin:0 0 4px}
+.dir-deep-ocean .imp-h p{margin:0;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .out-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dir-deep-ocean .out{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;box-shadow:var(--shadow);min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+.dir-deep-ocean .out .ot{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px}
+.dir-deep-ocean .out .ot i{width:7px;height:7px;border-radius:50%;background:var(--border)}
+.dir-deep-ocean .out .on{font-size:32px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.dir-deep-ocean .out.main{background:linear-gradient(180deg,var(--raised),var(--surface));box-shadow:var(--shadow-raised)}
+.dir-deep-ocean .out.main .ot{color:var(--text)}
+.dir-deep-ocean .out.main .ot i{background:var(--positive)}
+.dir-deep-ocean .out .on{margin-top:auto}
+.dir-deep-ocean .out .os{font-size:11px;color:var(--muted)}
+.dir-deep-ocean .out.err .ot i{background:transparent;box-shadow:inset 0 0 0 1.5px var(--muted)}
+.dir-deep-ocean .skip-list{margin-top:12px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:12px 14px;font-size:12px;color:var(--muted)}
+.dir-deep-ocean .skip-list b{color:var(--text);font-weight:600;font-size:13px;display:block;margin-bottom:2px}
+.dir-deep-ocean .phone .bottom-cta{position:absolute;left:16px;right:16px;bottom:28px}
+
+/* settings */
+.dir-deep-ocean .grp-l{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:16px 4px 8px}
+.dir-deep-ocean .grp{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.dir-deep-ocean .li{display:flex;align-items:center;min-height:50px;padding:0 16px;gap:12px;font-size:15px}
+.dir-deep-ocean .li + .li{border-top:1px solid var(--border)}
+.dir-deep-ocean .li .k{flex:1}
+.dir-deep-ocean .li .v{color:var(--muted);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .li .chev{color:var(--muted);font-size:18px}
+.dir-deep-ocean .grey-bar{width:150px;height:10px;border-radius:6px;background:var(--border)}
+.dir-deep-ocean .seg{display:flex;background:var(--bg-bottom);border:1px solid var(--border);border-radius:999px;padding:3px;margin:4px 0 12px;height:44px}
+.dir-deep-ocean .seg span{flex:1;display:flex;align-items:center;justify-content:center;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted)}
+.dir-deep-ocean .seg span.on{background:var(--surface);color:var(--text);font-weight:600;box-shadow:0 1px 3px rgba(15,26,42,.12),0 0 0 1px var(--border)}
+.dir-deep-ocean .li.col{flex-direction:column;align-items:stretch;padding-top:12px;gap:4px}
+.dir-deep-ocean .signout{margin-top:16px}
+
+/* ---------- desktop ---------- */
+.dir-deep-ocean .desk-scale{width:900px;height:540px;border-radius:18px;overflow:hidden;box-shadow:0 0 0 1px #2A3448,0 30px 60px rgba(0,0,0,.5)}
+.dir-deep-ocean .desk{width:1000px;height:600px;transform:scale(.9);transform-origin:0 0;display:flex;background:var(--page);color:var(--text)}
+.dir-deep-ocean .side{width:204px;flex:none;background:rgba(18,28,45,.6);border-right:1px solid var(--border);padding:22px 14px;display:flex;flex-direction:column}
+.dir-deep-ocean .side .wordmark{font-size:16px;color:var(--text);padding:0 10px 24px}
+.dir-deep-ocean .nav{display:flex;align-items:center;height:44px;padding:0 12px;border-radius:12px;font-size:15px;color:var(--muted);gap:12px}
+.dir-deep-ocean .nav i{width:16px;height:16px;border-radius:5px;border:1.6px solid currentColor;flex:none}
+.dir-deep-ocean .nav.on{background:var(--accent-soft);color:var(--text);font-weight:600}
+.dir-deep-ocean .nav.on i{border-color:var(--accent)}
+.dir-deep-ocean .side .ver{margin-top:auto;font-size:12px;color:var(--muted);padding:0 12px;font-variant-numeric:tabular-nums}
+.dir-deep-ocean .main{flex:1;padding:24px 24px;min-width:0}
+.dir-deep-ocean .main-h{display:flex;align-items:center;margin-bottom:18px}
+.dir-deep-ocean .main-h h4{margin:0;font-size:24px;font-weight:600;letter-spacing:-.015em}
+.dir-deep-ocean .main-h p{margin:2px 0 0;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dir-deep-ocean .main-h .sp{flex:1}
+.dir-deep-ocean .tbl{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.dir-deep-ocean table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.dir-deep-ocean th{font-size:11px;font-weight:600;color:var(--muted);text-align:right;padding:10px 6px;border-bottom:1px solid var(--border);white-space:nowrap;letter-spacing:.02em;line-height:15px;vertical-align:bottom}
+.dir-deep-ocean th small{display:block;font-weight:500;color:var(--muted);font-size:11px}
+.dir-deep-ocean th.l,.dir-deep-ocean td.l{text-align:left}
+.dir-deep-ocean th:first-child,.dir-deep-ocean td:first-child{padding-left:12px}
+.dir-deep-ocean th:last-child,.dir-deep-ocean td:last-child{padding-right:12px}
+.dir-deep-ocean th .d{display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;margin-right:5px;vertical-align:1px}
+.dir-deep-ocean td{padding:0 6px;height:40px;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}
+.dir-deep-ocean td.nm{font-weight:600}
+.dir-deep-ocean td.nm .pill{margin-left:6px;vertical-align:1px}
+.dir-deep-ocean td.dt{color:var(--muted)}
+.dir-deep-ocean td.dash{color:var(--muted)}
+.dir-deep-ocean tr.wk td{height:34px;background:var(--raised);font-size:12px;color:var(--muted);font-weight:600}
+.dir-deep-ocean tr.wk td span{color:var(--text)}
+.dir-deep-ocean tr:last-child td{border-bottom:0}
+
+/* trade-offs */
+.dir-deep-ocean .why{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.dir-deep-ocean .why ul{margin:0;padding-left:18px;font-size:15px;color:#C9D4E3}
+.dir-deep-ocean .why li{margin-bottom:8px}
+.dir-deep-ocean .why h5{font-size:14px;margin:0 0 10px;color:#E6EDF7;font-weight:600}
+</style>
+
+<div class="wrap">
+  <!-- 1. Header -->
+  <p class="kicker">Design direction · Cycling Hub</p>
+  <h2 class="dir-title">Direction C — <span>Deep Ocean</span></h2>
+  <p class="mood">The quietest of the three. Blue-tinted slate surfaces that fade very slightly from top to bottom, cards that float on soft layered shadows instead of borders, and one cobalt accent that only marks what you can act on. The numbers stay the loudest thing on the screen, in muted, sea-washed metric colours.</p>
+  <p class="inspired">Inspired by Oura's soft depth, Apple Health's calm data tables and the colour of the North Sea at dusk. Font: Inter, one family everywhere.</p>
+
+  <!-- 2. Palette -->
+  <h3 class="sec">Palette</h3>
+  <div class="two">
+    <div class="panel theme-dark">
+      <p class="panel-h">Dark (default) · background is a gradient #0F1829 → #0A111F</p>
+      <div class="sw-grid">
+        <div class="sw"><i style="background:#0B1322"></i><b>bg</b><code>#0B1322</code></div>
+        <div class="sw"><i style="background:#121C2D"></i><b>surface</b><code>#121C2D</code></div>
+        <div class="sw"><i style="background:#1A2639"></i><b>surface-raised</b><code>#1A2639</code></div>
+        <div class="sw"><i style="background:#26344A"></i><b>border</b><code>#26344A</code></div>
+        <div class="sw"><i style="background:#E6EDF7"></i><b>text</b><code>#E6EDF7</code></div>
+        <div class="sw"><i style="background:#97A6BA"></i><b>text-muted</b><code>#97A6BA</code></div>
+        <div class="sw"><i style="background:#5B9BFF"></i><b>accent · azure</b><code>#5B9BFF</code></div>
+        <div class="sw"><i style="background:#06101F"></i><b>on-accent</b><code>#06101F</code></div>
+      </div>
+      <ul class="ratios">
+        <li><span>text / bg</span><span>15.1 : 1 <em>AA</em></span></li>
+        <li><span>text-muted / bg</span><span>7.2 : 1 <em>AA</em></span></li>
+        <li><span>accent / bg (usable as text)</span><span>6.4 : 1 <em>AA</em></span></li>
+        <li><span>on-accent / accent</span><span>6.9 : 1 <em>AA</em></span></li>
+        <li><span>positive #8FD07A / bg (status only)</span><span>9.7 : 1 <em>AA</em></span></li>
+      </ul>
+    </div>
+    <div class="panel theme-light">
+      <p class="panel-h">Light · background is a gradient #F6F8FB → #ECF0F6</p>
+      <div class="sw-grid">
+        <div class="sw"><i style="background:#F2F5F9"></i><b>bg</b><code>#F2F5F9</code></div>
+        <div class="sw"><i style="background:#FFFFFF"></i><b>surface</b><code>#FFFFFF</code></div>
+        <div class="sw"><i style="background:#FFFFFF;box-shadow:inset 0 -10px 18px rgba(30,60,120,.08)"></i><b>surface-raised</b><code>#FFFFFF + shadow</code></div>
+        <div class="sw"><i style="background:#D8E0EA"></i><b>border</b><code>#D8E0EA</code></div>
+        <div class="sw"><i style="background:#0F1A2A"></i><b>text</b><code>#0F1A2A</code></div>
+        <div class="sw"><i style="background:#536175"></i><b>text-muted</b><code>#536175</code></div>
+        <div class="sw"><i style="background:#2457D6"></i><b>accent · cobalt</b><code>#2457D6</code></div>
+        <div class="sw"><i style="background:#FFFFFF"></i><b>on-accent</b><code>#FFFFFF</code></div>
+      </div>
+      <ul class="ratios">
+        <li><span>text / bg</span><span>15.0 : 1 <em>AA</em></span></li>
+        <li><span>text-muted / bg</span><span>5.4 : 1 <em>AA</em></span></li>
+        <li><span>accent / bg (usable as text)</span><span>5.3 : 1 <em>AA</em></span></li>
+        <li><span>on-accent / accent</span><span>6.2 : 1 <em>AA</em></span></li>
+        <li><span>positive #3C7D22 / surface (status only)</span><span>5.1 : 1 <em>AA</em></span></li>
+      </ul>
+    </div>
+  </div>
+  <p class="note">Ratios are measured against the lighter end of each background gradient (worst case for dark mode is #0F1829, for light mode #ECF0F6). The calm green is a secondary "positive" colour for status only (import success, Fix pills). It never sits next to metric values.</p>
+
+  <!-- 3. Metric colours -->
+  <h3 class="sec">Metric colours</h3>
+  <div class="two">
+    <div class="panel theme-dark">
+      <p class="panel-h">Dark · contrast against surface #121C2D</p>
+      <div class="met-grid">
+        <div class="met"><span class="ring c-dist"></span><div><b>Distance · sea green</b><code>#56D2AC · 9.1 : 1</code></div></div>
+        <div class="met"><span class="ring c-time"></span><div><b>Moving time · pale ivory</b><code>#ECEEC4 · 14.3 : 1</code></div></div>
+        <div class="met"><span class="ring c-speed"></span><div><b>Avg speed · ice</b><code>#9DD9F0 · 11.1 : 1</code></div></div>
+        <div class="met"><span class="ring c-power"></span><div><b>Avg power · soft violet</b><code>#9483F0 · 5.5 : 1</code></div></div>
+        <div class="met"><span class="ring c-hr"></span><div><b>Avg heart rate · rose</b><code>#D85A80 · 4.6 : 1</code></div></div>
+        <div class="met"><span class="ring c-elev"></span><div><b>Elevation · sand</b><code>#CF9849 · 6.7 : 1</code></div></div>
+      </div>
+    </div>
+    <div class="panel theme-light">
+      <p class="panel-h">Light · contrast against surface #FFFFFF</p>
+      <div class="met-grid">
+        <div class="met"><span class="ring c-dist"></span><div><b>Distance · sea green</b><code>#0D7050 · 6.1 : 1</code></div></div>
+        <div class="met"><span class="ring c-time"></span><div><b>Moving time · olive</b><code>#4D5812 · 7.7 : 1</code></div></div>
+        <div class="met"><span class="ring c-speed"></span><div><b>Avg speed · steel cyan</b><code>#2A82A8 · 4.3 : 1</code></div></div>
+        <div class="met"><span class="ring c-power"></span><div><b>Avg power · violet</b><code>#5C46D0 · 6.5 : 1</code></div></div>
+        <div class="met"><span class="ring c-hr"></span><div><b>Avg heart rate · rose</b><code>#D24D76 · 4.2 : 1</code></div></div>
+        <div class="met"><span class="ring c-elev"></span><div><b>Elevation · sand</b><code>#A9700C · 4.2 : 1</code></div></div>
+      </div>
+    </div>
+  </div>
+  <p class="note">No metric is blue: the azure/cobalt accent owns blue, speed is a pale ice (dark) or steel cyan (light) with a big lightness gap to the accent. Colour-vision safety comes from lightness steps, not hue alone: in dark mode the set spans L* 56 (rose) to 93 (ivory), and the classic red-green pair, distance vs heart rate, is 21 L* apart (sea green 77, rose 56). Simulated deuteranopia, protanopia and tritanopia keep every pair at ΔE ≥ 13. Metric values always carry their unit and a label, so colour is never the only cue. All are ≥ 4.1 : 1 on surface, so they also pass as large text.</p>
+
+  <!-- 4. Type -->
+  <h3 class="sec">Type · Inter</h3>
+  <div class="panel theme-dark">
+    <div class="type-row"><span class="lbl">Display · 44 / 600</span><span class="t-display">96.0<small>km</small></span></div>
+    <div class="type-row"><span class="lbl">Title · 22 / 600</span><span class="t-title">Sunday Long Ride</span></div>
+    <div class="type-row"><span class="lbl">Body · 15 / 400</span><span class="t-body">Activities you already imported are updated, never duplicated.</span></div>
+    <div class="type-row"><span class="lbl">Caption · 12 / 400</span><span class="t-cap">Sun 12 Oct · 08:30 · last import 14 Oct, 21:05</span></div>
+    <div class="type-row"><span class="lbl">Tabular numbers</span>
+      <span class="tab"><span class="c-dist">96.0 km</span><span class="c-time">3:12 h</span><span class="c-speed">30.0 km/h</span><span class="c-power">214 W</span><span class="c-hr">141 bpm</span><span class="c-elev">1,020 m</span></span></div>
+  </div>
+
+  <!-- 5. Components -->
+  <h3 class="sec">Components</h3>
+  <div class="two">
+    <div class="panel theme-dark comp">
+      <div class="row"><span class="btn btn-primary">Import rides</span><span class="btn btn-secondary">Cancel</span></div>
+      <div class="row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">Commute</span><span class="pill pill-tag">MTB</span></div>
+      <div class="field"><label>Email</label><div class="input"></div><div class="help">The address you sign in with.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border with a soft halo.</div></div>
+      <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
+    </div>
+    <div class="panel theme-light comp">
+      <div class="row"><span class="btn btn-primary">Import rides</span><span class="btn btn-secondary">Cancel</span></div>
+      <div class="row"><span class="pill pill-feature">Feature</span><span class="pill pill-fix">Fix</span><span class="pill pill-tech">Technical</span><span class="pill pill-tag">Commute</span><span class="pill pill-tag">MTB</span></div>
+      <div class="field"><label>Email</label><div class="input"></div><div class="help">The address you sign in with.</div></div>
+      <div class="field"><label>Password</label><div class="input focus"></div><div class="help">Focused state: cobalt border with a soft halo.</div></div>
+      <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
+    </div>
+  </div>
+
+  <!-- 6. Mockups -->
+  <h3 class="sec">Mockups</h3>
+  <div class="mocks">
+    <!-- a. Rides list -->
+    <div>
+      <p class="mock-cap">a · Rides list (B1a) · dark</p>
+      <div class="phone theme-dark"><div class="inner">
+        <div class="topbar"><span class="hamb"><i></i><i></i><i></i></span><span class="ttl">Rides</span><span class="wordmark"><b>Cycling</b> Hub</span></div>
+        <div class="week"><span class="w1">Week 41 · 6–12 Oct</span><span class="w2">4 rides · 210 km · 7:19 h</span></div>
+
+        <div class="ride">
+          <div class="ride-h">
+            <span class="thumb"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M5 22 C7 14 4 9 9 6 S17 8 19 5 S26 9 24 15 S20 20 22 24 S12 26 9 23 Z"/></svg></span>
+            <span class="nm"><b>Sunday Long Ride</b><span>Sun 12 Oct · 08:30</span></span>
+            <span class="pill pill-tag">Road</span>
+          </div>
+          <div class="mgrid">
+            <div><div class="mv c-dist">96.0<small>km</small></div><div class="ml">Distance</div></div>
+            <div><div class="mv c-time">3:12<small>h</small></div><div class="ml">Moving time</div></div>
+            <div><div class="mv c-speed">30.0<small>km/h</small></div><div class="ml">Avg speed</div></div>
+            <div><div class="mv c-power">214<small>W</small></div><div class="ml">Avg power</div></div>
+            <div><div class="mv c-hr">141<small>bpm</small></div><div class="ml">Avg heart rate</div></div>
+            <div><div class="mv c-elev">1,020<small>m</small></div><div class="ml">Elevation</div></div>
+          </div>
+        </div>
+
+        <div class="ride">
+          <div class="ride-h">
+            <span class="thumb"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M4 24 L10 20 L12 14 L18 12 L21 7 L26 5"/></svg></span>
+            <span class="nm"><b>Evening Ride</b><span>Thu 9 Oct · 17:48</span></span>
+            <span class="pill pill-tag">Commute</span>
+          </div>
+          <div class="mgrid">
+            <div><div class="mv c-dist">18.6<small>km</small></div><div class="ml">Distance</div></div>
+            <div><div class="mv c-time">0:40<small>h</small></div><div class="ml">Moving time</div></div>
+            <div><div class="mv c-speed">27.9<small>km/h</small></div><div class="ml">Avg speed</div></div>
+            <div><div class="mv none">—<small>W</small></div><div class="ml">Avg power</div></div>
+            <div><div class="mv none">—<small>bpm</small></div><div class="ml">Avg heart rate</div></div>
+            <div><div class="mv c-elev">84<small>m</small></div><div class="ml">Elevation</div></div>
+          </div>
+        </div>
+
+        <div class="ride">
+          <div class="ride-h">
+            <span class="thumb"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M15 25 C9 24 6 20 8 16 S6 9 10 7 S15 9 17 6 S24 7 23 12 S19 15 22 19 S20 25 15 25"/></svg></span>
+            <span class="nm"><b>Morning Ride</b><span>Tue 7 Oct · 07:10</span></span>
+            <span class="pill pill-tag">MTB</span>
+          </div>
+          <div class="mgrid">
+            <div><div class="mv c-dist">22.0<small>km</small></div><div class="ml">Distance</div></div>
+            <div><div class="mv c-time">1:05<small>h</small></div><div class="ml">Moving time</div></div>
+            <div><div class="mv c-speed">20.3<small>km/h</small></div><div class="ml">Avg speed</div></div>
+            <div><div class="mv c-power">176<small>W</small></div><div class="ml">Avg power</div></div>
+            <div><div class="mv c-hr">148<small>bpm</small></div><div class="ml">Avg heart rate</div></div>
+            <div><div class="mv c-elev">410<small>m</small></div><div class="ml">Elevation</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="status-card"><span class="dot"></span><span class="msg">Updated to v0.2.0 · <a>See what's new</a></span><span class="x">×</span></div>
+      </div>
+    </div>
+
+    <!-- b. Import summary -->
+    <div>
+      <p class="mock-cap">b · Import summary (C3) · dark</p>
+      <div class="phone theme-dark"><div class="inner">
+        <div class="topbar"><span class="hamb"><i></i><i></i><i></i></span><span class="ttl">Import</span><span class="wordmark"><b>Cycling</b> Hub</span></div>
+        <div class="imp-h">
+          <div class="check"><svg width="22" height="22" viewBox="0 0 22 22"><path d="M5 11.5 L9.5 16 L17 7"/></svg></div>
+          <h4>Import complete</h4>
+          <p>cycling-hub-export-2026-10-14.json<br>280 activities · 16 Oct, 21:12</p>
+        </div>
+        <div class="out-grid">
+          <div class="out main"><span class="ot"><i></i>New rides</span><span class="on">233</span></div>
+          <div class="out"><span class="ot"><i></i>Updated</span><span class="on">3</span></div>
+          <div class="out"><span class="ot"><i></i>Unchanged</span><span class="on">2</span></div>
+          <div class="out"><span class="ot"><i></i>Not a ride</span><span class="on">41</span><span class="os">Stored, not shown</span></div>
+          <div class="out err"><span class="ot"><i></i>Skipped (errors)</span><span class="on">1</span></div>
+          <div class="out"><span class="ot"><i></i>Deleted earlier</span><span class="on">0</span></div>
+        </div>
+        <div class="skip-list"><b>1 activity skipped</b>Activity 11873420511 · missing start time</div>
+      </div>
+      <div class="bottom-cta"><span class="btn btn-primary btn-block">View rides</span></div>
+      </div>
+    </div>
+
+    <!-- c. Settings light -->
+    <div>
+      <p class="mock-cap">c · Settings (G1) · light</p>
+      <div class="phone theme-light" style="box-shadow:0 0 0 8px #05080E,0 0 0 9px #2A3448,0 30px 60px rgba(0,0,0,.5)"><div class="inner">
+        <div class="topbar"><span class="hamb"><i></i><i></i><i></i></span><span class="ttl">Settings</span><span class="wordmark"><b>Cycling</b> Hub</span></div>
+        <div class="grp-l">Account</div>
+        <div class="grp"><div class="li"><span class="k">Email</span><span class="grey-bar"></span></div></div>
+        <div class="grp-l">Appearance</div>
+        <div class="grp"><div class="li col"><span class="k">Theme</span>
+          <div class="seg"><span class="on">System</span><span>Light</span><span>Dark</span></div></div></div>
+        <div class="grp-l">Units &amp; time</div>
+        <div class="grp">
+          <div class="li"><span class="k">Units</span><span class="v">Metric · km, km/h</span></div>
+          <div class="li"><span class="k">Time zone</span><span class="v">Europe/Brussels</span></div>
+        </div>
+        <div class="grp-l">About</div>
+        <div class="grp">
+          <div class="li"><span class="k">Version</span><span class="v">0.1.0</span></div>
+          <div class="li"><span class="k">What's new</span><span class="chev">›</span></div>
+          <div class="li"><span class="k">What's next</span><span class="chev">›</span></div>
+        </div>
+        <div class="signout"><span class="btn btn-secondary btn-block">Sign out</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- d. Desktop -->
+  <div style="margin-top:36px">
+    <p class="mock-cap">d · Desktop rides table (X1) · dark · 1000 × 600 shown at 90 %</p>
+    <div class="desk-scale"><div class="desk theme-dark">
+      <aside class="side">
+        <div class="wordmark"><b>Cycling</b> Hub</div>
+        <div class="nav on"><i></i>Rides</div>
+        <div class="nav"><i></i>Import</div>
+        <div class="nav"><i></i>Settings</div>
+        <div class="ver">Version 0.1.0</div>
+      </aside>
+      <div class="main">
+        <div class="main-h"><div><h4>Rides</h4><p>238 rides · last import 14 Oct, 21:05</p></div><span class="sp"></span><span class="btn btn-secondary" style="margin-right:10px">Month</span><span class="btn btn-primary">Import rides</span></div>
+        <div class="tbl"><table>
+          <thead><tr>
+            <th class="l">Date</th><th class="l">Name · tags</th>
+            <th class="c-dist"><span class="d"></span>Distance<small>km</small></th>
+            <th class="c-time"><span class="d"></span>Moving time<small>h</small></th>
+            <th class="c-speed"><span class="d"></span>Avg speed<small>km/h</small></th>
+            <th class="c-power"><span class="d"></span>Avg power<small>W</small></th>
+            <th class="c-hr"><span class="d"></span>Avg HR<small>bpm</small></th>
+            <th class="c-elev"><span class="d"></span>Elevation<small>m</small></th>
+          </tr></thead>
+          <tbody>
+            <tr class="wk"><td class="l" colspan="2"><span>Week 41</span> · 6–12 Oct</td><td colspan="6">4 rides · <span>210 km</span> · <span>7:19 h</span></td></tr>
+            <tr><td class="l dt">Sun 12 Oct</td><td class="l nm">Sunday Long Ride <span class="pill pill-tag">Road</span></td><td class="c-dist">96.0</td><td class="c-time">3:12</td><td class="c-speed">30.0</td><td class="c-power">214</td><td class="c-hr">141</td><td class="c-elev">1,020</td></tr>
+            <tr><td class="l dt">Thu 9 Oct</td><td class="l nm">Evening Ride <span class="pill pill-tag">Commute</span></td><td class="c-dist">18.6</td><td class="c-time">0:40</td><td class="c-speed">27.9</td><td class="dash">—</td><td class="dash">—</td><td class="c-elev">84</td></tr>
+            <tr><td class="l dt">Wed 8 Oct</td><td class="l nm">Lunch Ride</td><td class="c-dist">73.4</td><td class="c-time">2:22</td><td class="c-speed">31.0</td><td class="c-power">228</td><td class="c-hr">145</td><td class="c-elev">640</td></tr>
+            <tr><td class="l dt">Tue 7 Oct</td><td class="l nm">Morning Ride <span class="pill pill-tag">MTB</span></td><td class="c-dist">22.0</td><td class="c-time">1:05</td><td class="c-speed">20.3</td><td class="c-power">176</td><td class="c-hr">148</td><td class="c-elev">410</td></tr>
+            <tr class="wk"><td class="l" colspan="2"><span>Week 40</span> · 29 Sep – 5 Oct</td><td colspan="6">3 rides · <span>164 km</span> · <span>5:41 h</span></td></tr>
+            <tr><td class="l dt">Sun 5 Oct</td><td class="l nm">Kluisbos loop</td><td class="c-dist">104.2</td><td class="c-time">3:36</td><td class="c-speed">28.9</td><td class="c-power">205</td><td class="c-hr">139</td><td class="c-elev">1,310</td></tr>
+            <tr><td class="l dt">Thu 2 Oct</td><td class="l nm">Evening Ride <span class="pill pill-tag">Commute</span></td><td class="c-dist">18.4</td><td class="c-time">0:41</td><td class="c-speed">26.9</td><td class="dash">—</td><td class="dash">—</td><td class="c-elev">79</td></tr>
+            <tr><td class="l dt">Tue 30 Sep</td><td class="l nm">Indoor intervals <span class="pill pill-tag">Indoor</span></td><td class="c-dist">41.4</td><td class="c-time">1:24</td><td class="c-speed">29.6</td><td class="c-power">241</td><td class="c-hr">152</td><td class="c-elev">0</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 7. Why -->
+  <h3 class="sec">Why pick this / trade-offs</h3>
+  <div class="why">
+    <div><h5>Why pick this</h5><ul>
+      <li>The calmest option: depth comes from soft shadows and a faint gradient, not from colour, so long sessions with the ride table stay restful.</li>
+      <li>One accent with one job (cobalt = tappable), which keeps the six metric colours readable as data, not decoration.</li>
+      <li>Light mode is designed, not inverted: blue-grey whites, darker metric tones, the same soft elevation.</li>
+    </ul></div>
+    <div><h5>Trade-offs</h5><ul>
+      <li>Muted metric colours have less punch than Apple Fitness rings; charts later will need line weight and fills to carry them.</li>
+      <li>Soft shadows almost disappear on very dark or low-quality screens; card edges then rely on the subtle surface step.</li>
+      <li>Least distinctive of the three: elegant, but with less brand personality.</li>
+    </ul></div>
+  </div>
+</div>
+</section>
+
+<div class="fb"><label for="fb-deep-ocean">Your feedback on Direction C · Deep Ocean</label>
+<textarea id="fb-deep-ocean" data-key="Direction C (Deep Ocean)" rows="4"></textarea>
+<p class="help">What do you like, what not? Saved in this browser.</p></div>
+<h2 class="sec" id="questions">Questions</h2>
+<p class="lead">Answer what you have an opinion on; skip the rest.</p>
+<div class="fb"><label for="q-Q1"><b>Q1</b> Which direction is closest to how Cycling Hub should feel? (A, B, C, or a mix — e.g. &quot;A&#x27;s surfaces with B&#x27;s metric colours&quot;)</label>
+<textarea id="q-Q1" data-key="Q1 Which direction is closest to how Cycling Hub should feel? (A, B, C, or a mix — e.g. &quot;A&#x27;s surfaces with B&#x27;s metric colours&quot;)" rows="2"></textarea></div><div class="fb"><label for="q-Q2"><b>Q2</b> Dark surfaces: blue-tinted (A, C) or neutral graphite (B)?</label>
+<textarea id="q-Q2" data-key="Q2 Dark surfaces: blue-tinted (A, C) or neutral graphite (B)?" rows="2"></textarea></div><div class="fb"><label for="q-Q3"><b>Q3</b> Accent: teal (A), lime (B) or blue (C)? Or another from these families?</label>
+<textarea id="q-Q3" data-key="Q3 Accent: teal (A), lime (B) or blue (C)? Or another from these families?" rows="2"></textarea></div><div class="fb"><label for="q-Q4"><b>Q4</b> Metric colours: vivid (B), balanced (A) or muted (C)? Any metric whose colour feels wrong (e.g. heart rate should be red)?</label>
+<textarea id="q-Q4" data-key="Q4 Metric colours: vivid (B), balanced (A) or muted (C)? Any metric whose colour feels wrong (e.g. heart rate should be red)?" rows="2"></textarea></div><div class="fb"><label for="q-Q5"><b>Q5</b> Glow and depth: none, subtle (as shown) or more?</label>
+<textarea id="q-Q5" data-key="Q5 Glow and depth: none, subtle (as shown) or more?" rows="2"></textarea></div><div class="fb"><label for="q-Q6"><b>Q6</b> Light mode: does it feel as good as dark in your favourite direction? Anything missing?</label>
+<textarea id="q-Q6" data-key="Q6 Light mode: does it feel as good as dark in your favourite direction? Anything missing?" rows="2"></textarea></div><div class="fb"><label for="q-Q7"><b>Q7</b> Anything you want to see explored that is not here?</label>
+<textarea id="q-Q7" data-key="Q7 Anything you want to see explored that is not here?" rows="2"></textarea></div>
+<div class="fb"><label for="q-general">Anything else</label><textarea id="q-general" data-key="General" rows="3"></textarea></div>
+<div class="send"><a class="p" id="mail" href="#">Send your feedback by email</a><button class="s" id="copy" type="button">Copy feedback</button><button class="s" id="clear" type="button">Clear</button></div>
+<p class="help" id="status"></p>
+</div>
+<script>
+const K='cycling-hub-design-directions-v1';const st=JSON.parse(localStorage.getItem(K)||'{}');
+const tas=[...document.querySelectorAll('textarea[data-key]')];
+tas.forEach(t=>{t.value=st[t.id]||'';t.addEventListener('input',()=>{st[t.id]=t.value;localStorage.setItem(K,JSON.stringify(st));upd()})});
+function body(){return 'Feedback on the Cycling Hub design directions (V1):\n\n'+tas.filter(t=>t.value.trim()).map(t=>'- '+t.dataset.key+'\n  > '+t.value.trim().replace(/\n/g,'\n  > ')).join('\n')}
+function upd(){document.getElementById('mail').href='mailto:yoran.broodcooren@inthepocket.com?subject='+encodeURIComponent('Cycling Hub design directions V1 - feedback')+'&body='+encodeURIComponent(body());
+document.getElementById('status').textContent=tas.filter(t=>t.value.trim()).length+' answers filled in.'}
+document.getElementById('copy').onclick=()=>navigator.clipboard.writeText(body()).then(()=>document.getElementById('status').textContent='Copied. Paste it in the chat with Claude.');
+document.getElementById('clear').onclick=()=>{if(confirm('Clear all feedback?')){localStorage.removeItem(K);tas.forEach(t=>t.value='');for(const k in st)delete st[k];upd()}};
+upd();
+</script></body></html>
