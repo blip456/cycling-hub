@@ -66,3 +66,9 @@ Pixel check of text on the splash and smoke after this pass: 87 elements, **0 fa
 - Text resize to 200 % and reflow at 320 px wide (1.4.4, 1.4.10).
 - The last ride sits partly behind the bottom status card: in the app the list must stay scrollable
   (bottom padding the height of the card) so no ride is permanently hidden (2.4.11 Focus not obscured).
+
+## After merging the restraint pass (P28)
+
+The P28 tone-step tiles put three of B's light metric names on grey (#ECECEA) instead of white, which
+dropped them to 4.2–4.3:1. Darkened: moving time #6A6E74 → #5F6368, speed #08798A → #076D7C,
+power #AD5A00 → #984F00 (all ≥ 4.7:1 on every light surface). Text check: 0 failures on solid backgrounds.
