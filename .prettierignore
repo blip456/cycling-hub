@@ -1,0 +1,17 @@
+# Generated, or owned by another tool
+dist/
+dev-dist/
+coverage/
+node_modules/
+pnpm-lock.yaml
+CHANGELOG.md
+.release-please-manifest.json
+src/lib/supabase/database.types.ts
+supabase/
+
+# Planning docs, wireframes and design files are written by hand, and docs/backlog.md is parsed at
+# build time: Prettier must not reflow them.
+docs/
+
+# Agent worktrees
+.claude/worktrees/
