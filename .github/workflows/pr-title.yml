@@ -1,0 +1,32 @@
+# The PR title becomes the squash commit on dev and the changelog line, so it must be a
+# Conventional Commit. Separate from ci.yml so that editing the title re-runs only this check.
+# Uses commitlint.config.js, the same rules (types and scopes) as the commit-msg hook.
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-title-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  pr-title:
+    name: PR title
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - name: Lint the PR title
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if ! printf '%s\n' "$TITLE" | pnpm exec commitlint --verbose; then
+            echo "::error::The PR title must be a Conventional Commit, e.g. 'feat(rides): add ride list'. Allowed scopes are in commitlint.config.js."
+            exit 1
+          fi

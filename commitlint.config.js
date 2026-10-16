@@ -1,5 +1,5 @@
 // Conventional Commits (https://www.conventionalcommits.org). Used by the commit-msg hook and by
-// CI for every commit and the PR title. Keep SCOPES in sync with the PR title check in ci.yml.
+// CI for every commit (ci.yml) and the PR title (pr-title.yml).
 
 /** Product areas, then technical areas. Scopes are optional. */
 export const SCOPES = [
