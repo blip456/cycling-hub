@@ -7,7 +7,7 @@ const buttonBase =
 
 const buttonVariants: Record<ButtonVariant, string> = {
   primary: "bg-accent text-on-accent hover:opacity-90",
-  secondary: "bg-subtle text-text hover:bg-border",
+  secondary: "bg-subtle text-text hover:bg-fill-hover",
   ghost: "text-accent hover:bg-subtle",
 };
 

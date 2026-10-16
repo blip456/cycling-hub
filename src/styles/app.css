@@ -18,9 +18,12 @@
   --color-accent-soft: var(--accent-soft);
   --color-positive: var(--positive);
   --color-positive-soft: var(--positive-soft);
-  /* Derived: a step above --surface in both themes (light --raised equals --surface). For secondary
-     buttons and hovers until the design system defines its own token. */
-  --color-subtle: color-mix(in srgb, var(--text) 8%, var(--surface));
+  /* Tone-step fill from the design system (secondary buttons, hovers, tracks). */
+  --color-subtle: var(--fill);
+  --color-fill: var(--fill);
+  --color-fill-hover: var(--fill-hover);
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
   --color-m-dist: var(--m-dist);
   --color-m-time: var(--m-time);
   --color-m-speed: var(--m-speed);
@@ -30,6 +33,9 @@
 
   --shadow-card: var(--shadow);
   --shadow-raised: var(--shadow-raised);
+
+  /* Desktop layout (permanent side menu, table) starts at 960 px (DESIGN.md). */
+  --breakpoint-lg: 60rem;
 
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
@@ -49,6 +55,9 @@
   }
   body {
     @apply bg-bg font-sans text-text antialiased;
+    /* Gradient splash (P25); data-background="flat" on <html> turns it off via the token. */
+    background: var(--page, var(--bg));
+    background-attachment: fixed;
     line-height: 1.45;
     min-height: 100dvh;
   }
@@ -71,7 +80,7 @@
 
 /* Phone drawer (native modal <dialog>) */
 .drawer::backdrop {
-  background: rgb(0 0 0 / 0.5);
+  background: var(--overlay);
 }
 .drawer[open] {
   animation: drawer-in 180ms ease-out;

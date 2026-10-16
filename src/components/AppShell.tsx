@@ -5,7 +5,7 @@ import { titleForPath } from "./nav-items";
 import { SideMenu } from "./SideMenu";
 import { StatusCard } from "./StatusCard";
 
-const DESKTOP_QUERY = "(min-width: 1024px)";
+const DESKTOP_QUERY = "(min-width: 960px)";
 
 /** Location state used to show a one-off confirmation (e.g. "Password changed") at the bottom of the page (P12). */
 export interface FlashState {
