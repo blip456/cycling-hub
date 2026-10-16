@@ -47,7 +47,7 @@ New metric colours, contrast on their surface (dark / light):
 
 With card outlines removed, card edges are a tone step only. That is allowed (cards are not controls, 1.4.11 does not apply); input borders, focus rings and the selected segment keep their 3:1 boundaries from fixes 1–4.
 
-Pixel check of text on the splash after this pass: pending (re-run of `pixel-contrast-check.cjs`).
+Pixel check of text on the splash and smoke after this pass: 87 elements, **0 failures**, lowest ratio 5.7:1.
 
 ## Passed without changes
 
