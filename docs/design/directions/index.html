@@ -252,6 +252,15 @@
 .dir-midnight-teal .input{border-color:var(--input-border)!important}
 .dir-midnight-teal .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
 .dir-midnight-teal [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
+
+/* Gradient splash background (P25): background only, never around a single element */
+.dir-midnight-teal .theme-dark{--splash-a:18%;--splash-b:13%;--splash-c:8%}
+.dir-midnight-teal .theme-light{--splash-a:16%;--splash-b:12%;--splash-c:7%}
+.dir-midnight-teal .phone,.dir-midnight-teal .dmain{background:
+  radial-gradient(120% 55% at 0% 0%,color-mix(in srgb,var(--accent) var(--splash-a),transparent),transparent 70%),
+  radial-gradient(90% 50% at 100% 45%,color-mix(in srgb,var(--m-power) var(--splash-b),transparent),transparent 70%),
+  radial-gradient(100% 45% at 30% 100%,color-mix(in srgb,var(--accent) var(--splash-c),transparent),transparent 70%),
+  var(--bg)!important}
 </style>
 
 <div class="mt-wrap">
@@ -726,6 +735,15 @@
 .dir-graphite-lime .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
 .dir-graphite-lime [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
 .dir-graphite-lime .theme-light .input.focus{border-color:var(--accent-text)!important;box-shadow:0 0 0 2px var(--accent-text)!important}
+
+/* Gradient splash background (P25): background only, never around a single element */
+.dir-graphite-lime .theme-dark{--splash-a:18%;--splash-b:13%;--splash-c:8%}
+.dir-graphite-lime .theme-light{--splash-a:16%;--splash-b:12%;--splash-c:7%}
+.dir-graphite-lime .phone,.dir-graphite-lime .main{background:
+  radial-gradient(120% 55% at 0% 0%,color-mix(in srgb,var(--accent) var(--splash-a),transparent),transparent 70%),
+  radial-gradient(90% 50% at 100% 45%,color-mix(in srgb,var(--m-speed) var(--splash-b),transparent),transparent 70%),
+  radial-gradient(100% 45% at 30% 100%,color-mix(in srgb,var(--accent) var(--splash-c),transparent),transparent 70%),
+  var(--bg)!important}
 </style>
 
 <div class="wrap">
@@ -1207,6 +1225,15 @@
 .dir-deep-ocean .input{border-color:var(--input-border)!important}
 .dir-deep-ocean .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
 .dir-deep-ocean [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
+
+/* Gradient splash background (P25): background only, never around a single element */
+.dir-deep-ocean .theme-dark{--splash-a:18%;--splash-b:13%;--splash-c:8%}
+.dir-deep-ocean .theme-light{--splash-a:16%;--splash-b:12%;--splash-c:7%}
+.dir-deep-ocean .phone,.dir-deep-ocean .desk{background:
+  radial-gradient(120% 55% at 0% 0%,color-mix(in srgb,var(--accent) var(--splash-a),transparent),transparent 70%),
+  radial-gradient(90% 50% at 100% 45%,color-mix(in srgb,var(--m-dist) var(--splash-b),transparent),transparent 70%),
+  radial-gradient(100% 45% at 30% 100%,color-mix(in srgb,var(--accent) var(--splash-c),transparent),transparent 70%),
+  var(--bg)!important}
 </style>
 
 <div class="wrap">
