@@ -24,10 +24,35 @@ def layer(i, W, H, seed, freq, warp, band, blur, stops, angle, op, rot=-28, oct=
             ), (f"<rect x='{X}' y='{Y}' width='{RW}' height='{RH}' fill='url(#g{i})' filter='url(#f{i})' opacity='{op}'"
                 f" transform='rotate({rot} {W//2} {H//2})'/>")
 
-def svg(W, H, layers, spots, top=None):
+
+def flow(i, W, H, stops, n=9, op=.5, seed=1, curve=None, gap=7, width=(.6, 1.3), blur=.7):
+    """Techorganic flow lines (P27): a small fan of thin, smooth curves with a gradient stroke,
+    gently warped by low-frequency noise so they feel organic rather than geometric."""
+    import random
+    r = random.Random(seed)
+    (ax, ay), (b1x, b1y), (b2x, b2y), (ex, ey) = curve or ((-.1, .42), (.28, -.05), (.62, .62), (1.1, .12))
+    st = ''.join(f"<stop offset='{o}' stop-color='{c}'/>" for o, c in stops)
+    defs = (f"<linearGradient id='lg{i}' gradientUnits='userSpaceOnUse' x1='0' y1='0' x2='{W}' y2='{H*.6:.0f}'>{st}</linearGradient>"
+            f"<filter id='lf{i}' x='-20%' y='-20%' width='140%' height='140%'>"
+            f"<feTurbulence type='fractalNoise' baseFrequency='0.004' numOctaves='1' seed='{seed}' result='w'/>"
+            f"<feDisplacementMap in='SourceGraphic' in2='w' scale='60' xChannelSelector='R' yChannelSelector='G'/>"
+            f"<feGaussianBlur stdDeviation='{blur}'/></filter>")
+    paths = ''
+    for k in range(n):
+        d = (k - n / 2) * gap; s = 1 + (k - n / 2) * .035  # fan out slightly
+        pts = [(ax*W, ay*H + d), (b1x*W, b1y*H + d*s*1.6), (b2x*W, b2y*H + d*s*2.2), (ex*W, ey*H + d*.8)]
+        dd = 'M{:.0f} {:.0f} C{:.0f} {:.0f} {:.0f} {:.0f} {:.0f} {:.0f}'.format(*[v for pt in pts for v in pt])
+        w = width[0] + (width[1] - width[0]) * r.random(); o = op * (.45 + .55 * r.random())
+        paths += f"<path d='{dd}' stroke-width='{w:.2f}' stroke-opacity='{o:.2f}'/>"
+    body = f"<g fill='none' stroke='url(#lg{i})' stroke-linecap='round' filter='url(#lf{i})'>{paths}</g>"
+    return defs, body
+
+def svg(W, H, layers, spots, top=None, flows=()):
     defs, body = '', ''
     for i, L in enumerate(layers):
         d, b = layer(i, W, H, **L); defs += d; body += b
+    for i, F in enumerate(flows):
+        d, b = flow(i, W, H, **F); defs += d; body += b
     # mask: smoke concentrated in a few soft elliptical spots
     mk = ''
     for j, (cx, cy, rx, ry, a) in enumerate(spots):
@@ -53,21 +78,23 @@ VEIN = '0 0 0 0 .08 .35 1 .35 .08 0 0 0 0'
 VEIN2 = '0 0 .1 .5 .1 0 0 .12 .6 .12 0 0'
 VEINS = '0 0 0 0 0 .02 .16 .55 .16 .03 .18 .9 .18 .03 .16 .5 .16 .02 0 0 0'
 VEINS2 = '0 0 0 0 .02 .14 .45 .14 .03 .3 .03 .16 .6 .16 .03 .3 .02 0 0 0 0'
+RIBBON = '0 0 0 0 0 0 0 0 .08 .35 .6 .35 .08 0 0 0 0 0 0 0 0'
 HAZE = '0 0 .05 .25 .55 .8 .55 .25 .05 0 0'
 
 def make(pal, theme, W, H, spots, seeds, top=None):
     """pal: 4 hues. Haze body + two sets of fine veins, each coloured by a short reflected gradient."""
     c0, c1, c2, c3 = pal
     dark = theme == 'dark'
+    # "Techorganic" (P27): a soft haze plus a FEW long, smooth ribbons (one band, 1 octave = no fractal
+    # contour lines), heavily blurred so they melt into the background.
     L = [
-        dict(seed=seeds[0], freq=(0.0026, 0.0055), warp=(0.0035, 240), band=HAZE, blur=8,
-             stops=[(0, c0), (.5, c1), (1, c2)], angle=(0, 0, .9, .5), op=.30 if dark else .22),
-        dict(seed=seeds[1], freq=(0.0032, 0.0075), warp=(0.0030, 300), band=VEINS, blur=2.8, oct=2,
-             stops=[(0, c1), (.35, c2), (.7, c3), (1, c0)], angle=(.1, 0, .7, .45), op=.36 if dark else .32),
-        dict(seed=seeds[2], freq=(0.0045, 0.0100), warp=(0.0040, 220), band=VEINS2, blur=2.4, oct=2,
-             stops=[(0, c3), (.4, c0), (.75, c1), (1, c2)], angle=(.8, .1, .2, .5), op=.26 if dark else .24),
+        dict(seed=seeds[0], freq=(0.0020, 0.0042), warp=(0.0022, 260), band=HAZE, blur=10,
+             stops=[(0, c0), (.5, c1), (1, c2)], angle=(0, 0, .9, .5), op=.24 if dark else .18),
     ]
-    return svg(W, H, L, spots, top)
+    F = [dict(stops=[(0, c0), (.35, c1), (.7, c2), (1, c3)], n=9, op=.55 if dark else .5, seed=seeds[1]),
+         dict(stops=[(0, c2), (.5, c3), (1, c0)], n=5, op=.35 if dark else .32, seed=seeds[2], gap=11,
+              curve=((-.15, .95), (.35, .6), (.7, 1.05), (1.15, .7)))]
+    return svg(W, H, L, spots, top, F)
 
 CFG = {
   'midnight-teal': dict(dark=['#2DD4BF', '#67E8F9', '#A78BFA', '#F9A8D4'], light=['#14B8A6', '#22D3EE', '#8B5CF6', '#F472B6'],
