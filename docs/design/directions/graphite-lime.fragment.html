@@ -18,7 +18,7 @@
 .dir-graphite-lime .wrap { max-width: 1120px; margin: 0 auto; }
 
 /* ---------- theme tokens ---------- */
-.dir-graphite-lime .theme-dark {
+.dir-graphite-lime .theme-dark {--input-border:#6B6D70;
   --bg: #0E0F10; --surface: #17181A; --raised: #202124; --border: #2E3033;
   --text: #F2F2F0; --muted: #A0A3A8; --accent: #C6F432; --accent-text: #C6F432; --on-accent: #0E0F10;
   --accent-soft: rgba(198,244,50,.12); --glow: none;
@@ -26,7 +26,7 @@
   --m-dist: #4D8EFF; --m-time: #C2C5CA; --m-speed: #2ED3E6; --m-power: #FF9F1C; --m-hr: #FF4F8B; --m-elev: #B57BFF;
   background: var(--bg); color: var(--text);
 }
-.dir-graphite-lime .theme-light {
+.dir-graphite-lime .theme-light {--input-border:#858581;
   --bg: #F4F4F2; --surface: #FFFFFF; --raised: #ECECEA; --border: #D8D8D4;
   --text: #141515; --muted: #5C5F64; --accent: #C6F432; --accent-text: #4D6B00; --on-accent: #141515;
   --accent-soft: rgba(198,244,50,.35); --glow: none;
@@ -202,6 +202,12 @@
 .dir-graphite-lime ul.why { margin: 0; padding-left: 20px; max-width: 900px; }
 .dir-graphite-lime ul.why li { margin-bottom: 8px; }
 .dir-graphite-lime ul.why li b { color: #C6F432; font-weight: 600; }
+
+/* WCAG 2.2 AA fixes (P23): input boundaries 3:1, selected state 3:1, solid 2px focus */
+.dir-graphite-lime .input{border-color:var(--input-border)!important}
+.dir-graphite-lime .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
+.dir-graphite-lime [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
+.dir-graphite-lime .theme-light .input.focus{border-color:var(--accent-text)!important;box-shadow:0 0 0 2px var(--accent-text)!important}
 </style>
 
 <div class="wrap">

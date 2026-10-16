@@ -14,7 +14,7 @@
 .dir-deep-ocean .wrap{max-width:1180px;margin:0 auto}
 
 /* ---------- theme tokens ---------- */
-.dir-deep-ocean .theme-dark{
+.dir-deep-ocean .theme-dark{--input-border:#6E7279;
   --bg:#111318; --bg-top:#16181E; --bg-bottom:#0F1116;
   --surface:#191C22; --raised:#23262C; --border:#30343B;
   --text:#E6EDF7; --muted:#A1A5AB; --accent:#5B9BFF; --on-accent:#0D1015;
@@ -26,12 +26,12 @@
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
-.dir-deep-ocean .theme-light{
+.dir-deep-ocean .theme-light{--input-border:#86888B;
   --bg:#F2F5F9; --bg-top:#F6F8FB; --bg-bottom:#ECF0F6;
   --surface:#FFFFFF; --raised:#FFFFFF; --border:#DDDFE2;
   --text:#171A1F; --muted:#5C6067; --accent:#2457D6; --on-accent:#FFFFFF;
-  --accent-soft:rgba(36,87,214,.09); --positive:#3C7D22;
-  --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#2A82A8; --m-power:#5C46D0; --m-hr:#D24D76; --m-elev:#A9700C;
+  --accent-soft:rgba(36,87,214,.09); --positive:#3A7A21;
+  --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#257395; --m-power:#5C46D0; --m-hr:#B64366; --m-elev:#93610A;
   --shadow:0 1px 2px rgba(23,26,31,.06),0 8px 24px rgba(55,62,85,.07);
   --shadow-raised:0 2px 4px rgba(23,26,31,.06),0 16px 40px rgba(55,62,85,.11);
   --glow:none;
@@ -208,6 +208,11 @@
 .dir-deep-ocean .why ul{margin:0;padding-left:18px;font-size:15px;color:#D0D3D8}
 .dir-deep-ocean .why li{margin-bottom:8px}
 .dir-deep-ocean .why h5{font-size:14px;margin:0 0 10px;color:#E6EDF7;font-weight:600}
+
+/* WCAG 2.2 AA fixes (P23): input boundaries 3:1, selected state 3:1, solid 2px focus */
+.dir-deep-ocean .input{border-color:var(--input-border)!important}
+.dir-deep-ocean .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
+.dir-deep-ocean [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
 </style>
 
 <div class="wrap">
@@ -257,7 +262,7 @@
         <li><span>text-muted / bg</span><span>5.4 : 1 <em>AA</em></span></li>
         <li><span>accent / bg (usable as text)</span><span>5.3 : 1 <em>AA</em></span></li>
         <li><span>on-accent / accent</span><span>6.2 : 1 <em>AA</em></span></li>
-        <li><span>positive #3C7D22 / surface (status only)</span><span>5.1 : 1 <em>AA</em></span></li>
+        <li><span>positive #3A7A21 / surface (status only)</span><span>5.3 : 1 <em>AA</em></span></li>
       </ul>
     </div>
   </div>
@@ -282,14 +287,14 @@
       <div class="met-grid">
         <div class="met"><span class="ring c-dist"></span><div><b>Distance · sea green</b><code>#0D7050 · 6.1 : 1</code></div></div>
         <div class="met"><span class="ring c-time"></span><div><b>Moving time · olive</b><code>#4D5812 · 7.7 : 1</code></div></div>
-        <div class="met"><span class="ring c-speed"></span><div><b>Avg speed · steel cyan</b><code>#2A82A8 · 4.3 : 1</code></div></div>
+        <div class="met"><span class="ring c-speed"></span><div><b>Avg speed · steel cyan</b><code>#257395 · 5.3 : 1</code></div></div>
         <div class="met"><span class="ring c-power"></span><div><b>Avg power · violet</b><code>#5C46D0 · 6.5 : 1</code></div></div>
-        <div class="met"><span class="ring c-hr"></span><div><b>Avg heart rate · rose</b><code>#D24D76 · 4.2 : 1</code></div></div>
-        <div class="met"><span class="ring c-elev"></span><div><b>Elevation · sand</b><code>#A9700C · 4.2 : 1</code></div></div>
+        <div class="met"><span class="ring c-hr"></span><div><b>Avg heart rate · rose</b><code>#B64366 · 5.3 : 1</code></div></div>
+        <div class="met"><span class="ring c-elev"></span><div><b>Elevation · sand</b><code>#93610A · 5.3 : 1</code></div></div>
       </div>
     </div>
   </div>
-  <p class="note">No metric is blue: the azure/cobalt accent owns blue, speed is a pale ice (dark) or steel cyan (light) with a big lightness gap to the accent. Colour-vision safety comes from lightness steps, not hue alone: in dark mode the set spans L* 56 (rose) to 93 (ivory), and the classic red-green pair, distance vs heart rate, is 21 L* apart (sea green 77, rose 56). Simulated deuteranopia, protanopia and tritanopia keep every pair at ΔE ≥ 13. Metric values always carry their unit and a label, so colour is never the only cue. All are ≥ 4.1 : 1 on surface, so they also pass as large text.</p>
+  <p class="note">No metric is blue: the azure/cobalt accent owns blue, speed is a pale ice (dark) or steel cyan (light) with a big lightness gap to the accent. Colour-vision safety comes from lightness steps, not hue alone: in dark mode the set spans L* 56 (rose) to 93 (ivory), and the classic red-green pair, distance vs heart rate, is 21 L* apart (sea green 77, rose 56). Simulated deuteranopia, protanopia and tritanopia keep every pair at ΔE ≥ 13. Metric values always carry their unit and a label, so colour is never the only cue. All are ≥ 4.5 : 1 on surface in both themes, so they also pass as small text.</p>
 
   <!-- 4. Type -->
   <h3 class="sec">Type · Inter</h3>

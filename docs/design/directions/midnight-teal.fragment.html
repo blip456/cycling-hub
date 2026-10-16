@@ -9,7 +9,7 @@
   -webkit-font-smoothing:antialiased;
 }
 .dir-midnight-teal *,.dir-midnight-teal *::before,.dir-midnight-teal *::after{box-sizing:border-box}
-.dir-midnight-teal .theme-dark{
+.dir-midnight-teal .theme-dark{--input-border:#6B6F77;
   --bg:#101217;--surface:#181A20;--raised:#20232B;--border:#30343C;
   --text:#E6EDF5;--muted:#9EA2A9;--accent:#2DD4BF;--on-accent:#042F2A;
   --accent-tint:rgba(45,212,191,.12);--glow:none;
@@ -18,7 +18,7 @@
   --bar:#30343C;
   background:var(--bg);color:var(--text);
 }
-.dir-midnight-teal .theme-light{
+.dir-midnight-teal .theme-light{--input-border:#848689;
   --bg:#F3F6F9;--surface:#FFFFFF;--raised:#E9EEF4;--border:#D9DBDE;
   --text:#14171C;--muted:#585C62;--accent:#0F766E;--on-accent:#FFFFFF;
   --accent-tint:rgba(15,118,110,.09);--glow:none;
@@ -215,6 +215,11 @@
 .dir-midnight-teal .mt-why ul{margin:0;padding-left:18px;font-size:15px;color:#C8CBD0}
 .dir-midnight-teal .mt-why li{margin-bottom:8px}
 .dir-midnight-teal .mt-why h4{margin:0 0 12px;font-size:15px}
+
+/* WCAG 2.2 AA fixes (P23): input boundaries 3:1, selected state 3:1, solid 2px focus */
+.dir-midnight-teal .input{border-color:var(--input-border)!important}
+.dir-midnight-teal .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
+.dir-midnight-teal [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
 </style>
 
 <div class="mt-wrap">

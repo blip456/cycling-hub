@@ -69,6 +69,7 @@ page = f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name
 {RESP}</style></head><body style="margin:0;background:#fbfcfd"><div class="page">
 <h1>Cycling Hub — design directions V1</h1>
 <p class="lead">Three high-level directions built on your design brief (calm &amp; analytical, dark-first with an equally good light mode, blue/teal or green/lime accents, one clean sans, soft rounded shapes, fixed colour per metric). They differ in surface tone, accent and how vivid the metric colours are. Pick one, or combine parts. Numbers are sample data. After you choose, the wireframes become real designs plus <code>DESIGN.md</code> and design tokens.</p>
+<p class="lead"><b>Accessibility:</b> all three directions are checked against WCAG 2.2 AA (contrast of text, input borders, focus rings, selected states, target sizes) and pass after the fixes listed in <code>docs/design/directions/accessibility-audit.md</code>.</p>
 <nav class="toc">{toc}<a href="#questions">Questions &amp; send</a></nav>
 {sections}
 <h2 class="sec" id="questions">Questions</h2>

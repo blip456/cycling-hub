@@ -43,6 +43,7 @@
 </style></head><body style="margin:0;background:#fbfcfd"><div class="page">
 <h1>Cycling Hub — design directions V1</h1>
 <p class="lead">Three high-level directions built on your design brief (calm &amp; analytical, dark-first with an equally good light mode, blue/teal or green/lime accents, one clean sans, soft rounded shapes, fixed colour per metric). They differ in surface tone, accent and how vivid the metric colours are. Pick one, or combine parts. Numbers are sample data. After you choose, the wireframes become real designs plus <code>DESIGN.md</code> and design tokens.</p>
+<p class="lead"><b>Accessibility:</b> all three directions are checked against WCAG 2.2 AA (contrast of text, input borders, focus rings, selected states, target sizes) and pass after the fixes listed in <code>docs/design/directions/accessibility-audit.md</code>.</p>
 <nav class="toc"><a href="#midnight-teal">Direction A · Midnight Teal</a><a href="#graphite-lime">Direction B · Graphite &amp; Lime</a><a href="#deep-ocean">Direction C · Deep Ocean</a><a href="#questions">Questions &amp; send</a></nav>
 <section class="direction dir-midnight-teal" id="midnight-teal">
 <style>
@@ -55,7 +56,7 @@
   -webkit-font-smoothing:antialiased;
 }
 .dir-midnight-teal *,.dir-midnight-teal *::before,.dir-midnight-teal *::after{box-sizing:border-box}
-.dir-midnight-teal .theme-dark{
+.dir-midnight-teal .theme-dark{--input-border:#6B6F77;
   --bg:#101217;--surface:#181A20;--raised:#20232B;--border:#30343C;
   --text:#E6EDF5;--muted:#9EA2A9;--accent:#2DD4BF;--on-accent:#042F2A;
   --accent-tint:rgba(45,212,191,.12);--glow:none;
@@ -64,7 +65,7 @@
   --bar:#30343C;
   background:var(--bg);color:var(--text);
 }
-.dir-midnight-teal .theme-light{
+.dir-midnight-teal .theme-light{--input-border:#848689;
   --bg:#F3F6F9;--surface:#FFFFFF;--raised:#E9EEF4;--border:#D9DBDE;
   --text:#14171C;--muted:#585C62;--accent:#0F766E;--on-accent:#FFFFFF;
   --accent-tint:rgba(15,118,110,.09);--glow:none;
@@ -261,6 +262,11 @@
 .dir-midnight-teal .mt-why ul{margin:0;padding-left:18px;font-size:15px;color:#C8CBD0}
 .dir-midnight-teal .mt-why li{margin-bottom:8px}
 .dir-midnight-teal .mt-why h4{margin:0 0 12px;font-size:15px}
+
+/* WCAG 2.2 AA fixes (P23): input boundaries 3:1, selected state 3:1, solid 2px focus */
+.dir-midnight-teal .input{border-color:var(--input-border)!important}
+.dir-midnight-teal .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
+.dir-midnight-teal [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
 </style>
 
 <div class="mt-wrap">
@@ -593,7 +599,7 @@
 .dir-graphite-lime .wrap { max-width: 1120px; margin: 0 auto; }
 
 /* ---------- theme tokens ---------- */
-.dir-graphite-lime .theme-dark {
+.dir-graphite-lime .theme-dark {--input-border:#6B6D70;
   --bg: #0E0F10; --surface: #17181A; --raised: #202124; --border: #2E3033;
   --text: #F2F2F0; --muted: #A0A3A8; --accent: #C6F432; --accent-text: #C6F432; --on-accent: #0E0F10;
   --accent-soft: rgba(198,244,50,.12); --glow: none;
@@ -601,7 +607,7 @@
   --m-dist: #4D8EFF; --m-time: #C2C5CA; --m-speed: #2ED3E6; --m-power: #FF9F1C; --m-hr: #FF4F8B; --m-elev: #B57BFF;
   background: var(--bg); color: var(--text);
 }
-.dir-graphite-lime .theme-light {
+.dir-graphite-lime .theme-light {--input-border:#858581;
   --bg: #F4F4F2; --surface: #FFFFFF; --raised: #ECECEA; --border: #D8D8D4;
   --text: #141515; --muted: #5C5F64; --accent: #C6F432; --accent-text: #4D6B00; --on-accent: #141515;
   --accent-soft: rgba(198,244,50,.35); --glow: none;
@@ -777,6 +783,12 @@
 .dir-graphite-lime ul.why { margin: 0; padding-left: 20px; max-width: 900px; }
 .dir-graphite-lime ul.why li { margin-bottom: 8px; }
 .dir-graphite-lime ul.why li b { color: #C6F432; font-weight: 600; }
+
+/* WCAG 2.2 AA fixes (P23): input boundaries 3:1, selected state 3:1, solid 2px focus */
+.dir-graphite-lime .input{border-color:var(--input-border)!important}
+.dir-graphite-lime .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
+.dir-graphite-lime [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
+.dir-graphite-lime .theme-light .input.focus{border-color:var(--accent-text)!important;box-shadow:0 0 0 2px var(--accent-text)!important}
 </style>
 
 <div class="wrap">
@@ -1099,7 +1111,7 @@
 .dir-deep-ocean .wrap{max-width:1180px;margin:0 auto}
 
 /* ---------- theme tokens ---------- */
-.dir-deep-ocean .theme-dark{
+.dir-deep-ocean .theme-dark{--input-border:#6E7279;
   --bg:#111318; --bg-top:#16181E; --bg-bottom:#0F1116;
   --surface:#191C22; --raised:#23262C; --border:#30343B;
   --text:#E6EDF7; --muted:#A1A5AB; --accent:#5B9BFF; --on-accent:#0D1015;
@@ -1111,12 +1123,12 @@
   --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
   color:var(--text);
 }
-.dir-deep-ocean .theme-light{
+.dir-deep-ocean .theme-light{--input-border:#86888B;
   --bg:#F2F5F9; --bg-top:#F6F8FB; --bg-bottom:#ECF0F6;
   --surface:#FFFFFF; --raised:#FFFFFF; --border:#DDDFE2;
   --text:#171A1F; --muted:#5C6067; --accent:#2457D6; --on-accent:#FFFFFF;
-  --accent-soft:rgba(36,87,214,.09); --positive:#3C7D22;
-  --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#2A82A8; --m-power:#5C46D0; --m-hr:#D24D76; --m-elev:#A9700C;
+  --accent-soft:rgba(36,87,214,.09); --positive:#3A7A21;
+  --m-dist:#0D7050; --m-time:#4D5812; --m-speed:#257395; --m-power:#5C46D0; --m-hr:#B64366; --m-elev:#93610A;
   --shadow:0 1px 2px rgba(23,26,31,.06),0 8px 24px rgba(55,62,85,.07);
   --shadow-raised:0 2px 4px rgba(23,26,31,.06),0 16px 40px rgba(55,62,85,.11);
   --glow:none;
@@ -1293,6 +1305,11 @@
 .dir-deep-ocean .why ul{margin:0;padding-left:18px;font-size:15px;color:#D0D3D8}
 .dir-deep-ocean .why li{margin-bottom:8px}
 .dir-deep-ocean .why h5{font-size:14px;margin:0 0 10px;color:#E6EDF7;font-weight:600}
+
+/* WCAG 2.2 AA fixes (P23): input boundaries 3:1, selected state 3:1, solid 2px focus */
+.dir-deep-ocean .input{border-color:var(--input-border)!important}
+.dir-deep-ocean .input.focus{border-color:var(--accent)!important;box-shadow:0 0 0 2px var(--accent)!important}
+.dir-deep-ocean [class*="seg"] > .on{box-shadow:inset 0 0 0 1px var(--input-border)!important}
 </style>
 
 <div class="wrap">
@@ -1342,7 +1359,7 @@
         <li><span>text-muted / bg</span><span>5.4 : 1 <em>AA</em></span></li>
         <li><span>accent / bg (usable as text)</span><span>5.3 : 1 <em>AA</em></span></li>
         <li><span>on-accent / accent</span><span>6.2 : 1 <em>AA</em></span></li>
-        <li><span>positive #3C7D22 / surface (status only)</span><span>5.1 : 1 <em>AA</em></span></li>
+        <li><span>positive #3A7A21 / surface (status only)</span><span>5.3 : 1 <em>AA</em></span></li>
       </ul>
     </div>
   </div>
@@ -1367,14 +1384,14 @@
       <div class="met-grid">
         <div class="met"><span class="ring c-dist"></span><div><b>Distance · sea green</b><code>#0D7050 · 6.1 : 1</code></div></div>
         <div class="met"><span class="ring c-time"></span><div><b>Moving time · olive</b><code>#4D5812 · 7.7 : 1</code></div></div>
-        <div class="met"><span class="ring c-speed"></span><div><b>Avg speed · steel cyan</b><code>#2A82A8 · 4.3 : 1</code></div></div>
+        <div class="met"><span class="ring c-speed"></span><div><b>Avg speed · steel cyan</b><code>#257395 · 5.3 : 1</code></div></div>
         <div class="met"><span class="ring c-power"></span><div><b>Avg power · violet</b><code>#5C46D0 · 6.5 : 1</code></div></div>
-        <div class="met"><span class="ring c-hr"></span><div><b>Avg heart rate · rose</b><code>#D24D76 · 4.2 : 1</code></div></div>
-        <div class="met"><span class="ring c-elev"></span><div><b>Elevation · sand</b><code>#A9700C · 4.2 : 1</code></div></div>
+        <div class="met"><span class="ring c-hr"></span><div><b>Avg heart rate · rose</b><code>#B64366 · 5.3 : 1</code></div></div>
+        <div class="met"><span class="ring c-elev"></span><div><b>Elevation · sand</b><code>#93610A · 5.3 : 1</code></div></div>
       </div>
     </div>
   </div>
-  <p class="note">No metric is blue: the azure/cobalt accent owns blue, speed is a pale ice (dark) or steel cyan (light) with a big lightness gap to the accent. Colour-vision safety comes from lightness steps, not hue alone: in dark mode the set spans L* 56 (rose) to 93 (ivory), and the classic red-green pair, distance vs heart rate, is 21 L* apart (sea green 77, rose 56). Simulated deuteranopia, protanopia and tritanopia keep every pair at ΔE ≥ 13. Metric values always carry their unit and a label, so colour is never the only cue. All are ≥ 4.1 : 1 on surface, so they also pass as large text.</p>
+  <p class="note">No metric is blue: the azure/cobalt accent owns blue, speed is a pale ice (dark) or steel cyan (light) with a big lightness gap to the accent. Colour-vision safety comes from lightness steps, not hue alone: in dark mode the set spans L* 56 (rose) to 93 (ivory), and the classic red-green pair, distance vs heart rate, is 21 L* apart (sea green 77, rose 56). Simulated deuteranopia, protanopia and tritanopia keep every pair at ΔE ≥ 13. Metric values always carry their unit and a label, so colour is never the only cue. All are ≥ 4.5 : 1 on surface in both themes, so they also pass as small text.</p>
 
   <!-- 4. Type -->
   <h3 class="sec">Type · Inter</h3>
