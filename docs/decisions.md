@@ -47,6 +47,7 @@ Source: `docs/wireframes/V1/feedback-product-owner.md` (PO is the only reviewer)
 | P21 | No glows or halos      | **No glows, halos or accent-tinted shadows/gradients** on buttons, cards, dots or focus states. Emphasis comes from fill and border only; focus is a solid accent outline. | 16 Oct 2026, PO feedback on design directions V1 ("the halo on the button is too much"). Refines P20. |
 | P22 | Dark surface tone      | **Dark surfaces are near-neutral charcoal/ink with at most a faint cool hint, not navy or dark blue.** | 16 Oct 2026, PO feedback on design directions V1 ("too dark blue … prefer less blue tones"). Refines P20; applied to directions A and C (B was already neutral). |
 | P23 | Accessibility baseline | **WCAG 2.2 AA is checked for every design and build**: text 4.5:1 (large 3:1), input borders, focus rings and selected states 3:1, solid 2 px focus ring, targets ≥ 44 px. Fixes on the V1 directions in `docs/design/directions/accessibility-audit.md`. | 16 Oct 2026, requested by the PO. |
+| P24 | Visual restraint       | **No eyebrow text** (small uppercase labels above headings or groups), **few pills** (buttons and segmented controls are rounded rectangles, ride tags are plain text; pills only for the Feature / Fix / Technical labels), **no halos**, and **only the text that is needed**. | 16 Oct 2026, PO feedback on design directions V1 ("avoid too much usage of pills … remove any type of eyebrow text … keep things light"). Refines P20, P21; supersedes "pill buttons" in the brief. |
 
 ## Authentication
 
