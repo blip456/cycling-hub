@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
@@ -6,7 +5,9 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
-const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as { version: string };
+const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as {
+  version: string;
+};
 
 // Dark tokens from src/styles/tokens.css (--bg). The manifest can't read CSS variables.
 const DARK_BG = "#111318";
@@ -37,7 +38,12 @@ export default defineConfig({
         icons: [
           { src: "pwa-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
           { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-          { src: "maskable-icon-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+          {
+            src: "maskable-icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
         ],
       },
       workbox: {
@@ -51,10 +57,4 @@ export default defineConfig({
     }),
   ],
   resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-  test: {
-    environment: "jsdom",
-    setupFiles: ["src/test/setup.ts"],
-    include: ["src/**/*.test.{ts,tsx}"],
-    css: false,
-  },
 });

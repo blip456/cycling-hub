@@ -6,25 +6,32 @@ import { readAuthParams } from "./initial-url";
 
 describe("parseEnv", () => {
   it("accepts a URL and a publishable key", () => {
-    const env = parseEnv({ VITE_SUPABASE_URL: "http://127.0.0.1:54321", VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_x" });
+    const env = parseEnv({
+      VITE_SUPABASE_URL: "http://127.0.0.1:54321",
+      VITE_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_x",
+    });
     expect(env.VITE_SUPABASE_URL).toBe("http://127.0.0.1:54321");
   });
 
   it("names the missing variables", () => {
     expect(() => parseEnv({})).toThrow(MissingEnvError);
-    expect(() => parseEnv({ VITE_SUPABASE_URL: "nope" })).toThrow(/VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY/);
+    expect(() => parseEnv({ VITE_SUPABASE_URL: "nope" })).toThrow(
+      /VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY/,
+    );
   });
 });
 
 describe("toAuthErrorKind", () => {
   it("maps wrong credentials to one generic kind", () => {
-    expect(toAuthErrorKind(new AuthApiError("Invalid login credentials", 400, "invalid_credentials"))).toBe(
-      "invalid_credentials",
-    );
+    expect(
+      toAuthErrorKind(new AuthApiError("Invalid login credentials", 400, "invalid_credentials")),
+    ).toBe("invalid_credentials");
   });
 
   it("maps rate limits and network failures", () => {
-    expect(toAuthErrorKind(new AuthApiError("Too many", 429, "over_request_rate_limit"))).toBe("rate_limited");
+    expect(toAuthErrorKind(new AuthApiError("Too many", 429, "over_request_rate_limit"))).toBe(
+      "rate_limited",
+    );
     expect(toAuthErrorKind(new AuthRetryableFetchError("Failed to fetch", 0))).toBe("network");
   });
 
@@ -54,6 +61,9 @@ describe("readAuthParams", () => {
   });
 
   it("ignores a normal URL", () => {
-    expect(readAuthParams("https://app.test/rides")).toEqual({ isRecovery: false, errorCode: null });
+    expect(readAuthParams("https://app.test/rides")).toEqual({
+      isRecovery: false,
+      errorCode: null,
+    });
   });
 });

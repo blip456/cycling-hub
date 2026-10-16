@@ -16,7 +16,9 @@ export function SideMenu({ onNavigate }: { onNavigate?: () => void }) {
                 className={({ isActive }) =>
                   "flex min-h-11 items-center gap-3 rounded-xl px-3 text-[15px] transition-colors " +
                   // Light theme has --raised == --surface, so the states use accent-soft / bg to stay visible.
-                  (isActive ? "bg-accent-soft font-semibold text-text" : "text-muted hover:bg-bg hover:text-text")
+                  (isActive
+                    ? "bg-accent-soft font-semibold text-text"
+                    : "text-muted hover:bg-bg hover:text-text")
                 }
               >
                 {({ isActive }) => (
@@ -30,7 +32,9 @@ export function SideMenu({ onNavigate }: { onNavigate?: () => void }) {
           ))}
         </ul>
       </nav>
-      <p className="mt-auto px-3 pt-6 text-[13px] text-muted tabular-nums">Version {__APP_VERSION__}</p>
+      <p className="mt-auto px-3 pt-6 text-[13px] text-muted tabular-nums">
+        Version {__APP_VERSION__}
+      </p>
     </div>
   );
 }

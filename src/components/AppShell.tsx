@@ -34,16 +34,22 @@ export function AppShell() {
 
   // The drawer is phone-only; close it when the window grows into the desktop layout.
   useEffect(() => {
-    const mql = window.matchMedia?.(DESKTOP_QUERY);
-    if (!mql) return;
+    // jsdom (tests) has no matchMedia, even though the DOM types say it always exists.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!window.matchMedia) return;
+    const mql = window.matchMedia(DESKTOP_QUERY);
     const onChange = (e: MediaQueryListEvent) => {
       if (e.matches) dialogRef.current?.close();
     };
     mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
+    return () => {
+      mql.removeEventListener("change", onChange);
+    };
   }, []);
 
-  const dismissFlash = () => navigate(location.pathname, { replace: true, state: null });
+  const dismissFlash = () => {
+    void navigate(location.pathname, { replace: true, state: null });
+  };
 
   return (
     <div className="min-h-dvh">
@@ -60,6 +66,9 @@ export function AppShell() {
       </aside>
 
       {/* Phone: drawer */}
+      {/* Native modal dialog: Esc closes it via the keyboard; the click handler only adds "tap the
+          backdrop to close", which has no keyboard equivalent to provide. */}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
       <dialog
         ref={dialogRef}
         id="side-menu"
@@ -107,12 +116,20 @@ export function AppShell() {
             >
               <MenuIcon />
             </button>
-            <h1 className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">{title}</h1>
-            <span className="pr-2 text-[13px] font-semibold tracking-tight text-muted">Cycling Hub</span>
+            <h1 className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">
+              {title}
+            </h1>
+            <span className="pr-2 text-[13px] font-semibold tracking-tight text-muted">
+              Cycling Hub
+            </span>
           </div>
         </header>
 
-        <main id="main" tabIndex={-1} className="mx-auto w-full max-w-5xl px-4 pb-28 pt-2 outline-none lg:px-8 lg:pt-8">
+        <main
+          id="main"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-5xl px-4 pb-28 pt-2 outline-none lg:px-8 lg:pt-8"
+        >
           <h1 className="mb-6 hidden text-2xl font-semibold tracking-tight lg:block">{title}</h1>
           <Outlet />
         </main>

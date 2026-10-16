@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
 import { Link } from "react-router";
 import { Button, FormAlert, PasswordField, TextField } from "@/components/ui";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -18,7 +18,8 @@ export function SignInPage() {
   const passwordRef = useRef<HTMLInputElement>(null);
 
   const mutation = useMutation({
-    mutationFn: (values: { email: string; password: string }) => signIn(values.email, values.password),
+    mutationFn: (values: { email: string; password: string }) =>
+      signIn(values.email, values.password),
     onSuccess: (result) => {
       // On success the session arrives through onAuthStateChange and RedirectIfSignedIn navigates
       // back to the page in `state.from`.
@@ -32,7 +33,7 @@ export function SignInPage() {
     },
   });
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null);
     const parsed = signInSchema.safeParse({ email, password });
@@ -65,7 +66,9 @@ export function SignInPage() {
           spellCheck={false}
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
           error={errors.email}
         />
         <PasswordField
@@ -75,7 +78,9 @@ export function SignInPage() {
           autoComplete="current-password"
           required
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
           error={errors.password}
         />
         <Button type="submit" block disabled={mutation.isPending} className="mt-1">

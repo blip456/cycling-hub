@@ -9,20 +9,29 @@ import { AuthContext, type AuthContextValue } from "./lib/auth/auth-context";
 import { fakeAuth, fakeSession, renderWithProviders } from "./test/render";
 
 describe("route guard", () => {
-  it.each(["/rides", "/import", "/settings", "/"])("sends a signed-out visitor from %s to sign in", (path) => {
-    renderWithProviders(<App />, { path });
-    expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument();
-    expect(screen.queryByRole("navigation", { name: "Main" })).not.toBeInTheDocument();
-  });
+  it.each(["/rides", "/import", "/settings", "/"])(
+    "sends a signed-out visitor from %s to sign in",
+    (path) => {
+      renderWithProviders(<App />, { path });
+      expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument();
+      expect(screen.queryByRole("navigation", { name: "Main" })).not.toBeInTheDocument();
+    },
+  );
 
   it("shows the app shell when signed in", () => {
-    renderWithProviders(<App />, { path: "/rides", auth: fakeAuth({ status: "signedIn", session: fakeSession() }) });
+    renderWithProviders(<App />, {
+      path: "/rides",
+      auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
+    });
     expect(screen.getAllByRole("heading", { name: "Rides" }).length).toBeGreaterThan(0);
     expect(screen.getByText("No rides yet.")).toBeInTheDocument();
   });
 
   it("sends a signed-in user away from the sign-in page", () => {
-    renderWithProviders(<App />, { path: "/sign-in", auth: fakeAuth({ status: "signedIn", session: fakeSession() }) });
+    renderWithProviders(<App />, {
+      path: "/sign-in",
+      auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
+    });
     expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
     expect(screen.getByText("No rides yet.")).toBeInTheDocument();
   });
@@ -91,7 +100,10 @@ describe("no sign-up", () => {
 describe("app shell", () => {
   it("opens and closes the side menu", async () => {
     const user = userEvent.setup();
-    renderWithProviders(<App />, { path: "/rides", auth: fakeAuth({ status: "signedIn", session: fakeSession() }) });
+    renderWithProviders(<App />, {
+      path: "/rides",
+      auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
+    });
     const open = screen.getByRole("button", { name: "Open menu" });
     expect(open).toHaveAttribute("aria-expanded", "false");
     await user.click(open);
@@ -101,7 +113,10 @@ describe("app shell", () => {
   });
 
   it("lists Rides, Import and Settings in the menu", () => {
-    renderWithProviders(<App />, { path: "/rides", auth: fakeAuth({ status: "signedIn", session: fakeSession() }) });
+    renderWithProviders(<App />, {
+      path: "/rides",
+      auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
+    });
     const navs = screen.getAllByRole("navigation", { name: "Main", hidden: true });
     expect(navs.length).toBeGreaterThan(0);
     for (const name of ["Rides", "Import", "Settings"]) {

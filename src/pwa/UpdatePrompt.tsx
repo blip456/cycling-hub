@@ -20,7 +20,9 @@ export function UpdatePrompt() {
   if (!needRefresh) return null;
   return (
     <StatusCard
-      onDismiss={() => setNeedRefresh(false)}
+      onDismiss={() => {
+        setNeedRefresh(false);
+      }}
       action={
         <Button className="shrink-0 px-4" onClick={() => void updateServiceWorker(true)}>
           Update

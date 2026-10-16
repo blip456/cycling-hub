@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type SubmitEvent } from "react";
 import { Link, useNavigate } from "react-router";
 import type { FlashState } from "@/components/AppShell";
-import { Button, buttonClass, FormAlert, PasswordField } from "@/components/ui";
+import { buttonClass } from "@/components/button-class";
+import { Button, FormAlert, PasswordField } from "@/components/ui";
 import { useAuth } from "@/lib/auth/auth-context";
 import { authErrorMessages } from "@/lib/auth/errors";
 import { fieldErrors, newPasswordSchema } from "@/lib/auth/schemas";
@@ -55,7 +56,7 @@ export function ResetPasswordPage() {
     );
   }
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null);
     const parsed = newPasswordSchema.safeParse({ password });
@@ -73,7 +74,14 @@ export function ResetPasswordPage() {
       {formError ? <FormAlert>{formError}</FormAlert> : null}
       <form noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
         {/* Hidden username so password managers save the new password on the right entry. */}
-        <input type="email" name="username" autoComplete="username" value={session?.user.email ?? ""} readOnly hidden />
+        <input
+          type="email"
+          name="username"
+          autoComplete="username"
+          value={session?.user.email ?? ""}
+          readOnly
+          hidden
+        />
         <PasswordField
           ref={passwordRef}
           label="New password"
@@ -82,7 +90,9 @@ export function ResetPasswordPage() {
           required
           minLength={12}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
           error={error}
           helper="At least 12 characters. Several words together are easy to remember."
         />

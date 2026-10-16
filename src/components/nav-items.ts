@@ -15,5 +15,8 @@ export const navItems: NavItem[] = [
 ];
 
 export function titleForPath(pathname: string): string {
-  return navItems.find((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))?.label ?? "Cycling Hub";
+  return (
+    navItems.find((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))?.label ??
+    "Cycling Hub"
+  );
 }

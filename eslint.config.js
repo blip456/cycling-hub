@@ -47,10 +47,15 @@ export default defineConfig([
     },
   },
 
-  // Tests may use non-null assertions.
+  // Tests may use non-null assertions, fake async APIs without awaiting anything, and defensive
+  // checks for things jsdom lacks (the DOM types claim they always exist).
   {
-    files: ["src/**/*.test.{ts,tsx}"],
-    rules: { "@typescript-eslint/no-non-null-assertion": "off" },
+    files: ["src/**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/require-await": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+    },
   },
 
   // Tooling: config files and Node scripts (no type-aware rules; they are not in an app tsconfig).

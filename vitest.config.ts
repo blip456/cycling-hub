@@ -1,21 +1,22 @@
-import { fileURLToPath, URL } from "node:url";
-import react from "@vitejs/plugin-react";
-import { defineConfig } from "vitest/config";
+import { defineConfig, mergeConfig } from "vitest/config";
+import viteConfig from "./vite.config";
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } },
-  test: {
-    environment: "jsdom",
-    setupFiles: ["./vitest.setup.ts"],
-    include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs"],
-    css: false,
-    restoreMocks: true,
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "html", "lcov"],
-      include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.test.{ts,tsx}", "src/main.tsx", "src/lib/supabase/database.types.ts"],
+// Reuses the app config (aliases, injected constants such as __APP_VERSION__), plus test settings.
+export default mergeConfig(
+  viteConfig,
+  defineConfig({
+    test: {
+      environment: "jsdom",
+      setupFiles: ["./src/test/setup.ts"],
+      include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs"],
+      css: false,
+      restoreMocks: true,
+      coverage: {
+        provider: "v8",
+        reporter: ["text", "html", "lcov"],
+        include: ["src/**/*.{ts,tsx}"],
+        exclude: ["src/**/*.test.{ts,tsx}", "src/main.tsx", "src/lib/supabase/database.types.ts"],
+      },
     },
-  },
-});
+  }),
+);

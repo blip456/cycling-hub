@@ -26,7 +26,15 @@ export function SettingsPage() {
           <dd className="text-[15px] text-muted tabular-nums">{__APP_VERSION__}</dd>
         </div>
       </dl>
-      <Button variant="secondary" block className="sm:w-auto sm:self-start" onClick={() => mutation.mutate()} disabled={mutation.isPending}>
+      <Button
+        variant="secondary"
+        block
+        className="sm:w-auto sm:self-start"
+        onClick={() => {
+          mutation.mutate();
+        }}
+        disabled={mutation.isPending}
+      >
         {mutation.isPending ? "Signing out…" : "Sign out"}
       </Button>
     </div>

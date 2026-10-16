@@ -13,7 +13,8 @@ export function isSessionExpired(
   maxAgeDays: number = MAX_SESSION_AGE_DAYS,
 ): boolean {
   if (lastSignInAt === null || lastSignInAt === undefined || lastSignInAt === "") return true;
-  const signedInMs = lastSignInAt instanceof Date ? lastSignInAt.getTime() : Date.parse(lastSignInAt);
+  const signedInMs =
+    lastSignInAt instanceof Date ? lastSignInAt.getTime() : Date.parse(lastSignInAt);
   if (Number.isNaN(signedInMs)) return true;
   return now.getTime() - signedInMs > maxAgeDays * DAY_MS;
 }

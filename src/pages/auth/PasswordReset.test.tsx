@@ -19,14 +19,18 @@ describe("ForgotPasswordPage (A3, A4)", () => {
     expect(requestPasswordReset).toHaveBeenCalledWith("rider@test.invalid");
     expect(await screen.findByRole("heading", { name: "Check your email" })).toBeInTheDocument();
     expect(screen.getByText(/If an account exists for this address/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Resend link \(available in \d+ s\)/ })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: /Resend link \(available in \d+ s\)/ }),
+    ).toBeDisabled();
   });
 
   it("validates the email", async () => {
     const user = userEvent.setup();
     renderWithProviders(<ForgotPasswordPage />);
     await user.click(screen.getByRole("button", { name: "Send reset link" }));
-    expect(screen.getByLabelText("Email")).toHaveAccessibleDescription(/Enter your email address\./);
+    expect(screen.getByLabelText("Email")).toHaveAccessibleDescription(
+      /Enter your email address\./,
+    );
   });
 });
 
@@ -35,7 +39,12 @@ describe("ResetPasswordPage (A5)", () => {
     const user = userEvent.setup();
     const updatePassword = vi.fn(async () => ({ ok: true as const }));
     renderWithProviders(<ResetPasswordPage />, {
-      auth: fakeAuth({ status: "signedIn", session: fakeSession(), recovery: true, updatePassword }),
+      auth: fakeAuth({
+        status: "signedIn",
+        session: fakeSession(),
+        recovery: true,
+        updatePassword,
+      }),
     });
     const field = screen.getByLabelText("New password");
     expect(field).toHaveAttribute("autocomplete", "new-password");
@@ -53,7 +62,10 @@ describe("ResetPasswordPage (A5)", () => {
   it("shows the expired message without a session", () => {
     renderWithProviders(<ResetPasswordPage />, { auth: fakeAuth({ status: "signedOut" }) });
     expect(screen.getByText("This link has expired or was already used.")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Send a new link" })).toHaveAttribute("href", "/forgot-password");
+    expect(screen.getByRole("link", { name: "Send a new link" })).toHaveAttribute(
+      "href",
+      "/forgot-password",
+    );
   });
 
   it("shows the expired message when the link carried an error", () => {

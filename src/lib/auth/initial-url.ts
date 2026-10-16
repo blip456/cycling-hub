@@ -17,4 +17,6 @@ export function readAuthParams(href: string): InitialAuthUrl {
 }
 
 export const initialAuthUrl: InitialAuthUrl =
-  typeof window === "undefined" ? { isRecovery: false, errorCode: null } : readAuthParams(window.location.href);
+  typeof window === "undefined"
+    ? { isRecovery: false, errorCode: null }
+    : readAuthParams(window.location.href);

@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { Link } from "react-router";
-import { Button, buttonClass, FormAlert, TextField } from "@/components/ui";
+import { buttonClass } from "@/components/button-class";
+import { Button, FormAlert, TextField } from "@/components/ui";
 import { useAuth } from "@/lib/auth/auth-context";
 import { authErrorMessages } from "@/lib/auth/errors";
 import { fieldErrors, forgotPasswordSchema } from "@/lib/auth/schemas";
@@ -34,15 +35,19 @@ export function ForgotPasswordPage() {
 
   useEffect(() => {
     if (secondsLeft <= 0) return;
-    const timer = window.setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
-    return () => window.clearTimeout(timer);
+    const timer = window.setTimeout(() => {
+      setSecondsLeft((s) => s - 1);
+    }, 1000);
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [secondsLeft]);
 
   useEffect(() => {
     if (sentTo) headingRef.current?.focus();
   }, [sentTo]);
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(null);
     const parsed = forgotPasswordSchema.safeParse({ email });
@@ -60,7 +65,9 @@ export function ForgotPasswordPage() {
       <AuthLayout title="Check your email" back={{ to: "/sign-in", label: "Sign in" }}>
         <div ref={headingRef} tabIndex={-1} className="outline-none">
           {formError ? <FormAlert>{formError}</FormAlert> : null}
-          <p className="mb-8 text-[15px] text-text">If an account exists for this address, a reset link is on its way.</p>
+          <p className="mb-8 text-[15px] text-text">
+            If an account exists for this address, a reset link is on its way.
+          </p>
         </div>
         <div className="flex flex-col gap-3">
           <Link to="/sign-in" className={buttonClass("primary", "w-full")}>
@@ -85,7 +92,9 @@ export function ForgotPasswordPage() {
   return (
     <AuthLayout title="Reset your password" back={{ to: "/sign-in", label: "Sign in" }}>
       {formError ? <FormAlert>{formError}</FormAlert> : null}
-      <p className="mb-6 text-[15px] text-muted">We will email you a link to choose a new password.</p>
+      <p className="mb-6 text-[15px] text-muted">
+        We will email you a link to choose a new password.
+      </p>
       <form noValidate onSubmit={onSubmit} className="flex flex-col gap-5">
         <TextField
           ref={emailRef}
@@ -99,7 +108,9 @@ export function ForgotPasswordPage() {
           spellCheck={false}
           required
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
           error={error}
           helper="The link works once and expires after 1 hour."
         />

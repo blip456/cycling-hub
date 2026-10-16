@@ -42,7 +42,9 @@ export function fakeAuth(overrides: Partial<AuthContextValue> = {}): AuthContext
 
 /** Renders `ui` inside a router at `path` with a fake auth context (no Supabase involved). */
 export function renderWithProviders(ui: ReactElement, { path = "/", auth = fakeAuth() } = {}) {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+  });
   const result = render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={auth}>

@@ -4,7 +4,10 @@ import { useAuth } from "./auth-context";
 
 function Pending() {
   return (
-    <div role="status" className="flex min-h-dvh items-center justify-center text-[15px] text-muted">
+    <div
+      role="status"
+      className="flex min-h-dvh items-center justify-center text-[15px] text-muted"
+    >
       Loading…
     </div>
   );
@@ -32,7 +35,8 @@ export function RedirectIfSignedIn({ children }: { children: ReactNode }) {
   if (status === "loading") return <Pending />;
   if (status === "signedIn") {
     const from = (location.state as { from?: unknown } | null)?.from;
-    const target = typeof from === "string" && from.startsWith("/") && !from.startsWith("//") ? from : "/rides";
+    const target =
+      typeof from === "string" && from.startsWith("/") && !from.startsWith("//") ? from : "/rides";
     return <Navigate to={target} replace />;
   }
   return children;

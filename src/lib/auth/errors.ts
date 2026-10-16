@@ -21,12 +21,16 @@ export const authErrorMessages: Record<AuthErrorKind, string> = {
 };
 
 export function toAuthErrorKind(error: unknown): AuthErrorKind {
-  if (typeof navigator !== "undefined" && navigator.onLine === false) return "network";
+  if (typeof navigator !== "undefined" && !navigator.onLine) return "network";
   if (isAuthRetryableFetchError(error)) return "network";
   if (error instanceof TypeError) return "network"; // fetch failed
   if (!isAuthError(error)) return "unknown";
 
-  if (error.status === 429 || error.code === "over_request_rate_limit" || error.code === "over_email_send_rate_limit") {
+  if (
+    error.status === 429 ||
+    error.code === "over_request_rate_limit" ||
+    error.code === "over_email_send_rate_limit"
+  ) {
     return "rate_limited";
   }
   switch (error.code) {
@@ -45,7 +49,8 @@ export function toAuthErrorKind(error: unknown): AuthErrorKind {
       return "session_missing";
   }
   if (error.name === "AuthSessionMissingError") return "session_missing";
-  if (error.status === 400 && /invalid login credentials/i.test(error.message)) return "invalid_credentials";
+  if (error.status === 400 && /invalid login credentials/i.test(error.message))
+    return "invalid_credentials";
   if (error.status === 0) return "network";
   return "unknown";
 }

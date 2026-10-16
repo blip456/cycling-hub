@@ -2,7 +2,13 @@ import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { getSupabase } from "@/lib/supabase/client";
-import { AuthContext, type AuthContextValue, type AuthResult, type AuthStatus, type SignedOutReason } from "./auth-context";
+import {
+  AuthContext,
+  type AuthContextValue,
+  type AuthResult,
+  type AuthStatus,
+  type SignedOutReason,
+} from "./auth-context";
 import { toAuthErrorKind } from "./errors";
 import { initialAuthUrl } from "./initial-url";
 import { isSessionExpired } from "./session-age";
@@ -26,7 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [recovery, setRecovery] = useState(initialAuthUrl.isRecovery);
   const [signedOutReason, setSignedOutReason] = useState<SignedOutReason>(null);
   const recoveryRef = useRef(recovery);
-  recoveryRef.current = recovery;
+  useEffect(() => {
+    recoveryRef.current = recovery;
+  }, [recovery]);
 
   const expire = useCallback(async () => {
     if (!client) return;
@@ -64,7 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const recheck = () => {
       if (document.visibilityState !== "visible") return;
-      void client.auth.getSession().then(({ data: { session: current } }) => applySession(current));
+      void client.auth.getSession().then(({ data: { session: current } }) => {
+        applySession(current);
+      });
     };
     document.addEventListener("visibilitychange", recheck);
     const timer = window.setInterval(recheck, AGE_CHECK_INTERVAL_MS);
@@ -148,7 +158,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       requestPasswordReset,
       updatePassword,
     }),
-    [status, session, recovery, signedOutReason, configError, signIn, signOut, requestPasswordReset, updatePassword],
+    [
+      status,
+      session,
+      recovery,
+      signedOutReason,
+      configError,
+      signIn,
+      signOut,
+      requestPasswordReset,
+      updatePassword,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -42,7 +42,10 @@ describe("SignInPage", () => {
 
   it("shows one generic error for wrong credentials, keeps the email and focuses the cleared password", async () => {
     const user = userEvent.setup();
-    const signIn = vi.fn(async () => ({ ok: false as const, error: "invalid_credentials" as const }));
+    const signIn = vi.fn(async () => ({
+      ok: false as const,
+      error: "invalid_credentials" as const,
+    }));
     renderWithProviders(<SignInPage />, { auth: fakeAuth({ signIn }) });
     await user.type(screen.getByLabelText("Email"), "Rider@Test.invalid ");
     await user.type(screen.getByLabelText("Password"), "wrong password");
@@ -72,6 +75,9 @@ describe("SignInPage", () => {
 
   it("links to forgot password", () => {
     renderWithProviders(<SignInPage />);
-    expect(screen.getByRole("link", { name: "Forgot password?" })).toHaveAttribute("href", "/forgot-password");
+    expect(screen.getByRole("link", { name: "Forgot password?" })).toHaveAttribute(
+      "href",
+      "/forgot-password",
+    );
   });
 });

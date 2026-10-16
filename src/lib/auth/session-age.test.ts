@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { isSessionExpired, MAX_SESSION_AGE_DAYS } from "./session-age";
 
 const now = new Date("2026-10-16T12:00:00Z");
-const daysAgo = (days: number) => new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
+const daysAgo = (days: number) =>
+  new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
 
 describe("isSessionExpired", () => {
   it("uses 30 days by default", () => {
