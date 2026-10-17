@@ -14,7 +14,7 @@
 :root {
   /* type */
   --font-sans:
-    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
   --font-numeric: tabular-nums; /* use as font-variant-numeric on every number */
   --fs-caption: 13px; /* meta, units, helper text, table header — the minimum size */

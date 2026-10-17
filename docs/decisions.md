@@ -54,6 +54,20 @@ Source: `docs/wireframes/V1/feedback-product-owner.md` (PO is the only reviewer)
 | P28 | Restraint pass (taste review) | **The directions page was checked with the design-taste skill (lint + browser inspector) and the generic "generated UI" tells were removed:** section divider lines, 1 px outlines and resting shadows on cards (surfaces now separate by a tone step; inputs, list rows and table rows keep their lines), the bottom fade on the phone list, the coloured word in the wordmark and in the direction titles, em dashes in titles, and text under 13 px. **Violet is gone from the metric colours** (it reads as the default AI accent): power is gold in A and C, elevation is earth brown/sand in all three, C's moving time is neutral grey like A and B; the smoke palettes follow. Old values: A power #A78BFA / #7C3AED, A elevation #F59E0B / #B45309, B elevation #B57BFF / #7A3FD9, C power #9483F0 / #5C46D0, C time #ECEEC4 / #4D5812, C elevation #CF9849 / #93610A. **A Splash / Flat switch** on the review page shows every mockup without the splash, so Q4 can be answered side by side. | 16 Oct 2026, PO request ("make it less AI slop"). Kept on purpose, as PO decisions: the splash (P25) and smoke (P26, P27), the floating shadow on the bottom status card (P12), the route-shape thumbnails on ride cards (P20), outcome titles above the import numbers (P17), 12–20 px radii (P20). Refines P20, P21, P24. |
 | P29 | Design direction       | **Direction C — Deep Ocean** is the basis for the design system (DESIGN.md + tokens). | 16 Oct 2026, PO choice at Sprint 0 start. The background choice (splash vs smoke/flow, Q4) stays open until the design review. |
 
+## Product — after the design V1 review (17 Oct 2026)
+
+Source: `docs/design/V1/feedback-product-owner.md`.
+
+| #   | Topic                  | Decision | Notes |
+| --- | ---------------------- | -------- | ----- |
+| P30 | Background             | **Gradient splash** (P25) is the app background. Flow lines (P26, P27) and the flat variant are dropped as options; flat stays only as a technical fallback. | D-PO1, closes Q4. |
+| P31 | Desktop status cards   | **On desktop the What's new card (and other status cards) sits at the bottom of the permanent side menu, as wide as the menu.** Phone keeps the bottom card above the bottom edge. | D-PO2. Refines P12. |
+| P32 | Metric colours         | **The contrast-adjusted metric colours from the design system are approved.** | D-PO3. |
+| P33 | Failed imports         | **A file that is not a valid export appears in the import history as "Not imported".** | D-PO4. Refines P16. |
+| P34 | Ride detail, product focus | **No map on the ride detail: route shape only.** The app is not a Strava rebuild; its focus is tailored training plans and AI/LLM analysis of past sessions. | D-PO5. Weighs on E2/E3 discovery. |
+| P35 | Desktop ride table     | **Sortable columns and filters** (e.g. sport/tags incl. commute, date range, name search) on the desktop table. | D-PO6, also answers X-PO1. Sprint 2. |
+| P36 | Font                   | **Inter ships with the app** (self-hosted variable font, no CDN, `font-display: swap`). | D-PO7. |
+
 ## Authentication
 
 | #   | Topic        | Decision                                                                                                                    | Notes                                                                                                                                     |

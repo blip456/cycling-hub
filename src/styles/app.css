@@ -37,7 +37,9 @@
   /* Desktop layout (permanent side menu, table) starts at 960 px (DESIGN.md). */
   --breakpoint-lg: 60rem;
 
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Inter ships with the app (P36): self-hosted variable font, imported in main.tsx. */
+  --font-sans:
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 @layer base {
