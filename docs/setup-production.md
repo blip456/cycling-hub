@@ -144,6 +144,30 @@ and update the secret in both environments.
 
 ### 3.2 Environment variables
 
+The app needs two public values per environment: the Supabase **Project URL** and **publishable key**.
+It reads them under our own names (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`) and, when those
+are not set, under the names the Supabase integration for Vercel syncs (`NEXT_PUBLIC_SUPABASE_URL` /
+`SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` / `SUPABASE_PUBLISHABLE_KEY`; decision T7). Our
+own names always win. Pick one of the two options.
+
+#### Option A: Supabase integration (keys synced automatically)
+
+1. Vercel → **Integrations** (or the Vercel Marketplace) → **Supabase** → Add/Connect, and link the
+   Supabase project to the `cycling-hub` Vercel project. You can also start it from the Supabase
+   dashboard: Project Settings → Integrations → Vercel.
+2. Link `cycling-hub-prod` to the **Production** environment.
+3. Check in Vercel → Settings → Environment Variables which environments got the synced variables.
+   - If you could link `cycling-hub-dev` to **Preview** (and Development), you are done.
+   - If the integration put the prod values in Preview too, add the two `VITE_*` variables below for
+     **Preview** only, with the values of `cycling-hub-dev`. They override the synced names, so previews
+     use the dev database.
+4. Good to know: the integration also stores the Supabase **secret key**, JWT secret and database
+   password in Vercel. This app has no server code and the build maps only the URL and publishable key,
+   so those secrets never reach the app bundle (checked in the build). They do sit in Vercel's settings;
+   if you prefer them not there, use option B.
+
+#### Option B: by hand
+
 Settings → Environment Variables → **Add New**. Add each variable twice, once per environment:
 
 | Key                             | Environment    | Value                                         |
@@ -154,8 +178,8 @@ Settings → Environment Variables → **Add New**. Add each variable twice, onc
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | **Preview**    | Publishable key of `cycling-hub-dev`          |
 
 For Preview choose "All Preview branches". These values are public by design (they are in the app
-bundle); the database is protected by RLS. Never add the Supabase secret key or the database password to
-Vercel. Changed values apply to the next deployment (Deployments → ⋯ → Redeploy).
+bundle); the database is protected by RLS. Never add the Supabase secret key or the database password by
+hand. Changed values apply to the next deployment (Deployments → ⋯ → Redeploy).
 
 ### 3.3 Git settings
 
