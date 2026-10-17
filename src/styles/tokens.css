@@ -4,8 +4,8 @@
  * Themes (P9): data-theme="dark" | "light" on <html>. Without the attribute the system setting decides.
  * The attribute selectors also work on any nested element, so a single panel can be forced to a theme.
  *
- * Background (P25, Q4 open): --page is the gradient splash by default. Set data-background="flat" on
- * <html> to turn it off. The smoke / flow-lines variant (P26, P27) is an optional asset, not a token.
+ * Background (P25, P30): --page is the gradient splash. data-background="flat" on <html> is only a
+ * technical fallback.
  *
  * Contrast (WCAG 2.2 AA, P23): every text colour below is >= 4.5:1 on --bg, --surface, --raised and
  * --fill in its theme; --input-border and --focus are >= 3:1 on --bg and --surface. Ratios in DESIGN.md. */

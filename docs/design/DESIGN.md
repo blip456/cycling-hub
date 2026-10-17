@@ -95,10 +95,9 @@ Rules: colour goes on the **value**, never on the label or unit. A missing value
 
 **Shipped with the app** (D-PO7): self-hosted, no CDN, no request to a third party.
 
-- File: one variable font, `public/fonts/InterVariable.woff2` (Inter 4, upright only; no italics are used), subset to Latin (Basic Latin, Latin-1, Latin Extended-A and the punctuation we use: `·`, `–`, `—`, `’`). About 100 kB, downloaded once and precached by the service worker. Ship the licence next to it (`public/fonts/LICENSE.txt`, SIL OFL 1.1).
+- Package: `@fontsource-variable/inter` (Inter variable, SIL OFL 1.1), imported once in `src/main.tsx`. Vite bundles the woff2 files into `/assets` (hashed, immutable cache, precached by the service worker). The CSS splits the font into unicode-range subsets, so the browser downloads only what a page uses: in practice the Latin subset, about 48 kB.
 - Weights used: 400 (text), 500 (segments, units, change labels), 600 (headings, values, buttons, labels). The variable axis covers them in one file.
-- `@font-face { font-family: "Inter"; src: url("/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }`
-- Preload it in `index.html`: `<link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>`. Serve `/fonts/*` with a long immutable cache.
+- Family name: `"Inter Variable"` (first in `--font-sans`, then `"Inter"`, then the system fallbacks). The package provides the `@font-face` rules with `font-display: swap` and `font-weight: 100 900`.
 - `font-display: swap`: text shows at once in the fallback (`--font-sans`: system UI font) and swaps to Inter when it has loaded.
 - Tabular numbers: Inter has the `tnum` feature, so `font-variant-numeric: tabular-nums` (`--font-numeric`) keeps columns of numbers aligned.
 
