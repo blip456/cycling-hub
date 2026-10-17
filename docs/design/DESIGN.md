@@ -1,6 +1,6 @@
 # Cycling Hub design system
 
-Direction C, **Deep Ocean** (P29). Version 1, 16 Oct 2026. Visual reference: [`V1/index.html`](V1/index.html).
+Direction C, **Deep Ocean** (P29). Version 1.1, 17 Oct 2026: the PO's design review (D-PO1 to D-PO7) is applied. Visual reference: [`V1/index.html`](V1/index.html).
 
 | Source of truth | What it holds |
 | --- | --- |
@@ -85,11 +85,22 @@ Fixed per metric, everywhere, in this order (P10). Never use the accent for a me
 
 Changed from the direction for contrast on tiles: dark heart rate `#D85A80` → `#E8728F`, light speed `#257395` → `#1F6585`, light heart rate `#B64366` → `#A63A5B`.
 
+These six colours are approved by the PO (D-PO3).
+
 Rules: colour goes on the **value**, never on the label or unit. A missing value is a muted "—" with its unit. Later charts and zones reuse these colours.
 
 ## 3. Typography
 
-**Inter** everywhere, one family (P20). Bundle it with the app (variable woff2, self-hosted; see open question D-PO7); fall back to the system UI font. Every number uses `font-variant-numeric: tabular-nums`. Nothing below 13 px.
+**Inter** everywhere, one family (P20). Every number uses `font-variant-numeric: tabular-nums`. Nothing below 13 px.
+
+**Shipped with the app** (D-PO7): self-hosted, no CDN, no request to a third party.
+
+- File: one variable font, `public/fonts/InterVariable.woff2` (Inter 4, upright only; no italics are used), subset to Latin (Basic Latin, Latin-1, Latin Extended-A and the punctuation we use: `·`, `–`, `—`, `’`). About 100 kB, downloaded once and precached by the service worker. Ship the licence next to it (`public/fonts/LICENSE.txt`, SIL OFL 1.1).
+- Weights used: 400 (text), 500 (segments, units, change labels), 600 (headings, values, buttons, labels). The variable axis covers them in one file.
+- `@font-face { font-family: "Inter"; src: url("/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }`
+- Preload it in `index.html`: `<link rel="preload" href="/fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>`. Serve `/fonts/*` with a long immutable cache.
+- `font-display: swap`: text shows at once in the fallback (`--font-sans`: system UI font) and swaps to Inter when it has loaded.
+- Tabular numbers: Inter has the `tnum` feature, so `font-variant-numeric: tabular-nums` (`--font-numeric`) keeps columns of numbers aligned.
 
 | Token | Size / line | Weight | Tracking | Use |
 | --- | --- | --- | --- | --- |
@@ -117,14 +128,13 @@ Rules: colour goes on the **value**, never on the label or unit. A missing value
 Three tone steps: `--bg` → `--surface` → `--raised` / `--fill`. That is the hierarchy.
 
 - `--shadow` is `none`: nothing at rest has a shadow (P28).
-- `--shadow-raised` (= `--shadow-float`) only on what floats above the page: bottom status card, phone drawer, dialogs, menus. Neutral black, never tinted.
+- `--shadow-raised` (= `--shadow-float`) only on what floats above the page: the phone's bottom status card (not the desktop one in the side menu), phone drawer, dialogs, menus. Neutral black, never tinted.
 
 ## 6. Background
 
-- **Default: gradient splash** (P25). `--page` (= `--splash`) layers three large radial fields (accent, distance colour, accent; 18/13/8 % dark, 16/12/7 % light) over `--bg`. Put it on the screen root only, never on a single element, and keep cards opaque.
-- **Flat:** `data-background="flat"` on `<html>` sets `--page` to `--bg`.
-- **Flow lines** (P26, P27): soft haze plus a few thin gradient-stroke lines, as an SVG background asset. Shown in V1 (BG1); not a token yet.
-- **The choice is open (Q4).** Build with `--page`, so switching later is one line.
+- **The background is the gradient splash** (P25; decided by the PO, D-PO1, closes Q4). `--page` (= `--splash`) layers three large radial fields (accent, distance colour, accent; 18/13/8 % dark, 16/12/7 % light) over `--bg`. Put it on the screen root only, never on a single element, and keep cards opaque.
+- **Flat is a technical fallback only:** `data-background="flat"` on `<html>` sets `--page` to `--bg` (for example for print, tests or a browser without `color-mix`). It is not a choice in Settings.
+- The flow-lines variant (P26, P27) is dropped.
 - The top bar is transparent over the splash; once the page scrolls it gets `--bg` (solid, never blurred glass).
 
 ## 7. Iconography
@@ -132,7 +142,8 @@ Three tone steps: `--bg` → `--surface` → `--raised` / `--fill`. That is the 
 - Line icons, 24 px grid, drawn at 20 px, 1.75 px stroke, round caps and joins, `currentColor`. One set (Lucide fits; the V1 icons follow its geometry).
 - Icons support a label; an icon-only button needs an `aria-label` and a 44 px target.
 - Default colour `--muted` in navigation, `--accent` for the active item, `--text` in the top bar.
-- **Route thumbnails** (P20): the ride's polyline as a 2 px accent line on a 44 px `--fill` tile, radius 12. No map tiles in V1.
+- **Route thumbnails** (P20): the ride's polyline as a 2 px accent line on a 44 px `--fill` tile, radius 12.
+- **Route shape on the ride detail** (D-PO5): the same polyline, 3 px accent line on a plain `--surface` card (radius 16), scaled to fit with even padding, with a start dot (`--surface` fill, 3 px accent ring). `role="img"` with an `aria-label`. Route shape only: no maps anywhere.
 - Wordmark: "Cycling Hub" in Inter 600, `--text`, no colour split.
 
 ## 8. Motion
@@ -200,23 +211,41 @@ Route thumbnail + name (17 px / 600, one line, ellipsis) + meta line `Sun 11 Oct
 
 ### Table row (desktop)
 
-- Container: `--surface`, radius 16. Header 13 px / 600 muted, unit on a second line; metric headers in their metric colour.
+- Container: `--surface`, radius 16. Header 13 px / 600 muted, unit on a second line.
 - Rows 44 px, 15 px tabular, 1 px `--border` between rows; numbers right-aligned, date muted, name 600.
 - Week / month rows: 36 px, `--fill`, 13 px / 600, totals on the right.
 - Hover `--surface-hover`; keyboard focus: 2 px focus outline inset; the row opens the ride.
 
+### Sortable table (desktop, D-PO6)
+
+- Every column header is a `button` inside the `th` (`scope="col"`), at least 44 px high, radius 8, hover `--fill`, focus ring as everywhere. Enter or Space sorts.
+- The sorted column has `aria-sort="descending"` or `"ascending"` on its `th`; the other headers have no `aria-sort`. Its label turns `--text` / 600 and shows a 14 px arrow (down = descending). Other headers show the arrow only on hover, in `--muted`; the arrow's space is kept so nothing moves. For metric columns the arrow sits on the unit line, left of the unit; for Date and Name after the label.
+- Default: Date, newest first. First click: numbers highest first, Name A to Z, Date newest first; a second click reverses.
+- Sorted by Date: week or month rows with totals (Week / Month control). Sorted by any other column: one flat list without group rows, and the Week / Month control is hidden until you sort by Date again.
+- Keep sort and filters in the URL query, so Back and a reload return to the same view.
+
+### Filter bar (desktop rides)
+
+- One row above the table, on the page background, aligned to the bottom of the fields: **Search by name** (text input with a muted search icon, 240 px), **Type** (select: All types, Road, Gravel, MTB, E-bike, Indoor, Commute; 156 px), **Period** (select: All time, Last 4 weeks, Last 3 months, This year, each earlier year, Custom range; 172 px), **Hide commutes** (checkbox, the same setting as on the phone). Custom range adds From and To date fields with labels.
+- Labels above, fields empty by default, no placeholders. `role="search"` with `aria-label="Filter rides"` on the row.
+- Once a filter is on: a text button **Clear filters** at the right end of the row, and a caption line above the table with the count and totals of what is shown (`3 rides · 273.6 km · 9:10 h`). No filter chips or pills.
+- Filters apply as you type or choose (search after a 250 ms pause); the caption line is a polite live region.
+- No matches: the table area shows "No rides match these filters." and Clear filters.
+- **Phone:** keeps Week / Month and Hide commutes (B1a). No sort or filter on the phone for now.
+
 ### Side menu and top bar
 
 - **Phone (< 960 px):** top bar 56 px: menu button, page title (20 px / 600), one page action on the right (Import on Rides). The menu is a drawer from the left (`--raised`, radius 0 20 20 0, float shadow, `--overlay` scrim); closes on scrim tap, swipe left, Escape or choosing an item; focus is trapped inside; the page behind is `inert`.
-- **Desktop (≥ 960 px):** permanent side menu 232 px on the page background: wordmark, items, version at the bottom.
+- **Desktop (≥ 960 px):** permanent side menu 232 px on the page background: wordmark, items, then at the bottom the status card when there is one, and the version.
 - Nav item: 44 px, radius 12, icon + label 15 px. Hover `--fill`. Active: `--accent-soft` fill, label 600, icon `--accent`, `aria-current="page"`.
 
 ### Bottom status card (P12)
 
-- `--raised`, radius 16, float shadow, min height 56, 12 px from the sides and 16 px from the bottom on the phone; bottom-right, 420 px wide on desktop.
-- Info (What's new): accent dot, one line of text, an action ("What's new"), close button. `role="status"`.
+- **Phone:** `--raised`, radius 16, float shadow, min height 56, 12 px from the sides and 16 px from the bottom, above the bottom edge. The page keeps bottom padding equal to the card height so nothing stays hidden behind it (2.4.11).
+- **Desktop (D-PO2):** the same card, but **inside the side menu at the bottom**, as wide as the menu inside its padding (208 px), 12 px above the version. It is part of the menu, not floating over the content, so it has **no shadow** (P28); it separates by the `--raised` tone step. Text wraps; the action goes on a second line under the message, the close button stays top right. The content needs no extra bottom padding.
+- The desktop rule applies to **every** status card: What's new, "Password changed.", the update prompt ("A new version is ready" + Reload) and errors. Only one card at a time; an error replaces an info card.
+- Info (What's new): accent dot, one short line, an action ("What's new"), close button. `role="status"`. Success ("Password changed."): positive dot, message, close. `role="status"`.
 - Error (load failed, no connection): danger alert icon, message, "Try again". `role="alert"`. No offline mode.
-- The page keeps bottom padding equal to the card height so nothing stays hidden behind it (2.4.11).
 
 ### Change-type labels (P18)
 
@@ -237,10 +266,10 @@ Pills, 24 px high, radius full, 13 px / 500: **Feature** `--accent-soft` / `--ac
 | Navigation | Top bar + drawer | Permanent side menu, 232 px |
 | Margins | 16 px | 32 px around the content |
 | Content | One column, full width | Up to 1120 px; forms and settings 400–560 px; ride detail two columns (route + details left, metrics right) |
-| Rides | Cards (B1a) | Dense table (X1) |
+| Rides | Cards (B1a); Week / Month, Hide commutes | Dense table (X1), sortable, filter bar above |
 | Import | Tap the file card | Drop anywhere on the page, or choose |
 | Primary action | Top bar icon or full-width button | In the page header, right-aligned |
-| Status card | Bottom, full width minus 12 px | Bottom right, 420 px |
+| Status card | Bottom, full width minus 12 px, float shadow | Bottom of the side menu, menu width, no shadow |
 
 - Tablets between 600 and 959 px use the phone layout with content up to 640 px wide, centred.
 - Safe areas: respect `env(safe-area-inset-*)` for the top bar, drawer and status card in the installed PWA.
@@ -267,7 +296,8 @@ Pills, 24 px high, radius full, 13 px / 500: **Feature** `--accent-soft` / `--ac
 | Put information in the heading or first sentence | Add eyebrow labels, uppercase tags or "New ·" chips |
 | Show ride tags as plain text in the meta line | Turn tags, statuses or filters into pills |
 | Use a solid 2 px focus outline | Use glows, halos, blurred or tinted focus shadows |
-| Keep status messages in the bottom card | Show banners at the top or toasts that cover content |
+| Keep status messages in the bottom card (phone) or the side menu (desktop) | Show banners at the top or toasts that cover content |
+| Draw the route shape | Add map tiles or a map placeholder |
 | Label above, helper below, empty field | Put example values or hints inside inputs |
 | Show "—" with the unit when a value is missing | Hide the column or show 0 |
 | Write one short sentence | Explain what the UI already shows |
