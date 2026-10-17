@@ -55,7 +55,7 @@ Everything from here to the next "## v" heading is stripped from the app.
 
 ## v0.1.0 — Design & foundation
 Sprint: 0
-Status: planned
+Status: in progress
 Tagline: The Cycling Hub look and feel, and an installable app you can sign in to.
 
 ### Details

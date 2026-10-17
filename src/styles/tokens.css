@@ -1,0 +1,80 @@
+/* PROVISIONAL design tokens from design direction C (Deep Ocean), docs/design/directions/deep-ocean.fragment.html.
+ * Owned by the design-system work (Sprint 0 part A), which replaces this file with the final tokens.
+ * Themes: data-theme="dark" | "light"; without the attribute the system setting decides (P9). */
+:root, [data-theme="dark"] {
+  --input-border:#6E7279;
+  --bg:#111318;
+  --bg-top:#16181E;
+  --bg-bottom:#0F1116;
+  --surface:#191C22;
+  --raised:#23262C;
+  --border:#30343B;
+  --text:#E6EDF7;
+  --muted:#A1A5AB;
+  --accent:#5B9BFF;
+  --on-accent:#0D1015;
+  --accent-soft:rgba(91,155,255,.14);
+  --positive:#8FD07A;
+  --positive-soft:rgba(143,208,122,.12);
+  --m-dist:#56D2AC;
+  --m-time:#C8CBD0;
+  --m-speed:#9DD9F0;
+  --m-power:#E9CD4C;
+  --m-hr:#D85A80;
+  --m-elev:#D6A97A;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 12px rgba(0,0,0,.2);
+  --shadow-raised:0 2px 4px rgba(0,0,0,.3),0 8px 20px rgba(0,0,0,.25);
+  --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+}
+[data-theme="light"] {
+  --input-border:#86888B;
+  --bg:#F2F5F9;
+  --bg-top:#F6F8FB;
+  --bg-bottom:#ECF0F6;
+  --surface:#FFFFFF;
+  --raised:#FFFFFF;
+  --border:#DDDFE2;
+  --text:#171A1F;
+  --muted:#5C6067;
+  --accent:#2457D6;
+  --on-accent:#FFFFFF;
+  --accent-soft:rgba(36,87,214,.09);
+  --positive:#3A7A21;
+  --positive-soft:rgba(58,122,33,.1);
+  --m-dist:#0D7050;
+  --m-time:#5A5F66;
+  --m-speed:#257395;
+  --m-power:#806200;
+  --m-hr:#B64366;
+  --m-elev:#6B4A2B;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.05);
+  --shadow-raised:0 2px 4px rgba(0,0,0,.06),0 8px 20px rgba(0,0,0,.07);
+  --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+  --input-border:#86888B;
+  --bg:#F2F5F9;
+  --bg-top:#F6F8FB;
+  --bg-bottom:#ECF0F6;
+  --surface:#FFFFFF;
+  --raised:#FFFFFF;
+  --border:#DDDFE2;
+  --text:#171A1F;
+  --muted:#5C6067;
+  --accent:#2457D6;
+  --on-accent:#FFFFFF;
+  --accent-soft:rgba(36,87,214,.09);
+  --positive:#3A7A21;
+  --positive-soft:rgba(58,122,33,.1);
+  --m-dist:#0D7050;
+  --m-time:#5A5F66;
+  --m-speed:#257395;
+  --m-power:#806200;
+  --m-hr:#B64366;
+  --m-elev:#6B4A2B;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.05);
+  --shadow-raised:0 2px 4px rgba(0,0,0,.06),0 8px 20px rgba(0,0,0,.07);
+  --page:linear-gradient(180deg,var(--bg-top) 0%,var(--bg-bottom) 100%);
+  }
+}
