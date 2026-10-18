@@ -131,7 +131,7 @@ Two parts; part B starts only after the PO approves part A.
 
 ## v0.2.0 — Import & settings
 Sprint: 1
-Status: planned
+Status: in progress
 Tagline: Drop your Strava export file and see exactly what was imported, plus settings, What's new and What's next.
 
 ### Details
