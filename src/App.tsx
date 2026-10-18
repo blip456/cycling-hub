@@ -6,6 +6,8 @@ import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 import { SignInPage } from "@/pages/auth/SignInPage";
 import { ConfigErrorPage } from "@/pages/ConfigErrorPage";
+import { ImportDetailPage } from "@/pages/ImportDetailPage";
+import { ImportHistoryPage } from "@/pages/ImportHistoryPage";
 import { ImportPage } from "@/pages/ImportPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { RidesPage } from "@/pages/RidesPage";
@@ -46,6 +48,8 @@ export function App() {
         <Route index element={<Navigate to="/rides" replace />} />
         <Route path="/rides" element={<RidesPage />} />
         <Route path="/import" element={<ImportPage />} />
+        <Route path="/import/history" element={<ImportHistoryPage />} />
+        <Route path="/import/history/:id" element={<ImportDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

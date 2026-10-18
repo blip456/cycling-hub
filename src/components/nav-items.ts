@@ -14,7 +14,16 @@ export const navItems: NavItem[] = [
   { to: "/settings", label: "Settings", Icon: SettingsIcon },
 ];
 
+/** Pages below a menu item that have their own title. */
+const subPageTitles: { prefix: string; label: string }[] = [
+  { prefix: "/import/history", label: "Import history" },
+];
+
 export function titleForPath(pathname: string): string {
+  const sub = subPageTitles.find(
+    ({ prefix }) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+  if (sub) return sub.label;
   return (
     navItems.find((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))?.label ??
     "Cycling Hub"
