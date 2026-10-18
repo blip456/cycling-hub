@@ -136,6 +136,10 @@ Tagline: Drop your Strava export file and see exactly what was imported, plus se
 
 ### Details
 
+> Built on 18 Oct 2026 on `chore/sprint-1-integration`, verified locally (174 unit tests, 62 pgTAP
+> checks, end-to-end import of the real export: 208 rides + 97 not a ride, second run all unchanged).
+> Waiting for the hosted setup and the PO's test on a preview: `docs/test-checklists/v0.2.0.md`.
+
 Goal: import the backfill and every later export reliably, and see the app's version, changes and plans.
 
 1. Import page (C1–C4, X2): tap to pick a file on the phone, drag and drop on desktop.
