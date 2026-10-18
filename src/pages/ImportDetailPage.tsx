@@ -1,7 +1,11 @@
 import { Link, useParams } from "react-router";
 import { buttonClass } from "@/components/button-class";
-import { StatusCard } from "@/components/StatusCard";
-import { Button, EmptyState } from "@/components/ui";
+import {
+  STATUS_PRIORITY,
+  statusActionClass,
+  useStatusCard,
+} from "@/components/status/status-context";
+import { EmptyState } from "@/components/ui";
 import { ImportRejected } from "@/features/import/components/ImportRejected";
 import { ImportSummary } from "@/features/import/components/ImportSummary";
 import { formatDateTime } from "@/features/import/format";
@@ -12,6 +16,28 @@ export function ImportDetailPage() {
   const { id = "" } = useParams();
   const query = useImportRecord(id);
   const record = query.data;
+
+  useStatusCard(
+    "import-detail-error",
+    STATUS_PRIORITY.error,
+    query.isError
+      ? {
+          tone: "error",
+          message: "This import could not be loaded.",
+          action: (
+            <button
+              type="button"
+              className={statusActionClass}
+              onClick={() => {
+                void query.refetch();
+              }}
+            >
+              Try again
+            </button>
+          ),
+        }
+      : null,
+  );
 
   const backToHistory = (
     <Link to="/import/history" className={buttonClass("secondary")}>
@@ -27,22 +53,7 @@ export function ImportDetailPage() {
     );
   }
   if (query.isError) {
-    return (
-      <StatusCard
-        action={
-          <Button
-            variant="ghost"
-            onClick={() => {
-              void query.refetch();
-            }}
-          >
-            Try again
-          </Button>
-        }
-      >
-        This import could not be loaded.
-      </StatusCard>
-    );
+    return backToHistory;
   }
   if (!record) {
     return (

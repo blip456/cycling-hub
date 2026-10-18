@@ -220,7 +220,8 @@ describe("ImportPage", () => {
 
     await user.upload(screen.getByLabelText("Choose file"), jsonFile(valid));
 
-    expect(await screen.findByRole("status")).toHaveTextContent(
+    // Errors are announced as alerts by the shared status card.
+    expect(await screen.findByRole("alert")).toHaveTextContent(
       "The import failed and nothing was changed.",
     );
     vi.mocked(api.importActivities).mockResolvedValueOnce(record());

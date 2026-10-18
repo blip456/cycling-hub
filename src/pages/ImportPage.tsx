@@ -1,6 +1,10 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui";
-import { StatusCard } from "@/components/StatusCard";
+import {
+  STATUS_PRIORITY,
+  statusActionClass,
+  useStatusCard,
+} from "@/components/status/status-context";
 import type { ImportRecord } from "@/features/import/api";
 import { FilePicker } from "@/features/import/components/FilePicker";
 import { ACCEPT, takeFile } from "@/features/import/file-input";
@@ -189,6 +193,36 @@ export function ImportPage() {
     );
   }
 
+  // Save failures and copy confirmations are status cards (P12; in the side menu on desktop, P31).
+  useStatusCard(
+    "import-notice",
+    notice?.retry ? STATUS_PRIORITY.error : STATUS_PRIORITY.flash,
+    notice
+      ? {
+          tone: notice.retry ? "error" : "info",
+          message: notice.text,
+          onDismiss: () => {
+            setNotice(null);
+          },
+          ...(notice.retry
+            ? {
+                action: (
+                  <button
+                    type="button"
+                    className={statusActionClass}
+                    onClick={() => {
+                      if (notice.retry) onFile(notice.retry);
+                    }}
+                  >
+                    Try again
+                  </button>
+                ),
+              }
+            : {}),
+        }
+      : null,
+  );
+
   return (
     <>
       {content}
@@ -203,27 +237,6 @@ export function ImportPage() {
           if (file) onFile(file);
         }}
       />
-      {notice ? (
-        <StatusCard
-          onDismiss={() => {
-            setNotice(null);
-          }}
-          action={
-            notice.retry ? (
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  if (notice.retry) onFile(notice.retry);
-                }}
-              >
-                Try again
-              </Button>
-            ) : undefined
-          }
-        >
-          {notice.text}
-        </StatusCard>
-      ) : null}
     </>
   );
 }
