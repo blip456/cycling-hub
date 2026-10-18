@@ -3,10 +3,17 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { MemoryRouter } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { App } from "./App";
+import { StatusProvider } from "./components/status/StatusProvider";
 import { AuthContext, type AuthContextValue } from "./lib/auth/auth-context";
 import { fakeAuth, fakeSession, renderWithProviders } from "./test/render";
+
+// The shell asks Supabase for profiles.last_seen_version (What's new card); no backend in these tests.
+vi.mock("@/features/release/profile-api", () => ({
+  fetchLastSeenVersion: vi.fn(async () => __APP_VERSION__),
+  saveLastSeenVersion: vi.fn(async () => undefined),
+}));
 
 describe("route guard", () => {
   it.each(["/rides", "/import", "/settings", "/"])(
@@ -55,7 +62,9 @@ describe("route guard", () => {
       return (
         <AuthContext.Provider value={auth}>
           <MemoryRouter initialEntries={["/settings"]}>
-            <App />
+            <StatusProvider>
+              <App />
+            </StatusProvider>
           </MemoryRouter>
         </AuthContext.Provider>
       );

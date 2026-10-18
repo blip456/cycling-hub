@@ -14,17 +14,27 @@ export const navItems: NavItem[] = [
   { to: "/settings", label: "Settings", Icon: SettingsIcon },
 ];
 
-/** Pages below a menu item that have their own title. */
-const subPageTitles: { prefix: string; label: string }[] = [
-  { prefix: "/import/history", label: "Import history" },
+/** Pages below a menu item: the phone top bar shows Back to the parent instead of the menu button (G2, G3, C5). */
+export interface SubPage {
+  to: string;
+  label: string;
+  parent: string;
+}
+
+export const subPages: SubPage[] = [
+  { to: "/import/history", label: "Import history", parent: "/import" },
+  { to: "/settings/whats-new", label: "What's new", parent: "/settings" },
+  { to: "/settings/whats-next", label: "What's next", parent: "/settings" },
 ];
 
+/** The sub-page for a path, including its own detail pages (e.g. /import/history/:id). */
+export function subPageForPath(pathname: string): SubPage | undefined {
+  return subPages.find((page) => pathname === page.to || pathname.startsWith(`${page.to}/`));
+}
+
 export function titleForPath(pathname: string): string {
-  const sub = subPageTitles.find(
-    ({ prefix }) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-  if (sub) return sub.label;
   return (
+    subPageForPath(pathname)?.label ??
     navItems.find((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))?.label ??
     "Cycling Hub"
   );

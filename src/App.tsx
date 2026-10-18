@@ -12,6 +12,8 @@ import { ImportPage } from "@/pages/ImportPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { RidesPage } from "@/pages/RidesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
+import { WhatsNewPage } from "@/pages/WhatsNewPage";
+import { WhatsNextPage } from "@/pages/WhatsNextPage";
 
 /** All routes. There is deliberately no sign-up route (A1). */
 export function App() {
@@ -51,6 +53,8 @@ export function App() {
         <Route path="/import/history" element={<ImportHistoryPage />} />
         <Route path="/import/history/:id" element={<ImportDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/whats-new" element={<WhatsNewPage />} />
+        <Route path="/settings/whats-next" element={<WhatsNextPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -8,6 +8,8 @@
   --color-current: currentColor;
   --color-bg: var(--bg);
   --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-track: var(--track);
   --color-raised: var(--raised);
   --color-border: var(--border);
   --color-input-border: var(--input-border);
@@ -90,5 +92,16 @@
 @keyframes drawer-in {
   from {
     transform: translateX(-100%);
+  }
+}
+
+/* Status card (P12): slides up 16 px and fades in; instant with reduced motion (rule above). */
+.status-in {
+  animation: status-in var(--dur-base) var(--ease-out);
+}
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
   }
 }

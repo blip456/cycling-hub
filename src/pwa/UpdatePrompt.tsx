@@ -1,10 +1,16 @@
 import { useRegisterSW } from "virtual:pwa-register/react";
-import { StatusCard } from "@/components/StatusCard";
-import { Button } from "@/components/ui";
+import {
+  STATUS_PRIORITY,
+  statusActionClass,
+  useStatusCard,
+} from "@/components/status/status-context";
 
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 
-/** Asks before switching to a new version (prompt-to-update). No offline data (P12). */
+/**
+ * Asks before switching to a new version (prompt-to-update). No offline data (P12). Shown as a status
+ * card: bottom of the page on the phone, in the side menu on desktop (P31).
+ */
 export function UpdatePrompt() {
   const {
     needRefresh: [needRefresh, setNeedRefresh],
@@ -17,19 +23,28 @@ export function UpdatePrompt() {
     },
   });
 
-  if (!needRefresh) return null;
-  return (
-    <StatusCard
-      onDismiss={() => {
-        setNeedRefresh(false);
-      }}
-      action={
-        <Button className="shrink-0 px-4" onClick={() => void updateServiceWorker(true)}>
-          Update
-        </Button>
-      }
-    >
-      A new version is available.
-    </StatusCard>
+  useStatusCard(
+    "update",
+    STATUS_PRIORITY.update,
+    needRefresh
+      ? {
+          tone: "info",
+          message: "A new version is ready.",
+          action: (
+            <button
+              type="button"
+              className={statusActionClass}
+              onClick={() => void updateServiceWorker(true)}
+            >
+              Reload
+            </button>
+          ),
+          onDismiss: () => {
+            setNeedRefresh(false);
+          },
+        }
+      : null,
   );
+
+  return null;
 }

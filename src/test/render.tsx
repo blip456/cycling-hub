@@ -2,8 +2,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render } from "@testing-library/react";
 import type { Session } from "@supabase/supabase-js";
 import type { ReactElement } from "react";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, type InitialEntry } from "react-router";
 import { vi } from "vitest";
+import { StatusProvider } from "@/components/status/StatusProvider";
 import { AuthContext, type AuthContextValue } from "@/lib/auth/auth-context";
 
 export function fakeSession(email = "rider@test.invalid"): Session {
@@ -40,17 +41,29 @@ export function fakeAuth(overrides: Partial<AuthContextValue> = {}): AuthContext
   };
 }
 
-/** Renders `ui` inside a router at `path` with a fake auth context (no Supabase involved). */
-export function renderWithProviders(ui: ReactElement, { path = "/", auth = fakeAuth() } = {}) {
-  const queryClient = new QueryClient({
+export function testQueryClient(): QueryClient {
+  return new QueryClient({
     defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
   });
+}
+
+/** Renders `ui` inside a router at `path` with a fake auth context (no Supabase involved). */
+export function renderWithProviders(
+  ui: ReactElement,
+  {
+    path = "/" as InitialEntry,
+    auth = fakeAuth(),
+    queryClient = testQueryClient(),
+  }: { path?: InitialEntry; auth?: AuthContextValue; queryClient?: QueryClient } = {},
+) {
   const result = render(
     <QueryClientProvider client={queryClient}>
       <AuthContext.Provider value={auth}>
-        <MemoryRouter initialEntries={[path]}>{ui}</MemoryRouter>
+        <MemoryRouter initialEntries={[path]}>
+          <StatusProvider>{ui}</StatusProvider>
+        </MemoryRouter>
       </AuthContext.Provider>
     </QueryClientProvider>,
   );
-  return { ...result, auth };
+  return { ...result, auth, queryClient };
 }
