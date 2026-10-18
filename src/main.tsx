@@ -5,6 +5,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { App } from "./App";
+import { StatusProvider } from "./components/status/StatusProvider";
 import { AuthProvider } from "./lib/auth/AuthProvider";
 import { UpdatePrompt } from "./pwa/UpdatePrompt";
 import "@fontsource-variable/inter";
@@ -25,8 +26,10 @@ createRoot(root).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
-          <UpdatePrompt />
+          <StatusProvider>
+            <App />
+            <UpdatePrompt />
+          </StatusProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>

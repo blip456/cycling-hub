@@ -122,6 +122,17 @@ Versions follow the sprints (D5, D6): Sprint 0 ships v0.1.0, every next sprint t
 4. The **Back-merge** workflow opens a PR `main` → `dev` (`chore(release): back-merge vX.Y.Z into dev`).
    Merge it with a **merge commit** so `dev` gets the version bump and keeps `main`'s history.
 
+### What's new and What's next in the app
+
+Both pages are built from files in the repository at build time; the app never calls GitHub.
+`scripts/build-release-data.mjs` reads `CHANGELOG.md` (written by release-please; no file yet means "No
+releases yet") and the sprint sections of `docs/backlog.md`, and writes
+`src/features/release/generated/{changelog,roadmap}.json`. Those files are **not committed**
+(`.gitignore`): `pnpm dev`, `build`, `lint`, `typecheck`, `test` and `coverage` regenerate them first
+(`pre*` scripts in `package.json`; by hand: `pnpm release-data`), so CI and Vercel always build from the
+current changelog and backlog, and `pnpm dev` regenerates them when either file changes. A broken sprint
+entry in the backlog fails the build with a list of what is wrong (see "Sprint format" in the backlog).
+
 Hotfixes between sprints use `fix:` titles: before 1.0 a `feat:` bumps the minor version, which belongs
 to the next sprint.
 

@@ -1,8 +1,9 @@
+import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as {
@@ -36,12 +37,42 @@ function supabaseEnvDefines(env: Record<string, string>): Record<string, string>
   return defines;
 }
 
+/**
+ * What's new / What's next data (scripts/build-release-data.mjs). package.json runs the script before
+ * dev, build, lint, typecheck and tests; this plugin re-runs it when CHANGELOG.md or docs/backlog.md
+ * changes while `pnpm dev` is running. A broken backlog entry is reported and the old data stays.
+ */
+function releaseData(): Plugin {
+  const script = fileURLToPath(new URL("./scripts/build-release-data.mjs", import.meta.url));
+  const sources = ["CHANGELOG.md", "docs/backlog.md"].map((file) =>
+    fileURLToPath(new URL(`./${file}`, import.meta.url)),
+  );
+  return {
+    name: "cycling-hub:release-data",
+    apply: "serve",
+    configureServer(server) {
+      server.watcher.add(sources);
+      const regenerate = (file: string) => {
+        if (!sources.includes(file)) return;
+        try {
+          execFileSync(process.execPath, [script], { stdio: "inherit" });
+        } catch {
+          server.config.logger.error("release data not updated: fix docs/backlog.md (see above)");
+        }
+      };
+      server.watcher.on("change", regenerate);
+      server.watcher.on("add", regenerate);
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
     ...supabaseEnvDefines(loadEnv(mode, process.cwd(), "")),
   },
   plugins: [
+    releaseData(),
     react(),
     tailwindcss(),
     VitePWA({
