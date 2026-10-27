@@ -160,7 +160,7 @@ export function RideDetail({
           <Link
             to="/rides"
             aria-label="Back to rides"
-            className="-ml-3 flex size-11 shrink-0 items-center justify-center rounded-xl text-text hover:bg-subtle"
+            className="-ml-3 flex size-11 shrink-0 items-center justify-center rounded-md text-text hover:bg-subtle"
           >
             <BackIcon />
           </Link>

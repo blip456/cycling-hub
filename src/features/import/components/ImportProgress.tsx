@@ -21,7 +21,7 @@ export function ImportProgress({
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 rounded-2xl bg-surface p-4">
         <div className="flex items-center gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-fill text-accent">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-fill text-accent">
             <FileIcon />
           </span>
           <span className="flex min-w-0 flex-col">

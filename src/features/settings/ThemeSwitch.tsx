@@ -19,7 +19,7 @@ export function ThemeSwitch() {
       <div
         role="radiogroup"
         aria-labelledby={`${id}-label`}
-        className="flex h-11 gap-0.5 rounded-xl bg-track p-[3px]"
+        className="flex h-11 gap-0.5 rounded-md bg-track p-[3px]"
       >
         {THEME_CHOICES.map((choice) => (
           <label

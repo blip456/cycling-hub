@@ -54,7 +54,7 @@ export const TextField = forwardRef<HTMLInputElement, FieldProps>(function TextF
       </label>
       <div
         className={
-          "flex min-h-11 items-center rounded-xl border bg-surface focus-within:border-accent " +
+          "flex min-h-11 items-center rounded-md border bg-surface focus-within:border-accent " +
           "focus-within:outline-2 focus-within:outline-accent " +
           (error ? "border-accent" : "border-input-border")
         }
@@ -64,7 +64,7 @@ export const TextField = forwardRef<HTMLInputElement, FieldProps>(function TextF
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className="min-h-11 w-full min-w-0 flex-1 rounded-xl bg-transparent px-3.5 text-base text-text outline-none"
+          className="min-h-11 w-full min-w-0 flex-1 rounded-md bg-transparent px-3.5 text-base text-text outline-none"
           {...rest}
         />
         {trailing}
@@ -107,7 +107,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             }}
             aria-pressed={visible}
             aria-label={visible ? "Hide password" : "Show password"}
-            className="mr-1 min-h-11 min-w-11 shrink-0 rounded-lg px-2.5 text-[14px] font-semibold text-accent hover:bg-subtle"
+            className="mr-1 min-h-11 min-w-11 shrink-0 rounded-sm px-2.5 text-[14px] font-semibold text-accent hover:bg-subtle"
           >
             {visible ? "Hide" : "Show"}
           </button>
@@ -129,7 +129,7 @@ export function FormAlert({
     <div
       role={tone === "error" ? "alert" : "status"}
       className={
-        "mb-5 rounded-xl px-4 py-3 text-[15px] text-text " +
+        "mb-5 rounded-md px-4 py-3 text-[15px] text-text " +
         (tone === "error" ? "bg-subtle" : "bg-accent-soft")
       }
     >

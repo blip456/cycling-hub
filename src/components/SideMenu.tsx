@@ -18,7 +18,7 @@ export function SideMenu({ onNavigate, status }: { onNavigate?: () => void; stat
                 to={to}
                 onClick={onNavigate}
                 className={({ isActive }) =>
-                  "flex min-h-11 items-center gap-3 rounded-xl px-3 text-[15px] transition-colors " +
+                  "flex min-h-11 items-center gap-3 rounded-md px-3 text-[15px] transition-colors " +
                   // DESIGN.md: hover is the --fill tone step; active is accent-soft. Desktop: on the page background.
                   (isActive
                     ? "bg-accent-soft font-semibold text-text"

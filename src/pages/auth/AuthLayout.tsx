@@ -21,7 +21,7 @@ export function AuthLayout({ title, back, children }: AuthLayoutProps) {
         {back ? (
           <Link
             to={back.to}
-            className="-ml-2 flex min-h-11 items-center gap-1 rounded-xl px-2 text-[15px] font-semibold text-text hover:bg-subtle"
+            className="-ml-2 flex min-h-11 items-center gap-1 rounded-md px-2 text-[15px] font-semibold text-text hover:bg-subtle"
           >
             <BackIcon />
             {back.label}

@@ -10,6 +10,7 @@ import { formatDateTime } from "@/features/import/format";
 import { useImportHistory } from "@/features/import/hooks";
 import { UploadIcon } from "@/features/import/icons";
 import { groupRides, totals, type GroupBy } from "@/features/rides/format";
+import { ExportRidesButton } from "@/features/rides/export/ExportRidesButton";
 import { useRides } from "@/features/rides/hooks";
 import { Checkbox, GroupBySwitch } from "@/features/rides/list/controls";
 import { FilterBar } from "@/features/rides/list/FilterBar";
@@ -195,6 +196,7 @@ export function RidesPage() {
             {hasRides && state.sort === "date" ? (
               <GroupBySwitch value={state.view} onChange={setView} />
             ) : null}
+            {hasRides ? <ExportRidesButton /> : null}
             {hasRides ? (
               <Link to="/import" className={buttonClass("primary")}>
                 <UploadIcon />
@@ -242,6 +244,11 @@ export function RidesPage() {
         {state.hideCommutes && hasRides && sorted.length > 0 ? formatTotalsLine(shownTotals) : ""}
       </p>
       {content}
+      {hasRides ? (
+        <div className="mt-6 flex justify-center">
+          <ExportRidesButton />
+        </div>
+      ) : null}
     </div>
   );
 }

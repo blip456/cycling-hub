@@ -104,7 +104,7 @@ export function AppShell() {
     <div className="min-h-dvh">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-xl focus:bg-surface focus:px-4 focus:py-3"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3"
       >
         Skip to content
       </a>
@@ -138,7 +138,7 @@ export function AppShell() {
               type="button"
               onClick={closeMenu}
               aria-label="Close menu"
-              className="flex size-11 items-center justify-center rounded-xl text-text hover:bg-subtle"
+              className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
             >
               <CloseIcon />
             </button>
@@ -157,7 +157,7 @@ export function AppShell() {
               <Link
                 to={subPage.parent}
                 aria-label="Back"
-                className="flex size-11 items-center justify-center rounded-xl text-text hover:bg-subtle"
+                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
               >
                 <BackIcon />
               </Link>
@@ -170,7 +170,7 @@ export function AppShell() {
                 aria-haspopup="dialog"
                 aria-expanded={menuOpen}
                 aria-controls="side-menu"
-                className="flex size-11 items-center justify-center rounded-xl text-text hover:bg-subtle"
+                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
               >
                 <MenuIcon />
               </button>

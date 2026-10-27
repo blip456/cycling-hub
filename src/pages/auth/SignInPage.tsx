@@ -90,7 +90,7 @@ export function SignInPage() {
       <p className="mt-4 text-center">
         <Link
           to="/forgot-password"
-          className="inline-flex min-h-11 items-center rounded-xl px-3 text-[15px] font-semibold text-accent hover:bg-subtle"
+          className="inline-flex min-h-11 items-center rounded-md px-3 text-[15px] font-semibold text-accent hover:bg-subtle"
         >
           Forgot password?
         </Link>

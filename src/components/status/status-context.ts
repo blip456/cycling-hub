@@ -67,5 +67,5 @@ export function useCurrentStatus(): StatusCardSpec | null {
 
 /** Text-button look for the card's action (DESIGN.md: accent, 600, 44 px target). */
 export const statusActionClass =
-  "inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-xl px-2 text-[15px] " +
+  "inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-md px-2 text-[15px] " +
   "font-semibold text-accent hover:bg-accent-soft";
