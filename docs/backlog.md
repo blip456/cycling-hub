@@ -183,6 +183,11 @@ Tagline: All your rides by week or month, sortable and filterable, with the deta
 
 ### Details
 
+> Progress (27 Oct 2026): built and integrated on `chore/sprint-2-integration`, verified locally against
+> the real export (208 rides, 118 week and 52 month groups, every sort and filter, delete + undo, re-import
+> "Deleted earlier 1", CSV 207 rows, JSON re-import "Unchanged 207"; 253 unit tests, lint, typecheck,
+> build). Waiting for the hosted setup and the PO's test: `docs/test-checklists/v0.3.0.md`.
+
 Goal: see every imported ride, find any ride quickly, and open, delete or export it.
 
 Foundation (done first, shared by both parts): `src/features/rides/` — `api.ts` (visible rides =
