@@ -178,24 +178,54 @@ Goal: import the backfill and every later export reliably, and see the app's ver
 
 ## v0.3.0 — Rides
 Sprint: 2
-Status: planned
-Tagline: All your rides by week or month, with the details of every ride.
+Status: in progress
+Tagline: All your rides by week or month, sortable and filterable, with the details of every ride.
 
 ### Details
 
-Draft; planned in detail at the end of Sprint 1.
+Goal: see every imported ride, find any ride quickly, and open, delete or export it.
 
-- Ride list: cards on the phone (B1a), dense table on desktop (X1), sortable by column and filterable
-  (sport/tags incl. commute, date range, name search; P35); newest first by default; metric order
-  distance, moving time, average speed, average power, average HR, elevation; "—" when missing
-  (P10, P11).
-- Week and month view with totals; filter to hide commutes; tags (MTB, commute, indoor, …) (P11).
-- Empty, loading and error states (B2, B3); error as a bottom card (P12).
-- Ride detail page (B4 in design V1): all stored fields and the route shape from the polyline; no map
-  (P34).
-- Delete a ride in the app; a deleted ride is skipped on later imports, with a way to undo (P15).
-- Export rides (format to decide: CSV and/or JSON).
-- Discovery: weather per ride (P19); export format v2 for power, HR and tags (Q1).
+Foundation (done first, shared by both parts): `src/features/rides/` — `api.ts` (visible rides =
+cycling types, not deleted; one ride; soft delete and restore; export query with raw JSON), `hooks.ts`
+(TanStack Query, optimistic delete with rollback), `format.ts` (km, h:mm, km/h derived, W, bpm, m,
+"—" when missing; Brussels wall-clock dates; tags; ISO-week and month groups with totals) and
+`polyline.ts` (decode + SVG route shape), with unit tests.
+
+Part A — ride list (design V1: B1a, B2, B3a, B3b, X1):
+
+1. Phone (B1a): cards newest first, grouped by week or month (Week / Month control) with totals (rides,
+   km, moving time) per group; metric order distance, moving time, average speed, average power,
+   average HR, elevation, each in its metric colour (P10, P11); tags in the date line (P24); small route
+   shape per ride; "Hide commutes" filter (P11).
+2. Desktop (X1, ≥ 960 px): dense table, sortable by every column (aria-sort, keyboard; default date,
+   newest first) and filter bar: name search, type, period, hide commutes, clear filters (P35). Sorting
+   by anything but date shows a flat list with a count and totals line instead of week/month groups.
+3. Empty (B2, link to Import), loading (B3a) and error (B3b, bottom status card with Try again) states.
+4. Filters and sort survive navigation to a ride and back (URL search params).
+
+Part B — ride detail, delete, export (design V1: B4):
+
+5. Ride detail page `/rides/:id` (B4): name, date, tags, all stored metrics (incl. max power, max HR,
+   cadence when present, "—" otherwise), the route shape (no map, P34), Strava activity link.
+6. Delete a ride (P15): confirm, then removed at once with an Undo in the status card for a few seconds;
+   the ride is skipped by later imports ("Deleted earlier"); undo restores it.
+7. Export rides (P37): CSV (the normalised fields of the visible rides, for spreadsheets) and JSON (the
+   raw activities in the extension's export format, so it can be re-imported).
+8. Tests: list grouping and totals, sorting and filtering, detail page states, delete + undo, export
+   contents (CSV escaping, JSON re-imports with the Sprint 1 parser).
+
+Discovery (no build): weather per ride (P19), export format v2 for power, HR and tags (Q1).
+
+**Acceptance criteria**
+
+- After importing the real export, the list shows 208 rides newest first, grouped by week with correct
+  totals, and the month view groups by month.
+- On desktop every column sorts both ways; name search, type, period and hide commutes filter the table.
+- A ride opens its detail page with all values and the route shape; missing power/HR show "—".
+- Deleting a ride removes it, Undo brings it back, and a re-import reports a deleted ride as "Deleted
+  earlier".
+- The CSV opens in a spreadsheet with one row per visible ride; the JSON imports again as "Unchanged".
+- Works on phone and desktop, light and dark, WCAG 2.2 AA, no horizontal scrolling on the phone.
 
 ## Later
 

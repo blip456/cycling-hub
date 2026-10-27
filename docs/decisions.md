@@ -67,6 +67,7 @@ Source: `docs/design/V1/feedback-product-owner.md`.
 | P34 | Ride detail, product focus | **No map on the ride detail: route shape only.** The app is not a Strava rebuild; its focus is tailored training plans and AI/LLM analysis of past sessions. | D-PO5. Weighs on E2/E3 discovery. |
 | P35 | Desktop ride table     | **Sortable columns and filters** (e.g. sport/tags incl. commute, date range, name search) on the desktop table. | D-PO6, also answers X-PO1. Sprint 2. |
 | P36 | Font                   | **Inter ships with the app** (self-hosted variable font, no CDN, `font-display: swap`). | D-PO7. |
+| P37 | Export rides           | **Proposed:** export as **CSV** (normalised fields of the visible rides, for spreadsheets) and **JSON** (raw activities in the extension's export format, re-importable). | 27 Oct 2026, Sprint 2 planning; the format was open in the backlog. PO to confirm when testing. |
 
 ## Authentication
 
@@ -102,3 +103,4 @@ Source: `docs/design/V1/feedback-product-owner.md`.
 | D6  | Sprint order       | **Sprint 0: design system (designed with the PO, reviewed as HTML), then the technical setup with login; ships v0.1.0. Sprint 1: import + settings (What's new, What's next). Sprint 2: the rides section (list, detail, delete, export).** | 16 Oct 2026, G-PO4. Supersedes the kickoff brief's Sprint 1 scope. After Sprint 1 rides are imported but only visible in the import summary and history. |
 | D7  | Sprint 0 in parallel | **Sprint 0 part A (design system) and part B (repo/CI and app bootstrap) run in parallel** with three agents; the app builds against provisional Deep Ocean tokens in `src/styles/tokens.css`, which the design system replaces. | 16 Oct 2026, PO request. Supersedes the backlog's "part B starts only after the PO approves part A"; screens may still change after the design review. |
 | D8  | Sprint 1 before infra | **Sprint 1 starts before the hosted infrastructure (GitHub rulesets, Vercel, Supabase projects) is ready and before Sprint 0 is merged into `dev`.** Sprint 1 branches build on `chore/sprint-0-integration` and are verified against the local Supabase; the PO connects Vercel and Supabase afterwards. | 18 Oct 2026, PO request. Sprint 0 stays "in progress" until the PO has tested it on a preview. |
+| D9  | Local working version | **`pnpm local:setup` + `pnpm dev` give a full local version** (local Supabase in Docker, `.env.local`, a local login) while the hosted infrastructure is not ready. | 27 Oct 2026, PO request. |
