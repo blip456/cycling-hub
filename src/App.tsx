@@ -10,6 +10,7 @@ import { ImportDetailPage } from "@/pages/ImportDetailPage";
 import { ImportHistoryPage } from "@/pages/ImportHistoryPage";
 import { ImportPage } from "@/pages/ImportPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { RideDetailPage } from "@/pages/RideDetailPage";
 import { RidesPage } from "@/pages/RidesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import { WhatsNewPage } from "@/pages/WhatsNewPage";
@@ -49,6 +50,7 @@ export function App() {
       >
         <Route index element={<Navigate to="/rides" replace />} />
         <Route path="/rides" element={<RidesPage />} />
+        <Route path="/rides/:id" element={<RideDetailPage />} />
         <Route path="/import" element={<ImportPage />} />
         <Route path="/import/history" element={<ImportHistoryPage />} />
         <Route path="/import/history/:id" element={<ImportDetailPage />} />
