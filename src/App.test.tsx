@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
+import type * as ImportApi from "@/features/import/api";
+import type * as RidesApi from "@/features/rides/api";
 import { App } from "./App";
 import { StatusProvider } from "./components/status/StatusProvider";
 import { AuthContext, type AuthContextValue } from "./lib/auth/auth-context";
@@ -13,6 +15,15 @@ import { fakeAuth, fakeSession, renderWithProviders } from "./test/render";
 vi.mock("@/features/release/profile-api", () => ({
   fetchLastSeenVersion: vi.fn(async () => __APP_VERSION__),
   saveLastSeenVersion: vi.fn(async () => undefined),
+}));
+// The rides page opens with no rides.
+vi.mock("@/features/rides/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof RidesApi>()),
+  fetchRides: vi.fn(async () => []),
+}));
+vi.mock("@/features/import/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof ImportApi>()),
+  fetchImportHistory: vi.fn(async () => []),
 }));
 
 describe("route guard", () => {
@@ -25,22 +36,22 @@ describe("route guard", () => {
     },
   );
 
-  it("shows the app shell when signed in", () => {
+  it("shows the app shell when signed in", async () => {
     renderWithProviders(<App />, {
       path: "/rides",
       auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
     });
     expect(screen.getAllByRole("heading", { name: "Rides" }).length).toBeGreaterThan(0);
-    expect(screen.getByText("No rides yet.")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "No rides yet" })).toBeInTheDocument();
   });
 
-  it("sends a signed-in user away from the sign-in page", () => {
+  it("sends a signed-in user away from the sign-in page", async () => {
     renderWithProviders(<App />, {
       path: "/sign-in",
       auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
     });
     expect(screen.queryByRole("heading", { name: "Sign in" })).not.toBeInTheDocument();
-    expect(screen.getByText("No rides yet.")).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "No rides yet" })).toBeInTheDocument();
   });
 
   it("shows nothing protected while the session is loading", () => {

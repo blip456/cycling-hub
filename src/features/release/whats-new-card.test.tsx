@@ -2,6 +2,8 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "@/App";
+import type * as ImportApi from "@/features/import/api";
+import type * as RidesApi from "@/features/rides/api";
 import { mockViewport } from "@/test/match-media";
 import { fakeAuth, fakeSession, renderWithProviders } from "@/test/render";
 import { fetchLastSeenVersion, saveLastSeenVersion } from "./profile-api";
@@ -10,6 +12,15 @@ import type * as VersionModule from "./version";
 vi.mock("./profile-api", () => ({
   fetchLastSeenVersion: vi.fn(),
   saveLastSeenVersion: vi.fn(),
+}));
+// The rides page opens with no rides (no backend in these tests).
+vi.mock("@/features/rides/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof RidesApi>()),
+  fetchRides: vi.fn(async () => []),
+}));
+vi.mock("@/features/import/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof ImportApi>()),
+  fetchImportHistory: vi.fn(async () => []),
 }));
 // The running app is v0.2.0 in these tests.
 vi.mock("./version", async (importOriginal) => ({
