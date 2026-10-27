@@ -11,6 +11,7 @@
     "release-data": "node scripts/build-release-data.mjs",
     "predev": "pnpm release-data",
     "dev": "vite",
+    "local:setup": "node scripts/local-setup.mjs",
     "prebuild": "pnpm release-data",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
