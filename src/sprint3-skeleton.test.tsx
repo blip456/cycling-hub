@@ -11,6 +11,16 @@ vi.mock("@/features/release/profile-api", () => ({
   saveLastSeenVersion: vi.fn(async () => undefined),
 }));
 
+vi.mock("@/features/profile/api", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  fetchProfile: vi.fn(async () => ({
+    displayName: null,
+    birthYear: null,
+    availableDays: [],
+    goal: null,
+  })),
+}));
+
 const signedIn = () => fakeAuth({ status: "signedIn", session: fakeSession() });
 
 describe("Sprint 3 navigation (P48)", () => {
@@ -78,7 +88,7 @@ describe("Sprint 3 placeholder pages", () => {
 
   it("opens the profile page", async () => {
     renderWithProviders(<App />, { path: "/profile", auth: signedIn() });
-    expect(await screen.findByText("The athlete profile is being built.")).toBeInTheDocument();
+    expect(await screen.findByText("Your profile is empty")).toBeInTheDocument();
   });
 
   it("shows a not-found message below an unknown tab", async () => {
