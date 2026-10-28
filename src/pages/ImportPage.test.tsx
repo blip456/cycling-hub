@@ -138,7 +138,7 @@ describe("ImportPage", () => {
     const user = userEvent.setup();
     vi.mocked(api.importActivities).mockImplementation(async ({ skipped }) =>
       record({
-        activity_count: 7,
+        activity_count: 6,
         new_count: 2,
         not_a_ride_count: 0,
         skipped_count: skipped.length,
@@ -152,11 +152,12 @@ describe("ImportPage", () => {
     await screen.findByRole("heading", { name: "Import complete" });
     const input = vi.mocked(api.importActivities).mock.calls[0]![0];
     expect(input.activities.map((a) => a.strava_id)).toEqual([900000010, 900000006]);
-    expect(input.skipped).toHaveLength(5);
+    // The second copy of a duplicate ID is ignored, not listed (T10).
+    expect(input.skipped).toHaveLength(4);
 
     const list = screen.getByRole("region", { name: "Skipped (errors)" });
     const items = within(list).getAllByRole("listitem");
-    expect(items).toHaveLength(5);
+    expect(items).toHaveLength(4);
     expect(items[0]).toHaveTextContent("Activity 2 · Test hike");
     expect(items[0]).toHaveTextContent("activities[1].startDateLocal is not a valid date");
     expect(items[1]).toHaveTextContent("Activity 3 · Test gravel loop, 28 Jun 2026");

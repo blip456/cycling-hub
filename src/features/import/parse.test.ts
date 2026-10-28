@@ -185,13 +185,13 @@ describe("parseExport, level 2: every activity", () => {
         startLocal: null,
         issues: [{ path: "activities[4]", message: "is not an activity" }],
       },
-      {
-        index: 6,
-        name: "Test run",
-        startLocal: "2026-04-20T07:15:00",
-        issues: [{ path: "activities[6].id", message: "is the same as activities[0].id" }],
-      },
     ]);
+  });
+
+  it("imports the first of two activities with the same ID and ignores the other", () => {
+    const result = parseOk(text(broken));
+    expect(result.activities.filter((a) => a.strava_id === 900000010)).toHaveLength(1);
+    expect(result.skipped.map((s) => s.index)).not.toContain(6);
   });
 
   it("lists every broken field of an activity once", () => {

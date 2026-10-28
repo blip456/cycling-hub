@@ -211,7 +211,7 @@ function parseActivities(items: Json[]): {
 } {
   const activities: ImportActivity[] = [];
   const skipped: SkippedActivity[] = [];
-  const seen = new Map<number, number>();
+  const seen = new Set<number>();
 
   items.forEach((item, index) => {
     const at = `activities[${index}]`;
@@ -245,17 +245,9 @@ function parseActivities(items: Json[]): {
     }
 
     const a = result.data;
-    const first = seen.get(a.id);
-    if (first !== undefined) {
-      skipped.push({
-        index,
-        name,
-        startLocal,
-        issues: [{ path: `${at}.id`, message: `is the same as activities[${first}].id` }],
-      });
-      return;
-    }
-    seen.set(a.id, index);
+    // The same ID twice in one file: the first one is imported, later copies are ignored (T10).
+    if (seen.has(a.id)) return;
+    seen.add(a.id);
 
     activities.push({
       strava_id: a.id,

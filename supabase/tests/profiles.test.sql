@@ -23,7 +23,8 @@ values
   ('22222222-2222-2222-2222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
    'user-b@test.invalid', '', now(), now(), now());
 
-select is((select count(*)::int from public.profiles), 2, 'trigger creates a profile per new auth user');
+-- Only the test users are counted, so the test also passes on a local database with a real login.
+select is((select count(*)::int from public.profiles where id in ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222')), 2, 'trigger creates a profile per new auth user');
 
 -- As user A
 set local role authenticated;
@@ -83,7 +84,7 @@ select is(
 );
 
 delete from auth.users where id = '22222222-2222-2222-2222-222222222222';
-select is((select count(*)::int from public.profiles), 1, 'profile is deleted with its auth user');
+select is((select count(*)::int from public.profiles where id in ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222')), 1, 'profile is deleted with its auth user');
 
 select * from finish();
 rollback;
