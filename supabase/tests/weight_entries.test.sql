@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(15);
+select plan(16);
 
 select has_table('public', 'weight_entries', 'weight_entries table exists');
 select is(
@@ -47,12 +47,16 @@ select is(
   'the day now holds the replaced weight'
 );
 select throws_ok(
-  $$ insert into public.weight_entries (entry_date, weight_kg) values ('2026-10-02', 19.99) $$,
-  '23514', null, 'weight under 20 kg is rejected'
+  $$ insert into public.weight_entries (entry_date, weight_kg) values ('2026-10-02', 29.99) $$,
+  '23514', null, 'weight under 30 kg is rejected'
 );
 select throws_ok(
-  $$ insert into public.weight_entries (entry_date, weight_kg) values ('2026-10-02', 400.01) $$,
-  '23514', null, 'weight over 400 kg is rejected'
+  $$ insert into public.weight_entries (entry_date, weight_kg) values ('2026-10-02', 250.01) $$,
+  '23514', null, 'weight over 250 kg is rejected'
+);
+select throws_ok(
+  $$ insert into public.weight_entries (entry_date, weight_kg, note) values ('2026-10-03', 70, repeat('x', 101)) $$,
+  '23514', null, 'a note over 100 characters is rejected'
 );
 select throws_ok(
   $$ insert into public.weight_entries (user_id, entry_date, weight_kg) values ('22222222-2222-2222-2222-222222222222', '2026-10-05', 70) $$,

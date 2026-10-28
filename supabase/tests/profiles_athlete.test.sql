@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(14);
+select plan(15);
 
 select has_column('public', 'profiles', 'display_name', 'has display_name');
 select has_column('public', 'profiles', 'birth_year', 'has birth_year');
@@ -52,8 +52,12 @@ select is(
 );
 
 select throws_ok(
-  $$ update public.profiles set birth_year = 1850 where id = '11111111-1111-1111-1111-111111111111' $$,
-  '23514', null, 'birth year below 1900 is rejected'
+  $$ update public.profiles set birth_year = 1919 where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'birth year below 1920 is rejected'
+);
+select throws_ok(
+  $$ update public.profiles set display_name = repeat('x', 41) where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'a display name over 40 characters is rejected'
 );
 select throws_ok(
   $$ update public.profiles set available_days = '{7}' where id = '11111111-1111-1111-1111-111111111111' $$,
@@ -64,8 +68,8 @@ select throws_ok(
   '23514', null, 'reminder day 7 is rejected'
 );
 select throws_ok(
-  $$ update public.profiles set goal = repeat('x', 501) where id = '11111111-1111-1111-1111-111111111111' $$,
-  '23514', null, 'a goal over 500 characters is rejected'
+  $$ update public.profiles set goal = repeat('x', 201) where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'a goal over 200 characters is rejected'
 );
 
 update public.profiles set display_name = 'hacked' where id = '22222222-2222-2222-2222-222222222222';

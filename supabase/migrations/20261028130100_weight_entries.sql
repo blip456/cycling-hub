@@ -5,8 +5,8 @@ create table public.weight_entries (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null default auth.uid() references auth.users (id) on delete cascade,
   entry_date date not null,
-  weight_kg numeric(5, 2) not null check (weight_kg between 20 and 400),
-  note text check (note is null or char_length(note) <= 500),
+  weight_kg numeric(5, 2) not null check (weight_kg between 30 and 250),
+  note text check (note is null or char_length(note) <= 100),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint weight_entries_user_date_key unique (user_id, entry_date)
@@ -14,7 +14,7 @@ create table public.weight_entries (
 
 comment on table public.weight_entries is 'Body weight log, one entry per user per day (P45).';
 comment on column public.weight_entries.entry_date is 'The day the weight belongs to (a calendar date, no time zone).';
-comment on column public.weight_entries.weight_kg is 'Weight in kilograms, 20 to 400, two decimals (P6).';
+comment on column public.weight_entries.weight_kg is 'Weight in kilograms, 30 to 250, two decimals (P6).';
 
 -- Newest-first reads. The unique constraint's index is (user_id, entry_date); a descending index serves the list and the trend.
 create index weight_entries_user_date_desc_idx on public.weight_entries (user_id, entry_date desc);
