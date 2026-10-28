@@ -12,6 +12,8 @@ export interface StatusCardSpec {
   message: ReactNode;
   /** A link or button styled with statusActionClass. */
   action?: ReactNode;
+  /** A block under the message, for a card with a small form (the weight reminder, W3). */
+  content?: ReactNode;
   onDismiss?: () => void;
 }
 
