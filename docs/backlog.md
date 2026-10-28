@@ -27,7 +27,7 @@ rebuild).
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | E0  | **Foundation, import & rides**         | Design system, repo + standards + CI/CD, login, import with history, settings + release pages, ride list and ride detail.               | S0, S1, S2  | Export format v2 and its timing (Q1). Weather source (P19). Export format for "export rides".                    |
 | E1  | **Baseline & zones**                   | Athlete profile, guided FTP test week, power and HR zones from the test, zone history.                                                  | S3          | Test protocol (20-min, ramp)? Zone models? Manual test entry or automatic from streams (needs export v2 streams)? |
-| E2  | **Training plan — general fitness**    | Periodized plan (base / build / peak) around Wed / Sun / optional ride, weekly view, session detail with watt and HR targets.           | —           | Rule-based, Claude API or hybrid? How does the plan adapt to missed sessions?                                    |
+| E2  | **Training plan — general fitness**    | Periodized plan (base / build / peak) around Wed / Sun / optional ride, weekly view, session detail with watt and HR targets.           | S4          | Rule-based, Claude API or hybrid? How does the plan adapt to missed sessions?                                    |
 | E3  | **Plan vs actual & progress**          | Match rides to sessions, compliance, trends: FTP estimate, power curve, efficiency factor, aerobic decoupling, fitness / fatigue / form. | —           | Which metrics are reliable from the export? Most history has no power or HR (P5).                                 |
 | E4  | **Event mode**                         | Event with date, distance, elevation, goal; plan built backwards, taper, pacing and fueling targets.                                    | —           | Do event mode and general mode coexist?                                                                           |
 | E5  | **Body composition**                   | Weight log and trend (weight log delivered in S3, P45); body composition and the link to training load remain.                          | S3 (part)   | Manual entry or smart-scale import?                                                                               |
@@ -377,6 +377,109 @@ Two parts; part B started after the PO approved part A (D2, wireframes in `docs/
 - Streams are gzip JSON per ride in Storage (T13): reading many rides in the browser can be slow, so the
   best-effort search should run on the newest rides with power first, or in a database function.
 - FTP from a 20-minute effort is an estimate; label it as such.
+
+## v0.5.0 — Training plan
+Sprint: 4
+Status: planned
+Tagline: A training plan built around your week and your FTP, with a weekly view and every session spelled out in watts and heart rate.
+
+### Details
+
+> Proposed 28 Oct 2026 (epic E2). Draft for the PO: nothing starts before the PO's go and the answers to the
+> open questions below.
+
+Goal: turn what the app now knows (available days and goal from the profile, FTP and zones from the
+baseline, ride history, weight) into a plan the PO can follow: which session on which day, how long, at
+which watts and heart rate, and why.
+
+Two parts; part B starts only after the PO approves part A (D2).
+
+**Scope options (the PO decides, Q-E2-1)**
+
+| Option | What it is                                                                                                                          | Good                                                              | Costs                                                                                                       |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| A      | **Rule-based plan** built in the app from the baseline, profile and a session library. No AI service.                               | Predictable, testable, free to run, no new secrets or server code | Less personal; the explanation text is templated                                                            |
+| B      | **A plus Claude** (Anthropic API) that explains and adjusts the plan in plain language.                                              | Personal wording, answers "why this session"                      | Needs a server function and an API key stored as a secret (never in the app), running cost, a new failure mode |
+| C      | **Claude builds the plan** from the data.                                                                                           | Most flexible                                                     | Hardest to test and to trust; the same server and key needs as B; needs guardrails on load and watts          |
+
+My reading, for the PO to weigh: A in this sprint gives a plan that works and can be tested, and B can sit
+on top of it later as the "analyse past sessions" layer from P34 once E3 has plan vs actual data. C
+skips the testable part. This is a proposal, not a decision.
+
+**Part A: Discovery and design (gate: PO approves)**
+
+1. Answer the open questions below.
+2. Wireframes and design (Deep Ocean, light + dark, phone + desktop): Plan overview (phases and weeks),
+   Weekly view (phone list, desktop week grid), Session detail (steps, targets, why), Create plan
+   (start date, length, days, hours), Edit a session (move, skip, mark done), Plan needs a baseline
+   (empty state), Plan ends and next steps.
+3. Decisions written to `docs/decisions.md`.
+
+**Part B: Build (option A; Claude pieces only if the PO picks B)**
+
+4. Data: additive migration for `training_plans` (start date, number of weeks, weekly hours, days used,
+   status, snapshot of FTP and goal when it was made) and `planned_sessions` (plan, date, kind, title,
+   duration, structure as steps, status planned / done / skipped, nullable `activity_id` for E3 to fill),
+   RLS, grants, pgTAP tests, `pnpm db:types`.
+5. Plan engine (pure TypeScript in `src/features/plan/`, no UI, no database): periodization with base,
+   build, peak and a recovery week every third or fourth week; weekly load progression; the Wednesday and
+   Sunday sessions plus the optional third ride as set in the profile; a session library (endurance,
+   tempo, sweet spot, threshold intervals, recovery, long ride) with steps in % of FTP; targets turned
+   into watts and heart rate zones with the athlete's zones (P40). Deterministic: the same input gives the
+   same plan. Heavy unit tests.
+6. Create plan flow: needs an FTP; start date, length (for example 8 or 12 weeks), days and hours
+   (defaulting from the profile), a preview, save.
+7. Plan page with a Plan item in the menu: overview of phases and weeks, a weekly view (phone list,
+   desktop week grid) and today's session on top.
+8. Session detail: warm-up, main set, cool-down as steps with watts and bpm, duration, and a short reason
+   ("builds endurance for the base phase").
+9. Edit sessions by hand: move to another day, skip, mark done, with Undo. Missed sessions are not
+   re-planned automatically (E3; see Q-E2-4).
+10. When the baseline changes: show "Your FTP changed. Update targets?" and recompute the watts of the
+    sessions that have not happened yet. Past sessions keep their targets.
+11. Empty, loading and error states, plain English, metric units.
+12. Tests: plan engine rules (phases, recovery weeks, load progression, days respected, no sessions on
+    unavailable days), target conversion from FTP and zones, move / skip / done rules, the FTP-change
+    update.
+
+**Open questions for the PO (Q-E2-x)**
+
+| #      | Question                                                          | Options                                                                                                                                                                                  |
+| ------ | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q-E2-1 | Rule-based, Claude, or a mix? (the E2 discovery question)         | A, B or C in the table above.                                                                                                                                                            |
+| Q-E2-2 | How long is a plan?                                               | A fixed 8 or 12 weeks; the PO picks (4 to 16); open-ended, rolling four weeks at a time (needs regeneration, more work).                                                                 |
+| Q-E2-3 | What does a normal week look like?                                | Wed structured (intervals), Sun long endurance, optional third ride easy or tempo (as in the roadmap); or all sessions chosen by the engine from the available days.                      |
+| Q-E2-4 | What happens with a missed session?                               | Nothing automatic: the PO moves or skips it (this sprint); or the engine re-plans the rest of the week (more rules, better with E3 data); or a prompt after the week ("redo or drop?"). |
+| Q-E2-5 | Indoor, outdoor, or both?                                         | Targets in watts and heart rate that work for both; or an indoor variant (trainer, ERG steps) per session; or flag sessions as indoor-friendly.                                           |
+| Q-E2-6 | Do sessions end up on a calendar?                                 | App only; or an ICS calendar file download (small); or a live calendar subscription link (needs a server endpoint; later).                                                             |
+| Q-E2-7 | Is the plan the same when you have no power data in the last weeks? | Use the FTP on file; warn when it is older than N weeks and suggest a new test week; or block creating a plan until the baseline is recent.                                              |
+| Q-E2-8 | Should weight play a part?                                        | Not in this sprint (keeps load rules simple); or only show it next to the plan; W/kg targets later with E3.                                                                              |
+
+**Out of scope (later epics)**
+
+- Matching rides to planned sessions, compliance, fitness / fatigue / form, adaptive re-planning (E3).
+- Event mode: an event date, tapering and pacing / fuelling targets (E4).
+- Nutrition (E6); printable or PDF plans (P1).
+- AI analysis of past sessions, unless the PO picks option B.
+
+**Acceptance criteria (draft)**
+
+- With an FTP and a profile, the PO can create a plan, see its phases and weeks, and every week lists
+  sessions only on days the PO is available.
+- Each session shows its steps with watts and heart rate that match the current zones.
+- The PO can move, skip and mark a session done, and undo it.
+- Changing the baseline offers to update the targets of future sessions only.
+- Without an FTP, the page explains how to get one (suggestion from rides, manual entry, test week).
+- The same inputs always produce the same plan.
+- Phone and desktop, light and dark, WCAG 2.2 AA, no horizontal scrolling on the phone.
+
+**Risks**
+
+- Training load rules are easy to get wrong: a too steep progression is a health and trust issue. The
+  engine caps weekly increases, is tested, and the PO reviews example plans in part A before any build.
+- Session library and zone targets need the PO's coaching preferences (Q-E2-3); wrong defaults cost a
+  re-plan.
+- Option B adds a secret, a server function and a running cost, and should not be started without Q-E2-1.
 
 ## Later
 
