@@ -182,11 +182,14 @@ Goal: import the backfill and every later export reliably, and see the app's ver
 
 ## v0.3.0 — Rides
 Sprint: 2
-Status: in progress
+Status: shipped
 Tagline: All your rides by week or month, sortable and filterable, with the details of every ride, and a Chrome extension that exports them from Strava with power and heart rate.
 
 ### Details
 
+> Delivered 28 Oct 2026: tested and approved by the PO; merged to `main` with `dev` in PR #5. The
+> production release (release PR #6) and the production database migrations are still pending (see v0.2.0).
+>
 > Progress (27 Oct 2026): built and integrated on `chore/sprint-2-integration`, verified locally against
 > the real export (208 rides, 118 week and 52 month groups, every sort and filter, delete + undo, re-import
 > "Deleted earlier 1", CSV 207 rows, JSON re-import "Unchanged 207"; 253 unit tests, lint, typecheck,
