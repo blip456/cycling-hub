@@ -23,38 +23,39 @@ The plan lives in [`docs/backlog.md`](docs/backlog.md) (roadmap and sprints) and
 You need Node 22, pnpm 10 (`corepack enable` installs the version from `package.json`) and Docker
 (Docker Desktop, OrbStack or Colima) for the local Supabase.
 
-```bash
-pnpm install          # dependencies, and installs the git hooks (lefthook)
-cp .env.example .env.local
-pnpm db:start         # local Supabase in Docker; prints the API URL and the publishable key
+```sh
+pnpm install
+pnpm local:setup      # local Supabase in Docker + .env.local + a local login
 pnpm dev              # http://localhost:5173
 ```
 
-Put the API URL and publishable key that `pnpm db:start` prints into `.env.local`
-(`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`; see `.env.example`). Create a local user in
-Supabase Studio (the URL is printed too) under Authentication → Users → Add user. The local email inbox
-(for password reset mails) is Mailpit, also printed by `pnpm db:start`.
+`pnpm local:setup` starts the local Supabase (`pnpm db:start`), waits until it is healthy, writes the
+local URL and publishable key to `.env.local` and creates a local login (`rider@local.test` /
+`local-password-only`; override with `LOCAL_USER_EMAIL` and `LOCAL_USER_PASSWORD`). Run it again after a
+restart; it is safe to repeat. Password-reset emails land in the local inbox it prints. To start from an
+empty database run `pnpm db:reset` and then `pnpm local:setup` again (the reset removes the user).
 
 Only the URL and the publishable key ever go into the app. Never commit `.env.local` or any key.
 
 ## Scripts
 
-| Script           | What it does                                                                 |
-| ---------------- | ---------------------------------------------------------------------------- |
-| `pnpm dev`       | Start the dev server                                                         |
-| `pnpm build`     | Typecheck and build the production bundle into `dist/`                       |
-| `pnpm preview`   | Serve the production build locally                                           |
-| `pnpm lint`      | ESLint (`pnpm lint:fix` fixes what it can)                                   |
-| `pnpm format`    | Format everything with Prettier (`pnpm format:check` only checks)            |
-| `pnpm typecheck` | TypeScript, no output                                                        |
-| `pnpm test`      | Run the tests once (`pnpm test:watch` in watch mode)                         |
-| `pnpm coverage`  | Tests with a coverage report in `coverage/`                                  |
-| `pnpm db:start`  | Start the local Supabase (Docker), without the services the app does not use |
-| `pnpm db:stop`   | Stop it                                                                      |
-| `pnpm db:reset`  | Recreate the local database from `supabase/migrations` (and the seed)        |
-| `pnpm db:lint`   | Lint the local database schema                                               |
-| `pnpm db:test`   | Run the pgTAP tests in `supabase/tests`                                      |
-| `pnpm db:types`  | Regenerate `src/lib/supabase/database.types.ts` from the local database      |
+| Script             | What it does                                                                 |
+| ------------------ | ---------------------------------------------------------------------------- |
+| `pnpm dev`         | Start the dev server                                                         |
+| `pnpm build`       | Typecheck and build the production bundle into `dist/`                       |
+| `pnpm local:setup` | Local Supabase + `.env.local` + local login, ready for `pnpm dev`            |
+| `pnpm preview`     | Serve the production build locally                                           |
+| `pnpm lint`        | ESLint (`pnpm lint:fix` fixes what it can)                                   |
+| `pnpm format`      | Format everything with Prettier (`pnpm format:check` only checks)            |
+| `pnpm typecheck`   | TypeScript, no output                                                        |
+| `pnpm test`        | Run the tests once (`pnpm test:watch` in watch mode)                         |
+| `pnpm coverage`    | Tests with a coverage report in `coverage/`                                  |
+| `pnpm db:start`    | Start the local Supabase (Docker), without the services the app does not use |
+| `pnpm db:stop`     | Stop it                                                                      |
+| `pnpm db:reset`    | Recreate the local database from `supabase/migrations` (and the seed)        |
+| `pnpm db:lint`     | Lint the local database schema                                               |
+| `pnpm db:test`     | Run the pgTAP tests in `supabase/tests`                                      |
+| `pnpm db:types`    | Regenerate `src/lib/supabase/database.types.ts` from the local database      |
 
 Before pushing: `pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build`.
 
@@ -121,6 +122,17 @@ Versions follow the sprints (D5, D6): Sprint 0 ships v0.1.0, every next sprint t
    the version in the app always matches a release. Other pushes to `main` build nothing.
 4. The **Back-merge** workflow opens a PR `main` → `dev` (`chore(release): back-merge vX.Y.Z into dev`).
    Merge it with a **merge commit** so `dev` gets the version bump and keeps `main`'s history.
+
+### What's new and What's next in the app
+
+Both pages are built from files in the repository at build time; the app never calls GitHub.
+`scripts/build-release-data.mjs` reads `CHANGELOG.md` (written by release-please; no file yet means "No
+releases yet") and the sprint sections of `docs/backlog.md`, and writes
+`src/features/release/generated/{changelog,roadmap}.json`. Those files are **not committed**
+(`.gitignore`): `pnpm dev`, `build`, `lint`, `typecheck`, `test` and `coverage` regenerate them first
+(`pre*` scripts in `package.json`; by hand: `pnpm release-data`), so CI and Vercel always build from the
+current changelog and backlog, and `pnpm dev` regenerates them when either file changes. A broken sprint
+entry in the backlog fails the build with a list of what is wrong (see "Sprint format" in the backlog).
 
 Hotfixes between sprints use `fix:` titles: before 1.0 a `feat:` bumps the minor version, which belongs
 to the next sprint.

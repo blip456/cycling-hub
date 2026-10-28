@@ -1,11 +1,30 @@
 import { useEffect, useRef, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router";
-import { CloseIcon, MenuIcon } from "./icons";
-import { titleForPath } from "./nav-items";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
+import { useWhatsNew } from "@/features/release/use-whats-new";
+import { APP_VERSION } from "@/features/release/version";
+import { DESKTOP_QUERY, useMediaQuery } from "@/lib/use-media-query";
+import { BackIcon, CloseIcon, MenuIcon } from "./icons";
+import { subPageForPath, titleForPath } from "./nav-items";
 import { SideMenu } from "./SideMenu";
-import { StatusCard } from "./StatusCard";
+import { StatusCard } from "./status/StatusCard";
+import {
+  STATUS_PRIORITY,
+  statusActionClass,
+  useClaimSidePlacement,
+  useCurrentStatus,
+  useStatusCard,
+} from "./status/status-context";
 
-const DESKTOP_QUERY = "(min-width: 960px)";
+const WHATS_NEW_PATH = "/settings/whats-new";
+
+/**
+ * Desktop: the permanent side menu, with the current status card at its bottom (P31). Kept apart from
+ * AppShell so a changing card re-renders only this part.
+ */
+function DesktopSideMenu() {
+  const status = useCurrentStatus();
+  return <SideMenu status={status ? <StatusCard spec={status} placement="side" /> : null} />;
+}
 
 /** Location state used to show a one-off confirmation (e.g. "Password changed") at the bottom of the page (P12). */
 export interface FlashState {
@@ -16,6 +35,7 @@ export function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
   const title = titleForPath(location.pathname);
+  const subPage = subPageForPath(location.pathname);
   const flash = (location.state as FlashState | null)?.flash;
   const dialogRef = useRef<HTMLDialogElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -51,6 +71,35 @@ export function AppShell() {
     void navigate(location.pathname, { replace: true, state: null });
   };
 
+  // P31: on desktop the status card moves from the bottom of the page into the side menu.
+  const isDesktop = useMediaQuery(DESKTOP_QUERY);
+  useClaimSidePlacement(isDesktop);
+
+  useStatusCard(
+    "flash",
+    STATUS_PRIORITY.flash,
+    flash ? { tone: "success", message: flash, onDismiss: dismissFlash } : null,
+  );
+
+  // B1d: once after an update; not on What's new itself, which marks the version as seen.
+  const whatsNew = useWhatsNew();
+  useStatusCard(
+    "whats-new",
+    STATUS_PRIORITY.whatsNew,
+    whatsNew.state === "updated" && location.pathname !== WHATS_NEW_PATH
+      ? {
+          tone: "info",
+          message: `Updated to v${APP_VERSION}`,
+          action: (
+            <Link to={WHATS_NEW_PATH} className={statusActionClass}>
+              What&apos;s new
+            </Link>
+          ),
+          onDismiss: whatsNew.markSeen,
+        }
+      : null,
+  );
+
   return (
     <div className="min-h-dvh">
       <a
@@ -60,9 +109,9 @@ export function AppShell() {
         Skip to content
       </a>
 
-      {/* Desktop: permanent side menu */}
-      <aside className="fixed inset-y-0 left-0 hidden w-56 bg-surface px-3 py-6 lg:block">
-        <SideMenu />
+      {/* Desktop: permanent side menu on the page background (DESIGN.md) */}
+      <aside className="fixed inset-y-0 left-0 hidden w-56 px-3 py-6 lg:block">
+        {isDesktop ? <DesktopSideMenu /> : <SideMenu />}
       </aside>
 
       {/* Phone: drawer */}
@@ -104,18 +153,28 @@ export function AppShell() {
         {/* Phone: top bar */}
         <header className="sticky top-0 z-10 bg-bg pt-[env(safe-area-inset-top)] lg:hidden">
           <div className="flex h-14 items-center gap-1.5 px-2">
-            <button
-              ref={menuButtonRef}
-              type="button"
-              onClick={openMenu}
-              aria-label="Open menu"
-              aria-haspopup="dialog"
-              aria-expanded={menuOpen}
-              aria-controls="side-menu"
-              className="flex size-11 items-center justify-center rounded-xl text-text hover:bg-subtle"
-            >
-              <MenuIcon />
-            </button>
+            {subPage ? (
+              <Link
+                to={subPage.parent}
+                aria-label="Back"
+                className="flex size-11 items-center justify-center rounded-xl text-text hover:bg-subtle"
+              >
+                <BackIcon />
+              </Link>
+            ) : (
+              <button
+                ref={menuButtonRef}
+                type="button"
+                onClick={openMenu}
+                aria-label="Open menu"
+                aria-haspopup="dialog"
+                aria-expanded={menuOpen}
+                aria-controls="side-menu"
+                className="flex size-11 items-center justify-center rounded-xl text-text hover:bg-subtle"
+              >
+                <MenuIcon />
+              </button>
+            )}
             <h1 className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">
               {title}
             </h1>
@@ -134,8 +193,6 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
-
-      {flash ? <StatusCard onDismiss={dismissFlash}>{flash}</StatusCard> : null}
     </div>
   );
 }

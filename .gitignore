@@ -11,3 +11,5 @@ supabase/.branches/
 playwright-report/
 test-results/
 .claude/worktrees/
+# Build-time release data (scripts/build-release-data.mjs); generated before dev, build, lint, typecheck and tests.
+src/features/release/generated/

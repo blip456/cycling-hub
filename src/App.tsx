@@ -6,10 +6,14 @@ import { ForgotPasswordPage } from "@/pages/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "@/pages/auth/ResetPasswordPage";
 import { SignInPage } from "@/pages/auth/SignInPage";
 import { ConfigErrorPage } from "@/pages/ConfigErrorPage";
+import { ImportDetailPage } from "@/pages/ImportDetailPage";
+import { ImportHistoryPage } from "@/pages/ImportHistoryPage";
 import { ImportPage } from "@/pages/ImportPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { RidesPage } from "@/pages/RidesPage";
 import { SettingsPage } from "@/pages/SettingsPage";
+import { WhatsNewPage } from "@/pages/WhatsNewPage";
+import { WhatsNextPage } from "@/pages/WhatsNextPage";
 
 /** All routes. There is deliberately no sign-up route (A1). */
 export function App() {
@@ -46,7 +50,11 @@ export function App() {
         <Route index element={<Navigate to="/rides" replace />} />
         <Route path="/rides" element={<RidesPage />} />
         <Route path="/import" element={<ImportPage />} />
+        <Route path="/import/history" element={<ImportHistoryPage />} />
+        <Route path="/import/history/:id" element={<ImportDetailPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/whats-new" element={<WhatsNewPage />} />
+        <Route path="/settings/whats-next" element={<WhatsNextPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
