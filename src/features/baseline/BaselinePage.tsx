@@ -1,14 +1,15 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 import { TabNav, type TabItem } from "@/components/TabNav";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { BaselineTab } from "./BaselineTab";
 import { HistoryTab } from "./HistoryTab";
+import { ResultPage } from "./ResultPage";
+import { SessionPage } from "./SessionPage";
+import { SuggestionPage } from "./SuggestionPage";
+import { TestWeekPage } from "./TestWeekPage";
+import { UpdatePage } from "./UpdatePage";
+import { ValuesPage } from "./ValuesPage";
 import { ZonesTab } from "./ZonesTab";
-
-// owned by baseline stream: this folder (src/features/baseline/) is yours, including the data hooks. The
-// route /baseline/* and the menu item are already wired. Flows below the tabs (update baseline, FTP
-// suggestion, manual entry, guided test week, session, result: Z1b to Z6) get their own <Route> here and a
-// sub-page entry in src/components/nav-items.ts (Back on the phone).
 
 const tabs: readonly TabItem[] = [
   { to: "/baseline", label: "Baseline", end: true },
@@ -18,11 +19,21 @@ const tabs: readonly TabItem[] = [
 
 /** Z1 to Z10: Baseline with the tabs Baseline, Zones and History (P48). The shell shows the page title. */
 export function BaselinePage() {
+  // The tabs belong to the three tab pages; the flows below them (update, suggestion, test week) are
+  // sub-pages with Back on the phone (nav-items.ts) and no tabs.
+  const { pathname } = useLocation();
+  const onTab = tabs.some((tab) => tab.to === pathname.replace(/(.)\/$/, "$1"));
   return (
     <>
-      <TabNav label="Baseline" tabs={tabs} />
+      {onTab ? <TabNav label="Baseline" tabs={tabs} /> : null}
       <Routes>
         <Route index element={<BaselineTab />} />
+        <Route path="update" element={<UpdatePage />} />
+        <Route path="suggestion" element={<SuggestionPage />} />
+        <Route path="values" element={<ValuesPage />} />
+        <Route path="test-week" element={<TestWeekPage />} />
+        <Route path="test-week/:position" element={<SessionPage />} />
+        <Route path="test-week/:position/result" element={<ResultPage />} />
         <Route path="zones" element={<ZonesTab />} />
         <Route path="history" element={<HistoryTab />} />
         <Route path="*" element={<NotFoundPage />} />
