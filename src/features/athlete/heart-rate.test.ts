@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { findHighestHeartRate, highestPlausibleHeartRate } from "./heart-rate";
+import { findHighestHeartRate, highestPlausibleHeartRate, lthrFrom20MinTest } from "./heart-rate";
 import type { NumericStream, RideStream } from "./streams";
 
 function perSecond(values: (number | null)[]): NumericStream {
@@ -80,5 +80,32 @@ describe("findHighestHeartRate", () => {
     expect(await findHighestHeartRate([])).toBeNull();
     expect(await findHighestHeartRate([ride("a", null)])).toBeNull();
     expect(await findHighestHeartRate([ride("a", 150)], { maxRides: 0 })).toBeNull();
+  });
+});
+
+describe("lthrFrom20MinTest", () => {
+  // 10 minutes of warm-up, then the 20-minute test: 5 minutes at 150, 15 minutes at 170.
+  const warmUp = constant(120, 600);
+  const test = [...constant(150, 300), ...constant(170, 900)];
+  it("averages the last 15 minutes of the 20", () => {
+    expect(lthrFrom20MinTest(perSecond([...warmUp, ...test, ...constant(110, 300)]), 600)).toBe(
+      170,
+    );
+  });
+  it("skips the first 5 minutes", () => {
+    const mixed = [...constant(150, 300), ...constant(160, 450), ...constant(180, 450)];
+    expect(lthrFrom20MinTest(perSecond([...warmUp, ...mixed]), 600)).toBe(170);
+  });
+  it("leaves out dropouts but needs 90 % coverage", () => {
+    const some = [...constant(150, 300), ...constant(170, 850), ...constant(0, 50)];
+    expect(lthrFrom20MinTest(perSecond([...warmUp, ...some]), 600)).toBe(170);
+    const many = [...constant(150, 300), ...constant(170, 700), ...constant(0, 200)];
+    expect(lthrFrom20MinTest(perSecond([...warmUp, ...many]), 600)).toBeNull();
+  });
+  it("is null when the stream ends early, is missing or the start is not a number", () => {
+    expect(lthrFrom20MinTest(perSecond([...warmUp, ...constant(170, 600)]), 600)).toBeNull();
+    expect(lthrFrom20MinTest(null, 0)).toBeNull();
+    expect(lthrFrom20MinTest(perSecond(test), NaN)).toBeNull();
+    expect(lthrFrom20MinTest(perSecond(test), -5)).toBeNull();
   });
 });

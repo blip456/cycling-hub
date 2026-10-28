@@ -1,5 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { baselineSchema, ftpSchema, lthrSchema, maxHrSchema, profileSchema } from "./profile";
+import {
+  baselineSchema,
+  ftpSchema,
+  lthrSchema,
+  maxHrSchema,
+  profileSchema,
+  restingHrSchema,
+  weekdayFromDb,
+  weekdaysFromDb,
+  weekdaysToDb,
+  weekdayToDb,
+  weightEntrySchema,
+} from "./profile";
+import { WEEKDAYS } from "./dates";
 
 const now = new Date("2026-10-28T12:00:00Z");
 const schema = profileSchema(now);
@@ -18,19 +31,19 @@ describe("profileSchema", () => {
     expect(result.displayName).toBe("Sam");
     expect(result.goal).toBeNull();
   });
-  it("limits the name to 60 characters and the goal to 500", () => {
-    expect(schema.safeParse({ displayName: "a".repeat(60) }).success).toBe(true);
-    expect(schema.safeParse({ displayName: "a".repeat(61) }).success).toBe(false);
-    expect(schema.safeParse({ goal: "g".repeat(500) }).success).toBe(true);
-    expect(schema.safeParse({ goal: "g".repeat(501) }).success).toBe(false);
+  it("limits the name to 40 characters and the goal to 200", () => {
+    expect(schema.safeParse({ displayName: "a".repeat(40) }).success).toBe(true);
+    expect(schema.safeParse({ displayName: "a".repeat(41) }).success).toBe(false);
+    expect(schema.safeParse({ goal: "g".repeat(200) }).success).toBe(true);
+    expect(schema.safeParse({ goal: "g".repeat(201) }).success).toBe(false);
   });
   it("counts the limit after trimming", () => {
-    expect(schema.safeParse({ displayName: ` ${"a".repeat(60)} ` }).success).toBe(true);
+    expect(schema.safeParse({ displayName: ` ${"a".repeat(40)} ` }).success).toBe(true);
   });
-  it("accepts birth years from 1900 to the current year", () => {
-    expect(schema.safeParse({ birthYear: 1900 }).success).toBe(true);
+  it("accepts birth years from 1920 to the current year", () => {
+    expect(schema.safeParse({ birthYear: 1920 }).success).toBe(true);
     expect(schema.safeParse({ birthYear: 2026 }).success).toBe(true);
-    expect(schema.safeParse({ birthYear: 1899 }).success).toBe(false);
+    expect(schema.safeParse({ birthYear: 1919 }).success).toBe(false);
     expect(schema.safeParse({ birthYear: 2027 }).success).toBe(false);
   });
   it("reads the current year in Brussels", () => {
@@ -54,11 +67,11 @@ describe("profileSchema", () => {
     expect(schema.safeParse({ availableDays: ["funday"] }).success).toBe(false);
   });
   it("gives plain-English messages", () => {
-    const result = schema.safeParse({ displayName: "a".repeat(61), birthYear: 1800 });
+    const result = schema.safeParse({ displayName: "a".repeat(41), birthYear: 1800 });
     expect(result.success).toBe(false);
     const messages = result.error?.issues.map((i) => i.message) ?? [];
-    expect(messages).toContain("Name can be at most 60 characters.");
-    expect(messages).toContain("Enter a year from 1900.");
+    expect(messages).toContain("Name can be at most 40 characters.");
+    expect(messages).toContain("Enter a year from 1920.");
   });
 });
 
@@ -93,13 +106,24 @@ describe("baseline limits", () => {
 
 describe("baselineSchema", () => {
   it("accepts any subset and fills the rest with null", () => {
-    expect(baselineSchema.parse({})).toEqual({ ftp: null, maxHr: null, lthr: null });
-    expect(baselineSchema.parse({ ftp: 250 })).toEqual({ ftp: 250, maxHr: null, lthr: null });
+    expect(baselineSchema.parse({})).toEqual({
+      ftp: null,
+      maxHr: null,
+      restingHr: null,
+      lthr: null,
+    });
+    expect(baselineSchema.parse({ ftp: 250 })).toEqual({
+      ftp: 250,
+      maxHr: null,
+      restingHr: null,
+      lthr: null,
+    });
   });
   it("accepts a full baseline", () => {
-    expect(baselineSchema.parse({ ftp: 250, maxHr: 190, lthr: 170 })).toEqual({
+    expect(baselineSchema.parse({ ftp: 250, maxHr: 190, restingHr: 48, lthr: 170 })).toEqual({
       ftp: 250,
       maxHr: 190,
+      restingHr: 48,
       lthr: 170,
     });
   });
@@ -113,5 +137,59 @@ describe("baselineSchema", () => {
   });
   it("rejects out-of-range values", () => {
     expect(baselineSchema.safeParse({ ftp: 20 }).success).toBe(false);
+  });
+});
+
+describe("restingHrSchema", () => {
+  it("accepts 25 to 120 bpm", () => {
+    expect(restingHrSchema.safeParse(25).success).toBe(true);
+    expect(restingHrSchema.safeParse(120).success).toBe(true);
+    expect(restingHrSchema.safeParse(24).success).toBe(false);
+    expect(restingHrSchema.safeParse(121).success).toBe(false);
+  });
+});
+
+describe("weightEntrySchema", () => {
+  it("accepts 30 to 250 kg with decimals", () => {
+    expect(weightEntrySchema.parse({ kg: 30 }).kg).toBe(30);
+    expect(weightEntrySchema.parse({ kg: 250 }).kg).toBe(250);
+    expect(weightEntrySchema.parse({ kg: 72.456 }).kg).toBe(72.46);
+    expect(weightEntrySchema.safeParse({ kg: 29.9 }).success).toBe(false);
+    expect(weightEntrySchema.safeParse({ kg: 250.1 }).success).toBe(false);
+    expect(weightEntrySchema.safeParse({ kg: NaN }).success).toBe(false);
+    expect(weightEntrySchema.safeParse({ kg: "72" }).success).toBe(false);
+  });
+  it("limits the note to 100 characters, trimmed, empty is null", () => {
+    expect(weightEntrySchema.parse({ kg: 70 }).note).toBeNull();
+    expect(weightEntrySchema.parse({ kg: 70, note: "  " }).note).toBeNull();
+    expect(weightEntrySchema.parse({ kg: 70, note: " ok " }).note).toBe("ok");
+    expect(weightEntrySchema.safeParse({ kg: 70, note: "n".repeat(100) }).success).toBe(true);
+    expect(weightEntrySchema.safeParse({ kg: 70, note: "n".repeat(101) }).success).toBe(false);
+  });
+  it("gives plain-English messages", () => {
+    expect(weightEntrySchema.safeParse({ kg: 20 }).error?.issues[0]?.message).toBe(
+      "Weight must be at least 30 kg.",
+    );
+  });
+});
+
+describe("weekday mapping", () => {
+  it("maps Monday to Sunday onto 1 to 6 and 0", () => {
+    expect(WEEKDAYS.map(weekdayToDb)).toEqual([1, 2, 3, 4, 5, 6, 0]);
+  });
+  it("round-trips every weekday", () => {
+    for (const day of WEEKDAYS) expect(weekdayFromDb(weekdayToDb(day))).toBe(day);
+  });
+  it("rejects numbers outside 0 to 6", () => {
+    expect(weekdayFromDb(7)).toBeNull();
+    expect(weekdayFromDb(-1)).toBeNull();
+    expect(weekdayFromDb(null)).toBeNull();
+  });
+  it("converts lists: unique, database order up, week order down", () => {
+    expect(weekdaysToDb(["sun", "wed", "mon", "wed"])).toEqual([0, 1, 3]);
+    expect(weekdaysFromDb([0, 3, 1, 3])).toEqual(["mon", "wed", "sun"]);
+    expect(weekdaysFromDb(null)).toEqual([]);
+    expect(weekdaysFromDb([9, 2])).toEqual(["tue"]);
+    expect(weekdaysToDb([])).toEqual([]);
   });
 });
