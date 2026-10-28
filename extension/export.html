@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Export from Strava · Cycling Hub</title>
+  </head>
+  <body>
+    <main>
+      <h1>Export from Strava</h1>
+      <p class="lead">
+        Saves all your Strava activities in one file for the Import page of Cycling Hub. Sign in to
+        strava.com in this browser first.
+      </p>
+
+      <div class="actions">
+        <button type="button" class="primary" id="start">Export activities</button>
+        <button type="button" class="secondary" id="stop" hidden>Stop</button>
+      </div>
+      <p class="caption" id="cache-info"></p>
+
+      <section id="progress-section" aria-labelledby="progress-text" hidden>
+        <p id="progress-text" role="status" aria-live="polite"></p>
+        <progress id="progress" aria-labelledby="progress-text"></progress>
+      </section>
+
+      <section id="result" aria-labelledby="result-title" hidden>
+        <h2 id="result-title">Export saved</h2>
+        <p class="caption" id="result-file"></p>
+        <dl class="numbers">
+          <div>
+            <dt>Activities</dt>
+            <dd id="n-activities"></dd>
+          </div>
+          <div>
+            <dt>Rides with GPX</dt>
+            <dd id="n-gpx"></dd>
+          </div>
+          <div>
+            <dt>Rides without GPX</dt>
+            <dd id="n-no-gpx"></dd>
+          </div>
+          <div>
+            <dt>Failed</dt>
+            <dd id="n-failed"></dd>
+          </div>
+        </dl>
+        <p class="caption" id="result-note"></p>
+      </section>
+
+      <section class="again" aria-labelledby="again-title">
+        <h2 id="again-title">Ride details</h2>
+        <p class="caption" id="again-help">
+          Route, power and heart rate of each ride are kept after the first export, so later exports
+          only download new or changed rides.
+        </p>
+        <button type="button" class="secondary" id="again" aria-describedby="again-help">
+          Download ride details again
+        </button>
+      </section>
+    </main>
+
+    <div id="status-slot"></div>
+
+    <script type="module" src="./src/export.ts"></script>
+  </body>
+</html>

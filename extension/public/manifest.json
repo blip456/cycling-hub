@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Cycling Hub: Strava export",
+  "version": "0.1.0",
+  "description": "Exports your Strava activities, with route, power and heart rate, into one file for Cycling Hub.",
+  "action": {
+    "default_title": "Export from Strava",
+    "default_icon": { "128": "icon.png" }
+  },
+  "icons": { "128": "icon.png" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "permissions": ["unlimitedStorage"],
+  "host_permissions": ["https://www.strava.com/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
