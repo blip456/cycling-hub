@@ -302,30 +302,33 @@ Two parts; part B starts only after the PO approves part A (D2).
 6. Baseline page (new menu item, or under Settings if the design says so) with the current FTP and heart
    rate values, and "Update baseline".
 7. Guided FTP test week: protocol steps with the session targets, a checklist per session and a place to
-   enter the result. Protocol and zone model per the answers to Q-E1-1 and Q-E1-2.
+   enter the result. Both protocols (P39), Coggan zones (P40). The PO chooses the date of each session (P43).
 8. FTP estimate from the stored streams (T13): best 20-minute power from rides that have power, shown as a
-   suggestion with the ride it came from (date, link to the ride). The PO confirms it or enters a value by
+   suggestion with the ride it came from (date, link to the ride; P41). The PO confirms it or enters a value by
    hand; nothing changes the baseline without a confirm.
 9. Zones: power zones from FTP and heart rate zones from the chosen reference, shown as a table with
    ranges in W and bpm, and a zone colour per zone from the design tokens.
 10. Zone history: list of past baselines with their zones and a simple FTP-over-time view; nothing is lost
    when a new FTP is set.
 11. Empty, loading and error states, copy in plain English, metric units (P6).
-12. Tests: best-effort power calculation (20 min, gaps and dropouts), zone calculation for both models,
+12. Tests: best-effort power calculation (20 min, gaps and dropouts), Coggan zone calculation (power and heart rate),
     baseline history rules (newest wins, no overwrite), stream reading and the confirm flow.
 
-**Open questions for the PO (Q-E1-x)**
+**Decided by the PO (28 Oct 2026, P39 to P43)**
 
-| #      | Question                                                    | Options                                                                                                                                                                         |
-| ------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Q-E1-1 | Which FTP test protocol should the guided week use?         | 20-minute test (FTP = 95 % of the 20-minute average; needs a pacing warm-up); ramp test (shorter, less pacing, tends to give a different number); both, with the PO picking one per week. |
-| Q-E1-2 | Which zone models?                                          | Coggan 7 power zones and 5 heart rate zones (most common); polarized 3 zones (simpler, fits base training); both, switchable in Settings.                                        |
-| Q-E1-3 | Manual entry, automatic from streams, or both?              | Both is planned: the app suggests an FTP from the best 20 minutes in the stored rides, the PO confirms or types a value. Alternative: manual only first, automatic later (smaller sprint). Only about the last 6 months have power (P5). |
-| Q-E1-4 | Which heart rate reference?                                 | Max HR from the highest value in the data, typed max HR, or lactate threshold HR from the test. Needs resting HR as well for a reserve-based model.                              |
+- Q-E1-1: both the 20-minute and the ramp test, picked per test week.
+- Q-E1-2: Coggan 7 power zones and 5 heart rate zones.
+- Q-E1-3: FTP manual and automatic (suggestion from streams, confirmed by the PO).
+- Q-E1-4: heart rate reference manual and automatic (typed value or highest value in the data).
+- Q-E1-5: the PO picks the date of each test session; the app does not schedule for them.
+
+**Still open for the PO**
+
+| #      | Question | Options |
+| ------ | -------- | ------- |
 | Q-E1-6 | Which profile fields do you want, and which are too much? | The proposed set in item 4 (about you, cycling background, training week, goals); a minimal set (name, birth year, available days, goal); or the full set plus extra fields you name.                |
 | Q-E1-7 | Should weight be in the profile now?                        | No, wait for E5 (default; keeps one source of truth); or a single current-weight field now, replaced by the weight log in E5.                                                    |
 | Q-E1-8 | One sprint or two?                                          | One sprint with everything (large; the plan lists it as a risk); or split: Sprint 3 athlete profile + manual baseline and zones, Sprint 4 guided test week + FTP from streams.        |
-| Q-E1-5 | Does the guided test week also schedule sessions?           | Only describe them (this sprint, no calendar), or already propose days around Wed / Sun (that is E2; better left there).                                                         |
 
 **Out of scope (later epics)**
 
@@ -342,7 +345,7 @@ Two parts; part B starts only after the PO approves part A (D2).
 - The app suggests an FTP from existing rides with power, names the ride it came from and changes nothing
   until the PO confirms.
 - A guided test week can be followed step by step, and its result becomes a baseline entry.
-- Power and heart rate zones show ranges in W and bpm and follow the chosen model.
+- Power and heart rate zones show ranges in W and bpm and follow Coggan 7 (power) and 5 (heart rate) zones.
 - The history lists every baseline with its date, source and zones.
 - Rides without power or heart rate never break the page; a user with no power data sees a clear empty
   state with the manual route.

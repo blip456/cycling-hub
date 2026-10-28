@@ -68,6 +68,11 @@ Source: `docs/design/V1/feedback-product-owner.md`.
 | P36 | Font                   | **Inter ships with the app** (self-hosted variable font, no CDN, `font-display: swap`). | D-PO7. |
 | P37 | Export rides           | **Proposed:** export as **CSV** (normalised fields of the visible rides, for spreadsheets) and **JSON** (raw activities in the extension's export format, re-importable). | 27 Oct 2026, Sprint 2 planning; the format was open in the backlog. PO to confirm when testing. |
 | P38 | Sprint 1 open points   | **The ride types stay as they are for now** (Ride, MountainBikeRide, GravelRide, EBikeRide, EMountainBikeRide, VirtualRide, Velomobile, Handcycle) and can change later. **The What's new card does not need to support older devices.** | 28 Oct 2026, PO answers. Re-import counting and duplicate IDs: T10. |
+| P39 | FTP test protocol | **The guided test week offers both the 20-minute test and the ramp test**; the PO picks one per test week. | 28 Oct 2026, PO answer to Q-E1-1 (E1, Sprint 3). |
+| P40 | Zone models | **Coggan 7 power zones** (from FTP) and **5 heart rate zones**. No polarized model for now. | 28 Oct 2026, Q-E1-2. |
+| P41 | FTP source | **Manual entry and automatic estimate both.** The app suggests an FTP from the best 20 minutes in the stored streams (T13) and shows the source ride; nothing changes until the PO confirms or types a value. | 28 Oct 2026, Q-E1-3. |
+| P42 | Heart rate reference | **Manual and automatic both:** the PO can type max HR (and LTHR from the test), or take the highest value found in the rides' heart rate data as a suggestion to confirm. | 28 Oct 2026, Q-E1-4. |
+| P43 | Test week scheduling | **The PO chooses the date for each test session** in the guided week; the app does not propose days. Automatic planning around Wed / Sun stays with E2. | 28 Oct 2026, Q-E1-5. |
 
 ## Authentication
 
