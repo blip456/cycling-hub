@@ -37,6 +37,26 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"baseline_entries": {
+                  Row: {
+                    "created_at": string,"effective_date": string,"ftp_w": number | null,"id": string,"lthr": number | null,"max_hr": number | null,"note": string | null,"resting_hr": number | null,"source": string,"source_activity_id": string | null,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"effective_date": string,"ftp_w"?: number | null,"id"?: string,"lthr"?: number | null,"max_hr"?: number | null,"note"?: string | null,"resting_hr"?: number | null,"source": string,"source_activity_id"?: string | null,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"effective_date"?: string,"ftp_w"?: number | null,"id"?: string,"lthr"?: number | null,"max_hr"?: number | null,"note"?: string | null,"resting_hr"?: number | null,"source"?: string,"source_activity_id"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+                      foreignKeyName: "baseline_entries_source_activity_id_fkey"
+                      columns: ["source_activity_id"]
+                      isOneToOne: false
+                      referencedRelation: "activities"
+                      referencedColumns: ["id"]
+                    }
+                  ]
                 },"imports": {
                   Row: {
                     "activity_count": number,"deleted_earlier_count": number,"error_message": string | null,"errors": NonNullable<Json>,"file_name": string,"id": string,"imported_at": string,"new_count": number,"not_a_ride_count": number,"skipped_count": number,"status": string,"unchanged_count": number,"updated_count": number,"user_id": string
@@ -53,14 +73,62 @@ export type Database = {
                   ]
                 },"profiles": {
                   Row: {
-                    "created_at": string,"id": string,"last_seen_version": string | null,"updated_at": string
+                    "available_days": number[] | null,"birth_year": number | null,"created_at": string,"display_name": string | null,"goal": string | null,"id": string,"last_seen_version": string | null,"updated_at": string,"weight_reminder_day": number,"weight_reminder_enabled": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"id": string,"last_seen_version"?: string | null,"updated_at"?: string
+                    "available_days"?: number[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id": string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
                   }
                   Update: {
-                    "created_at"?: string,"id"?: string,"last_seen_version"?: string | null,"updated_at"?: string
+                    "available_days"?: number[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id"?: string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"test_sessions": {
+                  Row: {
+                    "completed_at": string | null,"created_at": string,"id": string,"kind": string,"notes": string | null,"position": number,"result_avg_power_w": number | null,"result_ftp_w": number | null,"scheduled_on": string | null,"updated_at": string,"user_id": string,"week_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "completed_at"?: string | null,"created_at"?: string,"id"?: string,"kind": string,"notes"?: string | null,"position": number,"result_avg_power_w"?: number | null,"result_ftp_w"?: number | null,"scheduled_on"?: string | null,"updated_at"?: string,"user_id"?: string,"week_id": string
+                  }
+                  Update: {
+                    "completed_at"?: string | null,"created_at"?: string,"id"?: string,"kind"?: string,"notes"?: string | null,"position"?: number,"result_avg_power_w"?: number | null,"result_ftp_w"?: number | null,"scheduled_on"?: string | null,"updated_at"?: string,"user_id"?: string,"week_id"?: string
+                  }
+                  Relationships: [
+                    {
+                      foreignKeyName: "test_sessions_week_fkey"
+                      columns: ["week_id","user_id"]
+                      isOneToOne: false
+                      referencedRelation: "test_weeks"
+                      referencedColumns: ["id","user_id"]
+                    }
+                  ]
+                },"test_weeks": {
+                  Row: {
+                    "created_at": string,"id": string,"protocol": string,"status": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"protocol": string,"status"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"protocol"?: string,"status"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"weight_entries": {
+                  Row: {
+                    "created_at": string,"entry_date": string,"id": string,"note": string | null,"updated_at": string,"user_id": string,"weight_kg": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"entry_date": string,"id"?: string,"note"?: string | null,"updated_at"?: string,"user_id"?: string,"weight_kg": number
+                  }
+                  Update: {
+                    "created_at"?: string,"entry_date"?: string,"id"?: string,"note"?: string | null,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
                   }
                   Relationships: [
                     
@@ -68,7 +136,14 @@ export type Database = {
                 }
           }
           Views: {
-            [_ in never]: never
+            "current_baseline": {
+              Row: {
+                "ftp_effective_date": string | null,"ftp_w": number | null,"lthr": number | null,"lthr_effective_date": string | null,"max_hr": number | null,"max_hr_effective_date": string | null,"resting_hr": number | null,"resting_hr_effective_date": string | null,"user_id": string | null
+              }
+              Relationships: [
+
+              ]
+            }
           }
           Functions: {
             "import_activities":
