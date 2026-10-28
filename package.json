@@ -34,7 +34,9 @@
     "db:lint": "supabase db lint --level warning --fail-on error",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
     "prepare": "lefthook install || true",
-    "pretest:watch": "pnpm release-data"
+    "pretest:watch": "pnpm release-data",
+    "ext:build": "vite build --config extension/vite.config.ts",
+    "ext:dev": "vite build --config extension/vite.config.ts --watch --mode development"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -55,6 +57,7 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.6.8",
+    "@types/chrome": "^0.3.7",
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

@@ -42,23 +42,24 @@ Only the URL and the publishable key ever go into the app. Never commit `.env.lo
 
 ## Scripts
 
-| Script             | What it does                                                                 |
-| ------------------ | ---------------------------------------------------------------------------- |
-| `pnpm dev`         | Start the dev server                                                         |
-| `pnpm build`       | Typecheck and build the production bundle into `dist/`                       |
-| `pnpm local:setup` | Local Supabase + `.env.local` + local login, ready for `pnpm dev`            |
-| `pnpm preview`     | Serve the production build locally                                           |
-| `pnpm lint`        | ESLint (`pnpm lint:fix` fixes what it can)                                   |
-| `pnpm format`      | Format everything with Prettier (`pnpm format:check` only checks)            |
-| `pnpm typecheck`   | TypeScript, no output                                                        |
-| `pnpm test`        | Run the tests once (`pnpm test:watch` in watch mode)                         |
-| `pnpm coverage`    | Tests with a coverage report in `coverage/`                                  |
-| `pnpm db:start`    | Start the local Supabase (Docker), without the services the app does not use |
-| `pnpm db:stop`     | Stop it                                                                      |
-| `pnpm db:reset`    | Recreate the local database from `supabase/migrations` (and the seed)        |
-| `pnpm db:lint`     | Lint the local database schema                                               |
-| `pnpm db:test`     | Run the pgTAP tests in `supabase/tests`                                      |
-| `pnpm db:types`    | Regenerate `src/lib/supabase/database.types.ts` from the local database      |
+| Script             | What it does                                                                                                                        |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`         | Start the dev server                                                                                                                |
+| `pnpm build`       | Typecheck and build the production bundle into `dist/`                                                                              |
+| `pnpm local:setup` | Local Supabase + `.env.local` + local login, ready for `pnpm dev`                                                                   |
+| `pnpm preview`     | Serve the production build locally                                                                                                  |
+| `pnpm lint`        | ESLint (`pnpm lint:fix` fixes what it can)                                                                                          |
+| `pnpm format`      | Format everything with Prettier (`pnpm format:check` only checks)                                                                   |
+| `pnpm typecheck`   | TypeScript, no output                                                                                                               |
+| `pnpm test`        | Run the tests once (`pnpm test:watch` in watch mode)                                                                                |
+| `pnpm coverage`    | Tests with a coverage report in `coverage/`                                                                                         |
+| `pnpm db:start`    | Start the local Supabase (Docker), without the services the app does not use                                                        |
+| `pnpm db:stop`     | Stop it                                                                                                                             |
+| `pnpm db:reset`    | Recreate the local database from `supabase/migrations` (and the seed)                                                               |
+| `pnpm db:lint`     | Lint the local database schema                                                                                                      |
+| `pnpm db:test`     | Run the pgTAP tests in `supabase/tests`                                                                                             |
+| `pnpm db:types`    | Regenerate `src/lib/supabase/database.types.ts` from the local database                                                             |
+| `pnpm ext:build`   | Build the Strava export Chrome extension into `extension/dist` ([extension/README.md](extension/README.md); `pnpm ext:dev` watches) |
 
 Before pushing: `pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build`.
 

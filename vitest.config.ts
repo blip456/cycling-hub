@@ -9,7 +9,7 @@ export default defineConfig((env) =>
       test: {
         environment: "jsdom",
         setupFiles: ["./src/test/setup.ts"],
-        include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs"],
+        include: ["src/**/*.test.{ts,tsx}", "scripts/**/*.test.mjs", "extension/src/**/*.test.ts"],
         css: false,
         restoreMocks: true,
         coverage: {
