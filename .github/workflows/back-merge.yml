@@ -1,0 +1,63 @@
+# After a release on main, open (or update) a PR main -> dev so the version bump and CHANGELOG.md
+# flow back into dev (decision D4). Merge it with a MERGE COMMIT, not a squash, so dev keeps main's
+# history and the next dev -> main PR has no conflicts.
+name: Back-merge
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".release-please-manifest.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: back-merge
+  cancel-in-progress: false
+
+jobs:
+  back-merge:
+    name: Open back-merge PR
+    # Only for the release commit (squash: "chore(release): ...", merge: "... release-please--...").
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.head_commit.message, 'chore(release):') ||
+      contains(github.event.head_commit.message, 'release-please--branches--main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Open or update the PR main -> dev
+        env:
+          # Same optional PAT as release-please; with the default token GitHub does not start CI.
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin dev
+          if git merge-base --is-ancestor origin/main origin/dev; then
+            echo "dev already contains main; nothing to back-merge."
+            exit 0
+          fi
+
+          version=$(node -p 'require("./.release-please-manifest.json")["."]')
+          title="chore(release): back-merge v${version} into dev"
+          body="Brings the v${version} release commit (version bump and CHANGELOG.md) from \`main\` back into \`dev\`.
+
+          **Merge with a merge commit** (not squash), so \`dev\` keeps \`main\`'s history.
+
+          Opened automatically by \`.github/workflows/back-merge.yml\`."
+
+          existing=$(gh pr list --repo "$GITHUB_REPOSITORY" --base dev --head main --state open \
+            --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh pr edit "$existing" --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
+            echo "Updated PR #$existing"
+          else
+            gh pr create --repo "$GITHUB_REPOSITORY" --base dev --head main --title "$title" --body "$body"
+          fi

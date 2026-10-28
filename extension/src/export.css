@@ -1,0 +1,226 @@
+/* Export page. Design tokens from src/styles/tokens.css (Deep Ocean); no approved design exists for
+   the extension, so this is one plain page with the app's buttons, cards and status card. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--page, var(--bg));
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--page-margin) 120px;
+}
+
+h1 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-heading);
+  line-height: var(--lh-heading);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-heading);
+}
+
+h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-title);
+  line-height: var(--lh-title);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+p {
+  margin: 0;
+}
+
+.lead {
+  color: var(--muted);
+  margin-bottom: var(--space-6);
+}
+
+.caption {
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+button {
+  min-height: var(--control-h);
+  min-width: var(--target-min);
+  padding: 0 var(--space-5);
+  border: 0;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+button:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
+}
+
+button[hidden] {
+  display: none;
+}
+
+.primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.primary:hover {
+  background: var(--accent-hover);
+}
+
+.primary:active {
+  background: var(--accent-pressed);
+}
+
+.secondary {
+  background: var(--fill);
+  color: var(--text);
+}
+
+.secondary:hover {
+  background: var(--fill-hover);
+}
+
+button:disabled {
+  background: var(--fill);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+section {
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+section[hidden] {
+  display: none;
+}
+
+#progress-text {
+  font-variant-numeric: var(--font-numeric);
+  margin-bottom: var(--space-3);
+}
+
+progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--track);
+  overflow: hidden;
+  appearance: none;
+}
+
+progress::-webkit-progress-bar {
+  background: var(--track);
+}
+
+progress::-webkit-progress-value {
+  background: var(--accent);
+  transition: width var(--dur-base) var(--ease-out);
+}
+
+progress::-moz-progress-bar {
+  background: var(--accent);
+}
+
+.numbers {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-4) 0 var(--space-3);
+}
+
+.numbers div {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--fill);
+}
+
+.numbers dt {
+  color: var(--muted);
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+}
+
+.numbers dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-stat);
+  line-height: var(--lh-stat);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--tracking-display);
+  font-variant-numeric: var(--font-numeric);
+}
+
+.again p {
+  margin-bottom: var(--space-4);
+}
+
+/* Bottom status card (P12): floats above the page, so it is the one thing with a shadow. */
+.status {
+  position: fixed;
+  left: 50%;
+  bottom: var(--space-4);
+  transform: translateX(-50%);
+  width: min(560px - 2 * var(--page-margin), calc(100% - 2 * var(--space-3)));
+  min-height: 56px;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--raised);
+  box-shadow: var(--shadow-float);
+}
+
+.status .dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 7px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+}
+
+.status-positive .dot {
+  background: var(--positive);
+}
+
+.status-danger .dot {
+  background: var(--danger);
+}
+
+.status-danger p {
+  color: var(--danger);
+}
