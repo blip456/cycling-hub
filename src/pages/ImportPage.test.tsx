@@ -6,6 +6,8 @@ import * as api from "@/features/import/api";
 import type { ImportRecord } from "@/features/import/api";
 import broken from "@/features/import/fixtures/export-v1-broken.json";
 import valid from "@/features/import/fixtures/export-v1.json";
+import v2 from "@/features/import/fixtures/export-v2.json";
+import type * as streams from "@/features/import/streams";
 import { renderWithProviders } from "@/test/render";
 import { ImportDetailPage } from "./ImportDetailPage";
 import { ImportHistoryPage } from "./ImportHistoryPage";
@@ -19,7 +21,16 @@ vi.mock("@/features/import/api", async (importOriginal) => {
     logNotImported: vi.fn(),
     fetchImportHistory: vi.fn(),
     fetchImport: vi.fn(),
+    fetchStreamsState: vi.fn(),
+    uploadRideStreams: vi.fn(),
+    markStreamsSaved: vi.fn(),
   };
+});
+
+// jsdom has no CompressionStream; the real gzip runs in the browser (checked end to end).
+vi.mock("@/features/import/streams", async (importOriginal) => {
+  const actual = await importOriginal<typeof streams>();
+  return { ...actual, gzipText: async (text: string) => new Blob([text]) };
 });
 
 function record(overrides: Partial<ImportRecord> = {}): ImportRecord {
@@ -49,6 +60,11 @@ const jsonFile = (content: unknown, name = "export.json") =>
 
 beforeEach(() => {
   vi.mocked(api.fetchImportHistory).mockResolvedValue([]);
+  vi.mocked(api.fetchStreamsState).mockImplementation(async (ids) =>
+    ids.map((strava_id) => ({ strava_id, is_ride: true, deleted_at: null, streams_sha256: null })),
+  );
+  vi.mocked(api.uploadRideStreams).mockResolvedValue(undefined);
+  vi.mocked(api.markStreamsSaved).mockResolvedValue(undefined);
   vi.mocked(api.logNotImported).mockImplementation(async ({ fileName, reason }) =>
     record({
       file_name: fileName,
@@ -138,7 +154,7 @@ describe("ImportPage", () => {
     const user = userEvent.setup();
     vi.mocked(api.importActivities).mockImplementation(async ({ skipped }) =>
       record({
-        activity_count: 7,
+        activity_count: 6,
         new_count: 2,
         not_a_ride_count: 0,
         skipped_count: skipped.length,
@@ -152,11 +168,12 @@ describe("ImportPage", () => {
     await screen.findByRole("heading", { name: "Import complete" });
     const input = vi.mocked(api.importActivities).mock.calls[0]![0];
     expect(input.activities.map((a) => a.strava_id)).toEqual([900000010, 900000006]);
-    expect(input.skipped).toHaveLength(5);
+    // The second copy of a duplicate ID is ignored, not listed (T10).
+    expect(input.skipped).toHaveLength(4);
 
     const list = screen.getByRole("region", { name: "Skipped (errors)" });
     const items = within(list).getAllByRole("listitem");
-    expect(items).toHaveLength(5);
+    expect(items).toHaveLength(4);
     expect(items[0]).toHaveTextContent("Activity 2 · Test hike");
     expect(items[0]).toHaveTextContent("activities[1].startDateLocal is not a valid date");
     expect(items[1]).toHaveTextContent("Activity 3 · Test gravel loop, 28 Jun 2026");
@@ -245,6 +262,120 @@ describe("ImportPage", () => {
     fireEvent.drop(window, { dataTransfer });
     expect(await screen.findByRole("heading", { name: "Import complete" })).toBeInTheDocument();
     expect(api.importActivities).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("ImportPage with ride data (export v2, T12)", () => {
+  const uploadedIds = () =>
+    vi.mocked(api.uploadRideStreams).mock.calls.map(([input]) => input.stravaId);
+
+  it("saves the rides first, then their ride data, and says so under the outcomes", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.importActivities).mockResolvedValue(
+      record({ activity_count: 5, new_count: 4, not_a_ride_count: 1 }),
+    );
+    let release: () => void = () => undefined;
+    vi.mocked(api.uploadRideStreams).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          release = () => {
+            resolve();
+          };
+        }),
+    );
+    renderWithProviders(<ImportPage />, { path: "/import" });
+
+    await user.upload(screen.getByLabelText("Choose file"), jsonFile(v2, "export-v2.json"));
+
+    expect(await screen.findByText(/^Saving ride data: \d of 2$/)).toBeInTheDocument();
+    expect(screen.getByText("Rides saved")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar", { name: "Saving ride data" })).toHaveAttribute(
+      "aria-valuemax",
+      "2",
+    );
+    // The rides were saved without streams in raw.
+    const input = vi.mocked(api.importActivities).mock.calls[0]![0];
+    expect(input.activities).toHaveLength(5);
+    for (const a of input.activities) expect(a.raw).not.toHaveProperty("streams");
+
+    act(() => {
+      release();
+    });
+
+    await screen.findByRole("heading", { name: "Import complete" });
+    expect(
+      screen.getByText("Ride data saved for 2 rides. 1 ride had unreadable ride data."),
+    ).toBeInTheDocument();
+    // Only rides with valid streams: the walk has none, the gravel ride's were dropped.
+    expect(uploadedIds().sort()).toEqual([900000101, 900000102]);
+    expect(api.markStreamsSaved).toHaveBeenCalledWith(
+      expect.objectContaining({ stravaId: 900000101, points: 4 }),
+    );
+  });
+
+  it("uploads nothing when the stored ride data is the same", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.importActivities).mockResolvedValue(record());
+    renderWithProviders(<ImportPage />, { path: "/import" });
+    await user.upload(screen.getByLabelText("Choose file"), jsonFile(v2));
+    await screen.findByRole("heading", { name: "Import complete" });
+
+    // The second import finds the hashes the first one saved.
+    const saved = new Map(
+      vi.mocked(api.markStreamsSaved).mock.calls.map(([c]) => [c.stravaId, c.sha256]),
+    );
+    vi.mocked(api.uploadRideStreams).mockClear();
+    vi.mocked(api.fetchStreamsState).mockImplementation(async (ids) =>
+      ids.map((strava_id) => ({
+        strava_id,
+        is_ride: true,
+        deleted_at: null,
+        streams_sha256: saved.get(strava_id) ?? null,
+      })),
+    );
+    await user.click(screen.getByRole("button", { name: "Import another file" }));
+    await user.upload(screen.getByLabelText("Choose file"), jsonFile(v2));
+    await screen.findByRole("heading", { name: "Import complete" });
+
+    expect(api.uploadRideStreams).not.toHaveBeenCalled();
+    expect(screen.getByText(/^Ride data saved for 2 rides\./)).toBeInTheDocument();
+  });
+
+  it("keeps the import when ride data fails and retries only the failed rides", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.importActivities).mockResolvedValue(record());
+    vi.mocked(api.uploadRideStreams).mockImplementation(async ({ stravaId }) => {
+      if (stravaId === 900000102) throw new Error("Failed to fetch");
+    });
+    renderWithProviders(<ImportPage />, { path: "/import" });
+
+    await user.upload(screen.getByLabelText("Choose file"), jsonFile(v2));
+
+    await screen.findByRole("heading", { name: "Import complete" });
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Ride data for 1 ride could not be saved.",
+    );
+    expect(screen.getByText(/^Ride data saved for 1 ride\./)).toBeInTheDocument();
+
+    vi.mocked(api.uploadRideStreams).mockReset();
+    vi.mocked(api.uploadRideStreams).mockResolvedValue(undefined);
+    await user.click(screen.getByRole("button", { name: "Try again" }));
+
+    expect(await screen.findByText(/^Ride data saved for 2 rides\./)).toBeInTheDocument();
+    expect(uploadedIds()).toEqual([900000102]);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    // The file itself was not imported again.
+    expect(api.importActivities).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not touch Storage for a file without ride data", async () => {
+    const user = userEvent.setup();
+    vi.mocked(api.importActivities).mockResolvedValue(record());
+    renderWithProviders(<ImportPage />, { path: "/import" });
+    await user.upload(screen.getByLabelText("Choose file"), jsonFile(valid));
+    await screen.findByRole("heading", { name: "Import complete" });
+    expect(api.fetchStreamsState).not.toHaveBeenCalled();
+    expect(screen.queryByText(/Ride data/)).not.toBeInTheDocument();
   });
 });
 

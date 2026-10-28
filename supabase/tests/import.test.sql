@@ -112,8 +112,8 @@ select 'again', public.import_activities('test-export.json', (select jsonb_agg(b
 select is(
   (select array[(r).new_count, (r).updated_count, (r).unchanged_count, (r).not_a_ride_count,
                 (r).skipped_count, (r).deleted_earlier_count] from results where step = 'again'),
-  array[0, 0, 3, 0, 0, 0],
-  'importing the same batch twice reports everything as unchanged'
+  array[0, 0, 2, 1, 0, 0],
+  'importing the same batch twice reports the rides as unchanged and the hike as not a ride'
 );
 select is((select count(*)::int from public.activities), 3, 'no duplicates after the second import');
 

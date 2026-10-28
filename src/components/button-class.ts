@@ -2,7 +2,7 @@
 export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 const buttonBase =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-5 text-[15px] font-semibold " +
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-5 text-[15px] font-semibold " +
   "transition-colors disabled:cursor-not-allowed disabled:opacity-60";
 
 const buttonVariants: Record<ButtonVariant, string> = {

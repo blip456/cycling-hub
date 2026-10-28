@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Json } from "@/lib/supabase/database.types";
+import { readStreams, type Streams } from "./streams";
 
 /**
  * Reads an export file from the Cycling Hub Chrome extension (P2) in two levels (P14):
@@ -9,15 +10,26 @@ import type { Json } from "@/lib/supabase/database.types";
  * 2. Every activity: broken ones are skipped and listed as `activities[i].field` with a reason; the
  *    valid ones are normalised for `import_activities()`.
  *
- * Unknown fields are allowed everywhere and kept in `raw` (T6), so export v2 (Q1) can add power, heart
- * rate, cadence, tags or a UTC start without breaking this parser.
+ * Unknown fields are allowed everywhere and kept in `raw` (T6). The contract is
+ * `docs/export-format.md`. v1 and v2 activities have the same field names; v2 adds optional fields
+ * (`startDate`, `elapsedTime`, `description`, `details`, ...) and `streams`. Every activity is read on
+ * its own, so a v2 file may hold v1-shaped activities (the app's own JSON export does).
+ *
+ * `streams` (v2) never goes into `raw`: valid streams are returned next to the activities and saved in
+ * Storage after the import (T12); invalid ones are dropped and counted, the activity still imports.
  */
 
-/** Export versions this parser reads. v1: the sample `activities.json` (15 Oct 2026). */
-export const SUPPORTED_VERSIONS: readonly number[] = [1];
+/**
+ * Export versions this parser reads. v1: the sample `activities.json` (15 Oct 2026). v2: the Chrome
+ * extension and the app's own JSON export (T12).
+ */
+export const SUPPORTED_VERSIONS: readonly number[] = [1, 2];
 
-/** Files above this size are rejected before reading (a 2-year backfill is well under 1 MB). */
-export const MAX_FILE_BYTES = 50 * 1024 * 1024;
+/**
+ * Files above this size are rejected before reading. A v1 backfill is under 1 MB; with streams about
+ * 200 rides × 2 h at 1 s is 30–60 MB of JSON, so this leaves room for several years.
+ */
+export const MAX_FILE_BYTES = 250 * 1024 * 1024;
 
 type JsonObject = { [key: string]: Json | undefined };
 
@@ -26,7 +38,7 @@ export type ImportActivity = {
   strava_id: number;
   name: string;
   sport_type: string;
-  /** Brussels wall-clock time without zone, `YYYY-MM-DDTHH:MM:SS` (T5). */
+  /** Brussels wall-clock time without zone, `YYYY-MM-DDTHH:MM:SS` (T11). */
   start_local: string;
   distance_m: number;
   moving_time_s: number;
@@ -57,6 +69,12 @@ export type SkippedActivity = {
   issues: ActivityIssue[];
 };
 
+/** Valid per-second data of one activity, kept out of `raw` (T12). */
+export type ActivityStreams = { stravaId: number; streams: Streams };
+
+/** An activity whose `streams` did not match the contract: dropped, the activity was imported. */
+export type DroppedStreams = { stravaId: number; reason: string };
+
 export type FileRejection = {
   /** Shown on C4 and stored as the history row's reason. */
   message: string;
@@ -72,6 +90,9 @@ export type ParseResult =
       total: number;
       activities: ImportActivity[];
       skipped: SkippedActivity[];
+      /** One entry per imported activity with valid streams. */
+      streams: ActivityStreams[];
+      droppedStreams: DroppedStreams[];
     }
   | ({ ok: false } & FileRejection);
 
@@ -140,15 +161,46 @@ export function parseExport(text: string): ParseResult {
 
 // ---- level 2: every activity --------------------------------------------------------------------
 
-/** `YYYY-MM-DDTHH:MM:SS`, optional fraction; a trailing `Z` is ignored (T5: it is local time). */
-const LOCAL_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?Z?$/;
+/** `YYYY-MM-DDTHH:MM:SS`, optional fraction, optional zone: `Z` or `±HH:MM` / `±HHMM`. */
+const DATE_TIME =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/;
 
-/** Returns `YYYY-MM-DDTHH:MM:SS` for a real calendar date and time, otherwise null. */
+/** The time zone of every start time in the app (P5, T11). */
+export const RIDE_TIME_ZONE = "Europe/Brussels";
+
+const brusselsParts = new Intl.DateTimeFormat("en-GB", {
+  timeZone: RIDE_TIME_ZONE,
+  hourCycle: "h23",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+});
+
+/** An instant (ms since epoch) as Brussels wall-clock time `YYYY-MM-DDTHH:MM:SS`, DST included. */
+export function toBrusselsWallClock(epochMs: number): string {
+  const part = Object.fromEntries(
+    brusselsParts.formatToParts(new Date(epochMs)).map((p) => [p.type, p.value]),
+  ) as Record<string, string>;
+  return `${part.year}-${part.month}-${part.day}T${part.hour}:${part.minute}:${part.second}`;
+}
+
+/**
+ * `startDateLocal` as Brussels wall-clock time `YYYY-MM-DDTHH:MM:SS` (T11), or null when it is not a
+ * real calendar date and time:
+ *
+ * - without a zone (export v2): already Brussels wall-clock time, kept as it is;
+ * - with a trailing `Z` (v1 files): UTC, converted to Brussels time (`15:27:43Z` in October → `17:27:43`);
+ * - with an offset (`+02:00`): that instant, converted to Brussels time.
+ *
+ * Fractions of a second are dropped.
+ */
 export function toLocalDateTime(value: string): string | null {
-  const m = LOCAL_DATE_TIME.exec(value);
+  const m = DATE_TIME.exec(value);
   if (!m) return null;
-  const [, y, mo, d, h, mi, s] = m.map(Number) as [
-    number,
+  const [y, mo, d, h, mi, s] = m.slice(1, 7).map(Number) as [
     number,
     number,
     number,
@@ -156,7 +208,9 @@ export function toLocalDateTime(value: string): string | null {
     number,
     number,
   ];
-  const date = new Date(Date.UTC(y, mo - 1, d, h, mi, s));
+  const zone = m[7];
+  const wall = Date.UTC(y, mo - 1, d, h, mi, s);
+  const date = new Date(wall);
   const valid =
     date.getUTCFullYear() === y &&
     date.getUTCMonth() === mo - 1 &&
@@ -164,7 +218,15 @@ export function toLocalDateTime(value: string): string | null {
     date.getUTCHours() === h &&
     date.getUTCMinutes() === mi &&
     date.getUTCSeconds() === s;
-  return valid ? value.slice(0, 19) : null;
+  if (!valid) return null;
+  if (zone === undefined) return value.slice(0, 19);
+  if (zone === "Z") return toBrusselsWallClock(wall);
+
+  const offset = /^([+-])(\d{2}):?(\d{2})$/.exec(zone);
+  const [sign, oh, om] = [offset?.[1], Number(offset?.[2]), Number(offset?.[3])];
+  if (oh > 14 || om > 59) return null;
+  const minutes = (sign === "-" ? -1 : 1) * (oh * 60 + om);
+  return toBrusselsWallClock(wall - minutes * 60_000);
 }
 
 const missingOr = (message: string) => (issue: { input: unknown }) =>
@@ -208,10 +270,14 @@ function isObject(value: Json | undefined): value is JsonObject {
 function parseActivities(items: Json[]): {
   activities: ImportActivity[];
   skipped: SkippedActivity[];
+  streams: ActivityStreams[];
+  droppedStreams: DroppedStreams[];
 } {
   const activities: ImportActivity[] = [];
   const skipped: SkippedActivity[] = [];
-  const seen = new Map<number, number>();
+  const streams: ActivityStreams[] = [];
+  const droppedStreams: DroppedStreams[] = [];
+  const seen = new Set<number>();
 
   items.forEach((item, index) => {
     const at = `activities[${index}]`;
@@ -245,17 +311,15 @@ function parseActivities(items: Json[]): {
     }
 
     const a = result.data;
-    const first = seen.get(a.id);
-    if (first !== undefined) {
-      skipped.push({
-        index,
-        name,
-        startLocal,
-        issues: [{ path: `${at}.id`, message: `is the same as activities[${first}].id` }],
-      });
-      return;
-    }
-    seen.set(a.id, index);
+    // The same ID twice in one file: the first one is imported, later copies are ignored (T10).
+    if (seen.has(a.id)) return;
+    seen.add(a.id);
+
+    // Streams stay out of raw: the row stays small and a re-import compares the same raw (T12).
+    const { streams: rawStreams, ...raw } = item;
+    const reading = readStreams(rawStreams);
+    if (reading.kind === "valid") streams.push({ stravaId: a.id, streams: reading.streams });
+    if (reading.kind === "invalid") droppedStreams.push({ stravaId: a.id, reason: reading.reason });
 
     activities.push({
       strava_id: a.id,
@@ -273,11 +337,11 @@ function parseActivities(items: Json[]): {
       average_heartrate: optionalNumber(item.averageHeartrate),
       max_heartrate: optionalNumber(item.maxHeartrate),
       average_cadence: optionalNumber(item.averageCadence),
-      raw: item,
+      raw,
     });
   });
 
-  return { activities, skipped };
+  return { activities, skipped, streams, droppedStreams };
 }
 
 // ---- stored errors ------------------------------------------------------------------------------

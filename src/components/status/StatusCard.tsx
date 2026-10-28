@@ -30,7 +30,7 @@ export function StatusCard({
       onClick={onDismiss}
       aria-label="Dismiss"
       className={
-        "flex size-11 shrink-0 items-center justify-center rounded-xl text-muted hover:bg-fill hover:text-text " +
+        "flex size-11 shrink-0 items-center justify-center rounded-md text-muted hover:bg-fill hover:text-text " +
         (side ? "-mt-2.5 [grid-area:x]" : "")
       }
     >

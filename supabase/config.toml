@@ -39,7 +39,9 @@ enabled = true
 port = 54324
 
 [storage]
-enabled = false
+# Private bucket "streams" for per-second ride data (T12); the bucket itself is created by a migration.
+enabled = true
+file_size_limit = "50MiB"
 
 [edge_runtime]
 enabled = false

@@ -44,6 +44,9 @@
     "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Radius: Tailwind's rounded-sm/md/lg/xl read the design tokens (--radius-sm 8, md 12, lg 16, xl 20 px;
+   tokens.css), not Tailwind's defaults. Buttons and inputs use rounded-md, cards rounded-lg (or 2xl = 16). */
+
 @layer base {
   html {
     color-scheme: dark;

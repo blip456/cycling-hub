@@ -16,6 +16,7 @@ const unusedVars = [
 export default defineConfig([
   globalIgnores([
     "dist/**",
+    "extension/dist/**",
     "dev-dist/**",
     "coverage/**",
     "docs/**",
@@ -47,10 +48,27 @@ export default defineConfig([
     },
   },
 
+  // Chrome extension (extension/): the same type-aware strict rules, browser and extension globals.
+  {
+    files: ["extension/src/**/*.ts"],
+    extends: [js.configs.recommended, tseslint.configs.strictTypeChecked],
+    languageOptions: {
+      ecmaVersion: 2022,
+      globals: { ...globals.browser, ...globals.webextensions },
+      parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+    },
+    rules: {
+      "@typescript-eslint/no-unused-vars": unusedVars,
+      "@typescript-eslint/consistent-type-imports": "error",
+      "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+    },
+  },
+
   // Tests may use non-null assertions, fake async APIs without awaiting anything, and defensive
   // checks for things jsdom lacks (the DOM types claim they always exist).
   {
-    files: ["src/**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}"],
+    files: ["src/**/*.test.{ts,tsx}", "src/test/**/*.{ts,tsx}", "extension/src/**/*.test.ts"],
     rules: {
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/require-await": "off",
@@ -60,7 +78,7 @@ export default defineConfig([
 
   // Tooling: config files and Node scripts (no type-aware rules; they are not in an app tsconfig).
   {
-    files: ["*.{js,mjs,cjs,ts}", "scripts/**/*.{js,mjs}"],
+    files: ["*.{js,mjs,cjs,ts}", "scripts/**/*.{js,mjs}", "extension/vite.config.ts"],
     extends: [js.configs.recommended, tseslint.configs.strict],
     languageOptions: { globals: globals.node },
     rules: { "@typescript-eslint/no-unused-vars": unusedVars },
