@@ -87,6 +87,16 @@ Source: `docs/design/V1/feedback-product-owner.md`.
 | P55 | Baseline saves | **A baseline save stores only the values that were entered, no carry-over of older values.** Each metric keeps its true source and date. A highest-HR suggestion used together with other typed values saves two rows (`hr_data` and `manual`), because a row has one source. Zones in History are computed from the values in force on that date. | 28 Oct 2026, built in Sprint 3; differs from wireframe Z3 (carry-over). PO to confirm when testing. |
 | P56 | Test session checklist | **The before-you-start ticks of a test session are stored on the device (localStorage), and the heart rate typed on the session page travels to the result page in the URL.** No database column for either. A `checklist` column on `test_sessions` would sync the ticks later. | 28 Oct 2026, Sprint 3 build. |
 | P57 | Weight reminder wording | **The reminder card says "Nothing logged since your reminder day."** It follows P52, not the 7-day text in the wireframe. | 28 Oct 2026. |
+| P58 | Plan engine | **Rule-based training plan, built in the app** (option A). No AI service builds or adjusts the plan. | 28 Oct 2026, PO answer to Q-E2-1 (E2, Sprint 4). |
+| P59 | Plan length and re-evaluation | **A plan is 12 weeks and is re-evaluated** after each ride, and when the PO opens the app or imports rides: the sessions that have not happened yet are recalculated. | 28 Oct 2026, Q-E2-2. |
+| P60 | Plan intake | **The app asks the PO questions before it builds a plan** (training purpose, level, hours per week) and uses the profile for the available days; the answers decide how much time and effort the plan assumes, from amateur to semi-pro. | 28 Oct 2026, Q-E2-3. Extends the minimal profile (P44). |
+| P61 | Missed sessions | **A missed session makes the engine recalculate the rest of the plan** (no manual-only handling). This needs rides matched to planned sessions, which pulls the basic matching from E3 into this work. | 28 Oct 2026, Q-E2-4. |
+| P62 | Indoor or outdoor | **The PO sets indoor, outdoor or both in the profile**; sessions are planned for that. | 28 Oct 2026, Q-E2-5. |
+| P63 | Calendar | **Planned sessions go on a calendar.** How (an ICS download or a subscription link) is Q-E2-10. | 28 Oct 2026, Q-E2-6. |
+| P64 | No power data | **The plan stays the same without power data**, but the app warns when four or more sessions in a row or in the last weeks have no power data. | 28 Oct 2026, Q-E2-7. |
+| P65 | Weight and training purposes | **Weight and weight change play a role in the plan, and the plan serves several purposes:** muscle building, weight loss, endurance and speed. The engine asks which purposes apply and builds different styles of plan from the answers. | 28 Oct 2026, Q-E2-8. Details in Q-E2-11 to Q-E2-13. |
+| P66 | Event mode in the plan | **The plan already supports an event with a date and a taper** (an easier last stretch before it). Pacing and fuelling targets stay with E4. | 28 Oct 2026. Pulls the date and taper part of E4 forward. |
+| P67 | AI-minded summaries | **The app makes a copy-and-paste text summary of a session, a week or a month**, written so it can be pasted into an AI chat for tips. No AI service is called from the app; AI analysis built into the app is not a must. | 28 Oct 2026. |
 
 ## Authentication
 
