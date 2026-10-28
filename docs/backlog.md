@@ -19,7 +19,9 @@ from [`decisions.md`](decisions.md); screens by ID from the wireframes in [`wire
 
 ## Roadmap — epics
 
-Sequence and dependencies matter; dates don't.
+Sequence and dependencies matter; dates don't. **Product focus (P34):** tailored training plans and
+AI/LLM analysis of past sessions. Ride data is the input for that, not an end in itself (no Strava
+rebuild).
 
 | #   | Epic                                   | Outcome                                                                                                                                  | Sprints     | Open discovery questions                                                                                          |
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
@@ -31,7 +33,7 @@ Sequence and dependencies matter; dates don't.
 | E5  | **Body composition**                   | Weight log and trend, linked to training load.                                                                                          | —           | Manual entry or smart-scale import?                                                                               |
 | E6  | **Nutrition**                          | Food logging, ride-day vs rest-day targets, daily meal plans.                                                                           | —           | Food database source? Acceptable logging effort?                                                                  |
 
-Out of scope: medical data, multi-user, Strava API, printable/PDF plans.
+Out of scope: medical data, multi-user, Strava API, printable/PDF plans, maps (P34).
 
 ## Sprint format (parsed at build time)
 
@@ -129,7 +131,7 @@ Two parts; part B starts only after the PO approves part A.
 
 ## v0.2.0 — Import & settings
 Sprint: 1
-Status: planned
+Status: in progress
 Tagline: Drop your Strava export file and see exactly what was imported, plus settings, What's new and What's next.
 
 ### Details
@@ -147,12 +149,13 @@ Goal: import the backfill and every later export reliably, and see the app's ver
 5. Upsert on the Strava activity ID in one database function (all-or-nothing per file); outcome per
    activity: new, updated, unchanged, not a ride, skipped (errors), deleted earlier (P15, P17).
 6. Import summary (C3) with the outcome cards and a "View rides" link (enabled in Sprint 2).
-7. Import history: list of past imports with date, file name and counts.
+7. Import history: list of past imports with date, file name and counts, including files that were not a valid export ("Not imported", P33).
 8. Settings (G1): account email, theme switch System / Light / Dark (P9), units and time zone (info),
    version, links to What's new and What's next, sign out.
 9. What's new (G2): changelog generated at build time from `CHANGELOG.md`, release-please link
    suffixes stripped, pills Feature / Fix / Technical (P18). Bottom card banner after an update (B1d,
-   P12); dismissing it or opening the page stores the version in `profiles.last_seen_version`.
+   P12; on desktop inside the side menu, P31); dismissing it or opening the page stores the version in
+   `profiles.last_seen_version`.
 10. What's next (G3): build-time script parses this file per the sprint format above, emits a static
     JSON bundled with the app; the build fails on a broken entry. No calls to GitHub at runtime.
 11. Unit tests: parser + validation (with the real sample and broken variants), outcome classification
@@ -178,12 +181,14 @@ Tagline: All your rides by week or month, with the details of every ride.
 
 Draft; planned in detail at the end of Sprint 1.
 
-- Ride list: cards on the phone (B1a), dense table on desktop (X1); newest first; metric order
+- Ride list: cards on the phone (B1a), dense table on desktop (X1), sortable by column and filterable
+  (sport/tags incl. commute, date range, name search; P35); newest first by default; metric order
   distance, moving time, average speed, average power, average HR, elevation; "—" when missing
   (P10, P11).
 - Week and month view with totals; filter to hide commutes; tags (MTB, commute, indoor, …) (P11).
 - Empty, loading and error states (B2, B3); error as a bottom card (P12).
-- Ride detail page (to be wireframed and designed): all stored fields, route map from the polyline.
+- Ride detail page (B4 in design V1): all stored fields and the route shape from the polyline; no map
+  (P34).
 - Delete a ride in the app; a deleted ride is skipped on later imports, with a way to undo (P15).
 - Export rides (format to decide: CSV and/or JSON).
 - Discovery: weather per ride (P19); export format v2 for power, HR and tags (Q1).

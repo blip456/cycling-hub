@@ -1,0 +1,2 @@
+-- Local seed. Intentionally empty: no users or credentials are committed.
+-- Create a local test user through the Auth admin API instead (see the README).

@@ -1,0 +1,184 @@
+# Quality gate for every pull request and every push to dev and main. The job names are the
+# required status checks in .github/rulesets/*.json; rename them in both places.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint and format
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: pnpm lint --max-warnings 0
+      - run: pnpm format:check
+
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: pnpm typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: pnpm coverage
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      # Public, non-secret placeholders so the production build does not depend on a real project.
+      VITE_SUPABASE_URL: http://127.0.0.1:54321
+      VITE_SUPABASE_PUBLISHABLE_KEY: ci-placeholder-publishable-key
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+      - run: pnpm build
+
+  branch-name:
+    name: Branch name
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Check the branch name
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: node scripts/branch-name.mjs "$HEAD_REF"
+
+  commit-messages:
+    name: Commit messages
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - name: Lint every commit in the pull request
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
+
+  database:
+    name: Database
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Detect database changes
+        id: changes
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            database:
+              - 'supabase/**'
+            migrations:
+              - 'supabase/migrations/**'
+
+      - name: Flag the pull request as containing a migration
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          HAS_MIGRATION: ${{ steps.changes.outputs.migrations }}
+        run: |
+          marker='<!-- cycling-hub:migration -->'
+          comment_id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n 1)
+          if [ "$HAS_MIGRATION" = "true" ]; then
+            gh label create migration --repo "$GITHUB_REPOSITORY" --color D93F0B \
+              --description "Contains a database migration" --force
+            gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-label migration
+            body="$marker
+          **This PR contains a database migration.** CI applied it to a fresh local database
+          (\`supabase db reset\`), linted the schema and ran the pgTAP tests. After merge it is
+          applied to the \`dev\` database; on \`main\` it waits for approval in the \`production\`
+          environment. Keep it additive: the app and the migration deploy at the same time."
+            if [ -n "$comment_id" ]; then
+              gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" -f body="$body"
+            else
+              gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -f body="$body"
+            fi
+          else
+            gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --remove-label migration 2>/dev/null || true
+            if [ -n "$comment_id" ]; then
+              gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id"
+            fi
+          fi
+
+      - name: Skip (no database changes)
+        if: steps.changes.outputs.database != 'true'
+        run: echo "No changes under supabase/, nothing to validate."
+
+      - uses: supabase/setup-cli@v3
+        if: steps.changes.outputs.database == 'true'
+
+      - name: Start a local Supabase
+        if: steps.changes.outputs.database == 'true'
+        run: >-
+          supabase start
+          -x realtime,storage-api,imgproxy,mailpit,studio,edge-runtime,logflare,vector,supavisor
+
+      - name: Apply all migrations to a fresh database
+        if: steps.changes.outputs.database == 'true'
+        run: supabase db reset
+
+      - name: Lint the database schema
+        if: steps.changes.outputs.database == 'true'
+        run: supabase db lint --level warning --fail-on error
+
+      - name: Run the pgTAP tests
+        if: steps.changes.outputs.database == 'true'
+        run: |
+          if [ -d supabase/tests ]; then
+            supabase test db
+          else
+            echo "::warning::No supabase/tests folder; every migration should come with pgTAP tests."
+          fi
+
+      - name: Check the generated types are up to date
+        if: steps.changes.outputs.database == 'true' && hashFiles('src/lib/supabase/database.types.ts') != ''
+        run: |
+          supabase gen types typescript --local > /tmp/database.types.ts
+          if ! diff -u src/lib/supabase/database.types.ts /tmp/database.types.ts; then
+            echo "::error::src/lib/supabase/database.types.ts is out of date. Run pnpm db:types and commit."
+            exit 1
+          fi
+
+      - name: Stop Supabase
+        if: always() && steps.changes.outputs.database == 'true'
+        run: supabase stop --no-backup

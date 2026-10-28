@@ -1,0 +1,28 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "include-component-in-tag": false,
+  "include-v-in-tag": true,
+  "pull-request-title-pattern": "chore(release): release${component} ${version}",
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": false,
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
+    { "type": "revert", "section": "Reverts" },
+    { "type": "refactor", "section": "Technical" },
+    { "type": "build", "section": "Technical" },
+    { "type": "ci", "section": "Technical" },
+    { "type": "test", "section": "Technical" },
+    { "type": "docs", "section": "Technical" },
+    { "type": "chore", "section": "Technical" },
+    { "type": "style", "section": "Technical" }
+  ],
+  "packages": {
+    ".": {
+      "package-name": "cycling-hub",
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}
