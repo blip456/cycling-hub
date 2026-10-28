@@ -45,6 +45,16 @@ export const subPages: SubPage[] = [
   // owned by profile stream (add sub-pages of /profile here)
 
   // owned by baseline stream (add sub-pages of /baseline here, e.g. the guided test week)
+  { to: "/baseline/update", label: "Update baseline", parent: "/baseline" },
+  { to: "/baseline/suggestion", label: "FTP from your rides", parent: "/baseline/update" },
+  { to: "/baseline/values", label: "Enter values", parent: "/baseline/update" },
+  {
+    to: "/baseline/test-week/:position/result",
+    label: "Check your result",
+    parent: "/baseline/test-week",
+  },
+  { to: "/baseline/test-week/:position", label: "Test session", parent: "/baseline/test-week" },
+  { to: "/baseline/test-week", label: "Guided test week", parent: "/baseline/update" },
 ];
 
 /** Whether `pathname` is `to` or below it; a `:param` segment in `to` matches any one segment. */
