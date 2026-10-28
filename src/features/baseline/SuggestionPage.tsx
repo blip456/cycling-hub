@@ -11,7 +11,7 @@ import { FormAlert } from "@/components/ui";
 import { baselineSchema, brusselsDate, isIsoDate } from "@/features/athlete";
 import { formatDayMonthYear, formatHoursMinutes, formatKm, formatRideStart } from "./format";
 import { baselineKeys, useBaseline, useAddBaseline, useFtpScan, type FtpScan } from "./hooks";
-import { changeText, savedMessage, valueOf } from "./model";
+import { savedMessage, valueOf } from "./model";
 import { EffectiveFrom } from "./parts";
 import type { LoadProgress } from "./stream-source";
 
@@ -123,13 +123,14 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
   if (!estimate) return null;
 
   const current = baseline ? valueOf(baseline, "ftp") : null;
-  const difference = changeText(current, estimate.ftp, "W");
   const comparison =
-    current === null
-      ? "No FTP is set yet."
-      : estimate.ftp === current
-        ? `Current FTP is ${String(current)} W, the same.`
-        : `Current FTP is ${String(current)} W, so this is ${String(Math.abs(estimate.ftp - current))} W ${estimate.ftp > current ? "higher" : "lower"}.`;
+    baseline === undefined
+      ? ""
+      : current === null
+        ? "No FTP is set yet."
+        : estimate.ftp === current
+          ? `Current FTP is ${String(current)} W, the same.`
+          : `Current FTP is ${String(current)} W, so this is ${String(Math.abs(estimate.ftp - current))} W ${estimate.ftp > current ? "higher" : "lower"}.`;
   const dateError = !isIsoDate(date)
     ? "Enter a valid date."
     : date > today
@@ -189,7 +190,6 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
           <p className="mt-2 text-[15px] font-semibold">This is an estimate, not a test result.</p>
           <p className="mt-1 text-[15px]">
             A best 20 minutes is only a good FTP when the ride was a hard, even effort. {comparison}
-            {difference ? ` (${difference})` : ""}
           </p>
           <dl className="mt-3 divide-y divide-border text-[15px]">
             <div className="flex justify-between gap-3 py-2">
@@ -233,8 +233,12 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
               {ride.name} · {formatKm(ride.distance_m)} km ·{" "}
               {formatHoursMinutes(ride.moving_time_s)}
             </p>
-            <Link to={`/rides/${ride.id}`} className={buttonClass("secondary", "mt-3")}>
-              Open ride<span className="sr-only"> {ride.name}</span>
+            <Link
+              to={`/rides/${ride.id}`}
+              aria-label={`Open ride ${ride.name}`}
+              className={buttonClass("secondary", "mt-3")}
+            >
+              Open ride
             </Link>
           </section>
         ) : null}

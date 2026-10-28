@@ -173,12 +173,13 @@ export function EffectiveFrom({
         <p className="text-[15px]">{formatDate(value)}</p>
         <button
           type="button"
+          aria-label="Change the effective date"
           onClick={() => {
             setEditing(true);
           }}
           className="inline-flex min-h-11 items-center rounded-md px-3 text-[15px] font-semibold text-accent hover:bg-accent-soft"
         >
-          Change<span className="sr-only"> the effective date</span>
+          Change
         </button>
       </div>
       <p className="text-[13px] text-muted">{helper}</p>

@@ -1,35 +1,48 @@
 import type { IsoDate } from "@/features/athlete";
 
-const parts = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "UTC",
-  weekday: "short",
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
+/** Fixed three-letter months: Intl gives "Sept" for September in some locales. */
+export const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
 
-function formatParts(date: IsoDate): Record<string, string> {
-  return Object.fromEntries(
-    parts.formatToParts(new Date(`${date}T00:00:00Z`)).map((p) => [p.type, p.value]),
-  );
+function parts(date: IsoDate): { weekday: string; day: number; month: string; year: number } {
+  const value = new Date(`${date}T00:00:00Z`);
+  return {
+    weekday: WEEKDAYS[value.getUTCDay()] ?? "",
+    day: value.getUTCDate(),
+    month: MONTHS[value.getUTCMonth()] ?? "",
+    year: value.getUTCFullYear(),
+  };
 }
 
 /** "Sun 11 Oct 2026" for a calendar date (YYYY-MM-DD), shown as stored (no time zone maths). */
 export function formatDate(date: IsoDate): string {
-  const p = formatParts(date);
-  return `${p["weekday"]} ${p["day"]} ${p["month"]} ${p["year"]}`;
+  const p = parts(date);
+  return `${p.weekday} ${String(p.day)} ${p.month} ${String(p.year)}`;
 }
 
 /** "Sat 31 Oct", for a session in a list. */
 export function formatShortDate(date: IsoDate): string {
-  const p = formatParts(date);
-  return `${p["weekday"]} ${p["day"]} ${p["month"]}`;
+  const p = parts(date);
+  return `${p.weekday} ${String(p.day)} ${p.month}`;
 }
 
 /** "4 May 2026", for the span of a search. */
 export function formatDayMonthYear(date: IsoDate): string {
-  const p = formatParts(date);
-  return `${p["day"]} ${p["month"]} ${p["year"]}`;
+  const p = parts(date);
+  return `${String(p.day)} ${p.month} ${String(p.year)}`;
 }
 
 /** "Sun 25 Oct 2026 · 08:30" from a ride's `start_local` (Brussels wall-clock time). */

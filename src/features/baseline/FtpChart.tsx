@@ -1,4 +1,5 @@
 import { addMonths, diffDays, type IsoDate } from "@/features/athlete";
+import { MONTHS } from "./format";
 
 /** A baseline row that sets FTP: the chart draws these. */
 export type FtpPoint = { date: IsoDate; ftp: number };
@@ -7,12 +8,10 @@ const W = 600;
 const H = 220;
 const PAD = { left: 44, right: 20, top: 28, bottom: 30 };
 
-const monthFormat = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", month: "short" });
-const monthYearFormat = new Intl.DateTimeFormat("en-GB", {
-  timeZone: "UTC",
-  month: "short",
-  year: "2-digit",
-});
+function monthLabel(month: IsoDate, withYear: boolean): string {
+  const name = MONTHS[Number(month.slice(5, 7)) - 1] ?? "";
+  return withYear ? `${name} ${month.slice(2, 4)}` : name;
+}
 
 function monthStart(date: IsoDate): IsoDate {
   return `${date.slice(0, 7)}-01`;
@@ -113,7 +112,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
             fontSize="12"
             fill="var(--muted)"
           >
-            {(multiYear ? monthYearFormat : monthFormat).format(new Date(`${month}T00:00:00Z`))}
+            {monthLabel(month, multiYear)}
           </text>
         ))}
         <path d={path} fill="none" stroke="var(--accent)" strokeWidth="2" />

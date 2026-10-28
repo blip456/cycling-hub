@@ -211,13 +211,10 @@ function ActiveWeek({
               />
               <Link
                 to={`/baseline/test-week/${String(p.position)}`}
+                aria-label={`Open session ${String(p.position)}, ${p.title}`}
                 className={buttonClass("secondary", "lg:mt-6")}
               >
                 Open
-                <span className="sr-only">
-                  {" "}
-                  session {p.position}, {p.title}
-                </span>
               </Link>
             </li>
           ) : null,
