@@ -380,7 +380,7 @@ Two parts; part B started after the PO approved part A (D2, wireframes in `docs/
 
 ## v0.5.0 — Training plan
 Sprint: 4
-Status: planned
+Status: in progress
 Tagline: A 12-week training plan built from your goals, week and FTP, that adapts to your rides, goes on your calendar and comes with summaries for an AI chat.
 
 ### Details
@@ -461,6 +461,15 @@ Three parts; part B starts only after the PO approves part A (D2).
 - Q-E2-8: weight and weight loss play a role; purposes are muscle building, weight loss, endurance, speed.
 - Event mode with taper is already taken into account; AI summaries to copy are wanted, AI analysis in the
   app is not a must.
+
+**Working defaults for part A (28 Oct 2026, the PO gave the go for Sprint 4 without answering Q-E2-9 to
+Q-E2-16).** The design round draws these and the PO corrects them while reviewing; they are assumptions,
+not decisions: one sprint is planned but B2 can be cut after the design review (Q-E2-9); calendar is an ICS
+download (Q-E2-10); weight loss uses a target weight and date with a weekly-rate cap (Q-E2-11); muscle
+building means on-bike strength work plus off-bike strength notes (Q-E2-12); purposes are ranked, one main
+and optional secondary (Q-E2-13); re-planning is automatic with a "Plan updated" notice and Undo
+(Q-E2-14); an AI summary has switches for weight and goals and a prompt line that can be switched off
+(Q-E2-15); one event with a taper (Q-E2-16).
 
 **Still open for the PO**
 
