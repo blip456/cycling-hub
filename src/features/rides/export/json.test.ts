@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { parseExport } from "@/features/import/parse";
 import valid from "@/features/import/fixtures/export-v1.json";
+import v2 from "@/features/import/fixtures/export-v2.json";
 import { exportFileName } from "./download";
 import { ridesToJson } from "./json";
 
@@ -13,12 +14,12 @@ describe("ridesToJson", () => {
 
   it("writes the extension's file format with version and export time", () => {
     const file = JSON.parse(ridesToJson(stored, now)) as Record<string, unknown>;
-    expect(file.version).toBe(1);
+    expect(file.version).toBe(2);
     expect(file.exportedAt).toBe("2026-10-27T09:15:00.000Z");
     expect(file.activities).toEqual(stored.map((s) => s.raw));
   });
 
-  it("is read back by the Sprint 1 import parser with every activity valid and unchanged", () => {
+  it("is read back by the import parser with every activity valid and unchanged", () => {
     const again = parseExport(ridesToJson(stored, now));
     expect(again.ok).toBe(true);
     if (!again.ok) return;
@@ -26,6 +27,18 @@ describe("ridesToJson", () => {
     expect(again.total).toBe(stored.length);
     // Same normalised fields as the first import, so import_activities() reports them as unchanged.
     expect(again.activities).toEqual(original.activities);
+  });
+
+  it("round-trips v2 activities without their streams (they stay in Storage, T12)", () => {
+    const first = parseExport(JSON.stringify(v2));
+    if (!first.ok) throw new Error("fixture must parse");
+    const again = parseExport(ridesToJson(first.activities, now));
+    expect(again.ok).toBe(true);
+    if (!again.ok) return;
+    expect(again.version).toBe(2);
+    expect(again.activities).toEqual(first.activities);
+    expect(again.streams).toEqual([]);
+    expect(again.droppedStreams).toEqual([]);
   });
 
   it("is a valid (empty) export without rides", () => {

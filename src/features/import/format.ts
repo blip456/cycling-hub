@@ -24,7 +24,7 @@ const localDateFormat = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
 });
 
-/** "3 May 2019" for a wall-clock `YYYY-MM-DDTHH:MM:SS` (already Brussels time, T5). */
+/** "3 May 2019" for a wall-clock `YYYY-MM-DDTHH:MM:SS` (already Brussels time, T11). */
 export function formatLocalDate(local: string): string {
   return localDateFormat.format(new Date(`${local.slice(0, 19)}Z`));
 }

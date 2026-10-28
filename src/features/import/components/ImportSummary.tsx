@@ -16,11 +16,14 @@ export function ImportSummary({
   record,
   secondaryAction,
   showHistoryLink = true,
+  note,
 }: {
   record: ImportRecord;
   /** "Import another file" after an import. */
   secondaryAction?: ReactNode;
   showHistoryLink?: boolean;
+  /** One short muted line under the outcomes, e.g. what happened to the ride data (T12). */
+  note?: ReactNode;
 }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -48,6 +51,11 @@ export function ImportSummary({
 
       <div className="lg:col-span-2">
         <OutcomeGrid record={record} />
+        {note ? (
+          <p aria-live="polite" className="mt-2.5 px-0.5 text-[13px] text-muted">
+            {note}
+          </p>
+        ) : null}
       </div>
 
       <div className="lg:col-span-2">

@@ -5,7 +5,12 @@ import {
   statusActionClass,
   useStatusCard,
 } from "@/components/status/status-context";
-import type { ImportRecord } from "@/features/import/api";
+import {
+  fetchStreamsState,
+  markStreamsSaved,
+  uploadRideStreams,
+  type ImportRecord,
+} from "@/features/import/api";
 import { FilePicker } from "@/features/import/components/FilePicker";
 import { ACCEPT, takeFile } from "@/features/import/file-input";
 import { LastImportLink } from "@/features/import/components/ImportHistory";
@@ -22,26 +27,70 @@ import { CopyIcon } from "@/features/import/icons";
 import {
   parseExport,
   rejectTooLarge,
+  type ActivityStreams,
   type FileRejection,
   type ParseResult,
 } from "@/features/import/parse";
+import { isRideSportType } from "@/features/import/sport-types";
+import { gzipText } from "@/features/import/streams";
+import { saveRideStreams, type StreamsDeps } from "@/features/import/streams-upload";
 import { useFileDrop } from "@/features/import/use-file-drop";
 
 type FileInfo = { fileName: string; fileSize: number };
 
+/** What happened to the per-second ride data of the imported file (T12). */
+type StreamsOutcome = {
+  /** Rides whose ride data is stored (uploaded now or already the same). */
+  saved: number;
+  /** Rides whose streams did not match the contract (the ride itself was imported). */
+  dropped: number;
+  /** Still in memory, so "Try again" can upload them without importing the file again. */
+  failed: ActivityStreams[];
+  retrying: boolean;
+  dismissed: boolean;
+};
+
 type Phase =
   | { kind: "idle" }
   | ({ kind: "working"; progress: ProgressStep } & FileInfo)
-  | { kind: "done"; record: ImportRecord }
+  | { kind: "done"; record: ImportRecord; streams: StreamsOutcome | null }
   | ({ kind: "rejected"; rejection: FileRejection } & FileInfo);
 
 type Notice = { text: string; retry?: File };
+
+const streamsDeps: StreamsDeps = {
+  fetchState: fetchStreamsState,
+  upload: uploadRideStreams,
+  markSaved: markStreamsSaved,
+  gzip: (text) => gzipText(text),
+};
+
+/** Lets the browser paint the current step before a long synchronous task (parsing a big file). */
+const nextPaint = () =>
+  new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+
+const rides = (n: number) => `${n} ${n === 1 ? "ride" : "rides"}`;
+
+function streamsNote(outcome: StreamsOutcome | null): string | null {
+  if (!outcome) return null;
+  const parts = [];
+  if (outcome.retrying) parts.push("Saving ride data…");
+  else if (outcome.saved > 0) parts.push(`Ride data saved for ${rides(outcome.saved)}.`);
+  if (outcome.dropped > 0) {
+    parts.push(`${rides(outcome.dropped)} had unreadable ride data.`);
+  }
+  return parts.length ? parts.join(" ") : null;
+}
 
 async function readAndParse(file: File): Promise<ParseResult> {
   const tooLarge = rejectTooLarge(file.size);
   if (tooLarge) return { ok: false, ...tooLarge };
   try {
-    return parseExport(await file.text());
+    const text = await file.text();
+    await nextPaint();
+    return parseExport(text);
   } catch (error) {
     return {
       ok: false,
@@ -96,22 +145,39 @@ export function ImportPage() {
         return;
       }
 
-      setPhase({
-        kind: "working",
-        ...info,
-        progress: { step: "saving", total: result.total, skipped: result.skipped.length },
-      });
+      const counts = { total: result.total, skipped: result.skipped.length };
+      setPhase({ kind: "working", ...info, progress: { step: "saving", ...counts } });
+      let record: ImportRecord;
       try {
-        const record = await importMutation.mutateAsync({
+        record = await importMutation.mutateAsync({
           fileName: file.name,
           activities: result.activities,
           skipped: result.skipped,
         });
-        setPhase({ kind: "done", record });
       } catch {
         setPhase({ kind: "idle" });
         setNotice({ text: "The import failed and nothing was changed.", retry: file });
+        return;
       }
+
+      // The file is saved; now the ride data of its rides (T12). Failures never undo the import.
+      const rideIds = new Set(
+        result.activities.filter((a) => isRideSportType(a.sport_type)).map((a) => a.strava_id),
+      );
+      const rideStreams = result.streams.filter((s) => rideIds.has(s.stravaId));
+      const dropped = result.droppedStreams.filter((d) => rideIds.has(d.stravaId)).length;
+      let streams: StreamsOutcome | null = null;
+      if (rideStreams.length > 0 || dropped > 0) {
+        const saved = await saveRideStreams(rideStreams, streamsDeps, ({ done, total }) => {
+          setPhase({
+            kind: "working",
+            ...info,
+            progress: { step: "streams", ...counts, done, uploads: total },
+          });
+        });
+        streams = { ...saved, dropped, retrying: false, dismissed: false };
+      }
+      setPhase({ kind: "done", record, streams });
     } finally {
       busy.current = false;
     }
@@ -122,6 +188,29 @@ export function ImportPage() {
   };
 
   const dragging = useFileDrop(phase.kind !== "working", onFile);
+
+  /** Uploads only the ride data that failed, from the file still in memory. */
+  const retryStreams = async () => {
+    if (phase.kind !== "done" || !phase.streams || phase.streams.retrying) return;
+    const { record } = phase;
+    const before = phase.streams;
+    const update = (streams: StreamsOutcome) => {
+      setPhase((current) =>
+        current.kind === "done" && current.record.id === record.id
+          ? { ...current, streams }
+          : current,
+      );
+    };
+    update({ ...before, retrying: true });
+    const result = await saveRideStreams(before.failed, streamsDeps);
+    update({
+      ...before,
+      saved: before.saved + result.saved,
+      failed: result.failed,
+      retrying: false,
+      dismissed: false,
+    });
+  };
 
   const copyDetails = async (text: string) => {
     try {
@@ -158,6 +247,7 @@ export function ImportPage() {
     content = (
       <ImportSummary
         record={phase.record}
+        note={streamsNote(phase.streams)}
         secondaryAction={
           <Button
             variant="secondary"
@@ -219,6 +309,40 @@ export function ImportPage() {
                 ),
               }
             : {}),
+        }
+      : null,
+  );
+
+  // Ride data that could not be saved: the import itself is done (T12).
+  const failedStreams =
+    phase.kind === "done" && phase.streams && !phase.streams.retrying && !phase.streams.dismissed
+      ? phase.streams.failed.length
+      : 0;
+  useStatusCard(
+    "import-streams",
+    STATUS_PRIORITY.error,
+    failedStreams > 0
+      ? {
+          tone: "error",
+          message: `Ride data for ${rides(failedStreams)} could not be saved.`,
+          onDismiss: () => {
+            setPhase((current) =>
+              current.kind === "done" && current.streams
+                ? { ...current, streams: { ...current.streams, dismissed: true } }
+                : current,
+            );
+          },
+          action: (
+            <button
+              type="button"
+              className={statusActionClass}
+              onClick={() => {
+                void retryStreams();
+              }}
+            >
+              Try again
+            </button>
+          ),
         }
       : null,
   );

@@ -2,7 +2,7 @@ import type { Ride } from "./api";
 
 /**
  * Formatting and grouping for rides (P6: metric units, Europe/Brussels). `start_local` is the Brussels
- * wall-clock time from the export (T5), so dates and weeks are read from it directly, with no time-zone
+ * wall-clock time written by the import (T11), so dates and weeks are read from it directly, with no time-zone
  * maths.
  */
 

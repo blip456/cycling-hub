@@ -47,7 +47,7 @@ function number(value: number | null | undefined, digits: number): string {
 function csvRow(ride: Ride): string[] {
   const [type = ride.sport_type, ...tags] = rideTags(ride);
   return [
-    // Brussels wall-clock time from the export (T5), "2026-10-14 15:27".
+    // Brussels wall-clock time as stored by the import (T11), "2026-10-14 15:27".
     `${ride.start_local.slice(0, 10)} ${ride.start_local.slice(11, 16)}`,
     csvField(ride.name, { text: true }),
     csvField(type),

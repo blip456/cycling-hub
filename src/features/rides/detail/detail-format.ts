@@ -11,7 +11,7 @@ const longDateFmt = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
 });
 
-/** "Sun 11 Oct 2026 · 08:30 · Road · Commute" (B4: always with the year; Brussels wall clock, T5). */
+/** "Sun 11 Oct 2026 · 08:30 · Road · Commute" (B4: always with the year; Brussels wall clock, T11). */
 export function detailDateLine(
   ride: Pick<Ride, "start_local" | "sport_type" | "commute" | "trainer">,
 ): string {
