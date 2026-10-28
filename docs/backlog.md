@@ -26,7 +26,7 @@ rebuild).
 | #   | Epic                                   | Outcome                                                                                                                                  | Sprints     | Open discovery questions                                                                                          |
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | E0  | **Foundation, import & rides**         | Design system, repo + standards + CI/CD, login, import with history, settings + release pages, ride list and ride detail.               | S0, S1, S2  | Export format v2 and its timing (Q1). Weather source (P19). Export format for "export rides".                    |
-| E1  | **Baseline & zones**                   | Athlete profile, guided FTP test week, power and HR zones from the test, zone history.                                                  | —           | Test protocol (20-min, ramp)? Zone models? Manual test entry or automatic from streams (needs export v2 streams)? |
+| E1  | **Baseline & zones**                   | Athlete profile, guided FTP test week, power and HR zones from the test, zone history.                                                  | S3          | Test protocol (20-min, ramp)? Zone models? Manual test entry or automatic from streams (needs export v2 streams)? |
 | E2  | **Training plan — general fitness**    | Periodized plan (base / build / peak) around Wed / Sun / optional ride, weekly view, session detail with watt and HR targets.           | —           | Rule-based, Claude API or hybrid? How does the plan adapt to missed sessions?                                    |
 | E3  | **Plan vs actual & progress**          | Match rides to sessions, compliance, trends: FTP estimate, power curve, efficiency factor, aerobic decoupling, fitness / fatigue / form. | —           | Which metrics are reliable from the export? Most history has no power or HR (P5).                                 |
 | E4  | **Event mode**                         | Event with date, distance, elevation, goal; plan built backwards, taper, pacing and fueling targets.                                    | —           | Do event mode and general mode coexist?                                                                           |
@@ -257,6 +257,87 @@ Discovery (no build): weather per ride (P19).
   start times as on Strava, and power and heart rate where the GPX has them.
 - A second export only downloads GPX files for new or changed rides; importing it reports unchanged.
 - The per-second streams of each ride are in Storage and only readable by the signed-in user.
+
+## v0.4.0 — Baseline & zones
+Sprint: 3
+Status: planned
+Tagline: Set your FTP from a guided test week or your own rides, and get your power and heart rate zones with a history.
+
+### Details
+
+> Planned 28 Oct 2026 (epic E1). Draft for the PO: nothing starts before the PO's go and the answers to the
+> open questions below.
+
+Goal: the app knows how strong the PO is. A current FTP and heart rate baseline, the zones derived from
+them, and a dated history, so that E2 (training plan) can give watt and heart rate targets and E3 can
+judge sessions against zones.
+
+Two parts; part B starts only after the PO approves part A (D2).
+
+**Part A: Discovery and design (gate: PO approves)**
+
+1. Answer the open questions below (PO), in one round of 3–4 questions with the options laid out.
+2. Wireframes and design for the new screens in the existing design system (Deep Ocean, light + dark,
+   phone + desktop): Baseline overview, Guided test week, FTP result and confirm, Zones and history.
+3. Write the decisions in `docs/decisions.md` (a new row each) and update `docs/export-format.md` only if
+   the streams are not enough.
+
+**Part B: Build**
+
+4. Data: migration for an athlete baseline (max HR, optional resting HR and LTHR) and a dated
+   **baseline history** table (FTP, source, effective date, note), additive, RLS on `auth.uid()`, grants,
+   pgTAP tests, `pnpm db:types`. History rows are never overwritten; the current baseline is the newest row.
+5. Baseline page (new menu item, or under Settings if the design says so) with the current FTP and heart
+   rate values, and "Update baseline".
+6. Guided FTP test week: protocol steps with the session targets, a checklist per session and a place to
+   enter the result. Protocol and zone model per the answers to Q-E1-1 and Q-E1-2.
+7. FTP estimate from the stored streams (T13): best 20-minute power from rides that have power, shown as a
+   suggestion with the ride it came from (date, link to the ride). The PO confirms it or enters a value by
+   hand; nothing changes the baseline without a confirm.
+8. Zones: power zones from FTP and heart rate zones from the chosen reference, shown as a table with
+   ranges in W and bpm, and a zone colour per zone from the design tokens.
+9. Zone history: list of past baselines with their zones and a simple FTP-over-time view; nothing is lost
+   when a new FTP is set.
+10. Empty, loading and error states, copy in plain English, metric units (P6).
+11. Tests: best-effort power calculation (20 min, gaps and dropouts), zone calculation for both models,
+    baseline history rules (newest wins, no overwrite), stream reading and the confirm flow.
+
+**Open questions for the PO (Q-E1-x)**
+
+| #      | Question                                                    | Options                                                                                                                                                                         |
+| ------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q-E1-1 | Which FTP test protocol should the guided week use?         | 20-minute test (FTP = 95 % of the 20-minute average; needs a pacing warm-up); ramp test (shorter, less pacing, tends to give a different number); both, with the PO picking one per week. |
+| Q-E1-2 | Which zone models?                                          | Coggan 7 power zones and 5 heart rate zones (most common); polarized 3 zones (simpler, fits base training); both, switchable in Settings.                                        |
+| Q-E1-3 | Manual entry, automatic from streams, or both?              | Both is planned: the app suggests an FTP from the best 20 minutes in the stored rides, the PO confirms or types a value. Alternative: manual only first, automatic later (smaller sprint). Only about the last 6 months have power (P5). |
+| Q-E1-4 | Which heart rate reference?                                 | Max HR from the highest value in the data, typed max HR, or lactate threshold HR from the test. Needs resting HR as well for a reserve-based model.                              |
+| Q-E1-5 | Does the guided test week also schedule sessions?           | Only describe them (this sprint, no calendar), or already propose days around Wed / Sun (that is E2; better left there).                                                         |
+
+**Out of scope (later epics)**
+
+- Plan generation, weekly view, adapting to missed sessions (E2).
+- Compliance, power curve, fitness / fatigue / form, decoupling (E3).
+- Weight and body composition (E5); FTP in W/kg waits for it.
+- Time in zone per ride (E3), except what the zone table itself needs.
+
+**Acceptance criteria (draft)**
+
+- The PO can see and update a current FTP and heart rate baseline; the old values stay in the history.
+- The app suggests an FTP from existing rides with power, names the ride it came from and changes nothing
+  until the PO confirms.
+- A guided test week can be followed step by step, and its result becomes a baseline entry.
+- Power and heart rate zones show ranges in W and bpm and follow the chosen model.
+- The history lists every baseline with its date, source and zones.
+- Rides without power or heart rate never break the page; a user with no power data sees a clear empty
+  state with the manual route.
+- Phone and desktop, light and dark, WCAG 2.2 AA, no horizontal scrolling on the phone.
+
+**Risks**
+
+- Little power history (P5): the suggestion can be empty or wrong for sprint-like rides; show the source
+  ride so the PO can judge.
+- Streams are gzip JSON per ride in Storage (T13): reading many rides in the browser can be slow, so the
+  best-effort search should run on the newest rides with power first, or in a database function.
+- FTP from a 20-minute effort is an estimate; label it as such.
 
 ## Later
 
