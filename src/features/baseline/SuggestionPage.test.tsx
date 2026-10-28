@@ -109,6 +109,19 @@ describe("FTP suggestion (Z2)", () => {
     });
   });
 
+  it("does not read the ride files again when the baseline is saved", async () => {
+    renderSuggestion();
+    await screen.findByText("This is an estimate, not a test result.");
+    const reads = vi.mocked(api.downloadRideStreams).mock.calls.length;
+    expect(reads).toBeGreaterThan(0);
+    await userEvent.click(screen.getByRole("button", { name: "Use 266 W as my FTP" }));
+    await waitFor(() => {
+      expect(screen.getByTestId("where")).toHaveTextContent("/baseline");
+    });
+    expect(screen.queryByText("Reading your rides…")).not.toBeInTheDocument();
+    expect(vi.mocked(api.downloadRideStreams).mock.calls).toHaveLength(reads);
+  });
+
   it("lets the date change, but not to the future", async () => {
     renderSuggestion();
     await screen.findByText("This is an estimate, not a test result.");
