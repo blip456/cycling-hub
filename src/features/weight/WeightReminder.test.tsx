@@ -49,7 +49,7 @@ describe("weight reminder card", () => {
     renderReminder();
     const card = await screen.findByRole("status");
     expect(card).toHaveTextContent("Time to log your weight");
-    expect(card).toHaveTextContent("Nothing logged in the last 7 days.");
+    expect(card).toHaveTextContent("Nothing logged since your reminder day.");
     expect(within(card).getByLabelText("Weight")).not.toHaveAttribute("placeholder");
     expect(card).toHaveTextContent("Saved as today's entry.");
   });

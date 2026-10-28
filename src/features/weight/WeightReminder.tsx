@@ -155,7 +155,7 @@ export function WeightReminder() {
               <>
                 <strong className="font-semibold">Time to log your weight</strong>
                 <br />
-                Nothing logged in the last 7 days.
+                Nothing logged since your reminder day.
               </>
             ),
             content: (

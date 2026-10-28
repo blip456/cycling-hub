@@ -74,6 +74,9 @@ export function useSaveReminderSettings() {
     onError: (_error, _settings, context) => {
       if (context?.previous) queryClient.setQueryData(key, context.previous);
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["weight", "reminder", userId] });
+      return queryClient.invalidateQueries({ queryKey: key });
+    },
   });
 }

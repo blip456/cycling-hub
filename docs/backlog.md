@@ -260,7 +260,7 @@ Discovery (no build): weather per ride (P19).
 
 ## v0.4.0 — Athlete profile, weight & zones
 Sprint: 3
-Status: planned
+Status: in progress
 Tagline: Your athlete profile, weight tracking with a weekly reminder, your FTP from a guided test week or your own rides, and your power and heart rate zones with a history.
 
 ### Details
