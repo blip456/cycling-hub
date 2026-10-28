@@ -32,6 +32,13 @@
   --color-m-power: var(--m-power);
   --color-m-hr: var(--m-hr);
   --color-m-elev: var(--m-elev);
+  --color-zone-1: var(--zone-1);
+  --color-zone-2: var(--zone-2);
+  --color-zone-3: var(--zone-3);
+  --color-zone-4: var(--zone-4);
+  --color-zone-5: var(--zone-5);
+  --color-zone-6: var(--zone-6);
+  --color-zone-7: var(--zone-7);
 
   --shadow-card: var(--shadow);
   --shadow-raised: var(--shadow-raised);

@@ -120,6 +120,15 @@
   --m-hr: #e8728f;
   --m-elev: #d6a97a;
 
+  /* zone colours (P40, P53): power zones 1-7, heart rate zones reuse 1-5; >= 3:1 on --bg, --surface, --raised */
+  --zone-1: #9aa3b2;
+  --zone-2: #6db6f0;
+  --zone-3: #56d2ac;
+  --zone-4: #e9cd4c;
+  --zone-5: #f0a04b;
+  --zone-6: #ff7a6b;
+  --zone-7: #c58cff;
+
   /* elevation: tone steps; shadow only on floating things (P21, P28) */
   --shadow: none;
   --shadow-raised: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.25);
@@ -165,6 +174,15 @@
   --m-power: #806200;
   --m-hr: #a63a5b;
   --m-elev: #6b4a2b;
+
+  /* zone colours (P40, P53): power zones 1-7, heart rate zones reuse 1-5; >= 3:1 on --bg, --surface, --raised */
+  --zone-1: #5a6472;
+  --zone-2: #1a62a3;
+  --zone-3: #0d7050;
+  --zone-4: #806200;
+  --zone-5: #a64b00;
+  --zone-6: #b3261e;
+  --zone-7: #7a3ec4;
   --shadow: none;
   --shadow-raised: 0 2px 4px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.07);
   --shadow-float: var(--shadow-raised);
@@ -207,6 +225,15 @@
     --m-power: #806200;
     --m-hr: #a63a5b;
     --m-elev: #6b4a2b;
+
+    /* zone colours (P40, P53): power zones 1-7, heart rate zones reuse 1-5; >= 3:1 on --bg, --surface, --raised */
+    --zone-1: #5a6472;
+    --zone-2: #1a62a3;
+    --zone-3: #0d7050;
+    --zone-4: #806200;
+    --zone-5: #a64b00;
+    --zone-6: #b3261e;
+    --zone-7: #7a3ec4;
     --shadow: none;
     --shadow-raised: 0 2px 4px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.07);
     --shadow-float: var(--shadow-raised);

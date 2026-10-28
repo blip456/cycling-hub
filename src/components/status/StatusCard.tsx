@@ -14,7 +14,7 @@ export function StatusCard({
   spec: StatusCardSpec;
   placement: StatusPlacement;
 }) {
-  const { tone, message, action, onDismiss } = spec;
+  const { tone, message, action, content, onDismiss } = spec;
   const side = placement === "side";
 
   const indicator =
@@ -37,6 +37,28 @@ export function StatusCard({
       <CloseIcon width={18} height={18} />
     </button>
   ) : null;
+
+  if (content) {
+    return (
+      <div
+        role={tone === "error" ? "alert" : "status"}
+        data-placement={placement}
+        className={
+          "status-in rounded-2xl bg-raised py-3 pl-3.5 pr-3 text-[15px] leading-[22px] text-text " +
+          (side
+            ? ""
+            : "fixed inset-x-3 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 mx-auto max-w-md shadow-raised")
+        }
+      >
+        <div className="flex items-start gap-2.5">
+          <span className={"flex " + (tone === "error" ? "mt-0.5" : "mt-[7px]")}>{indicator}</span>
+          <span className="min-w-0 flex-1">{message}</span>
+          {dismiss ? <span className="-mr-2 -mt-1.5 flex">{dismiss}</span> : null}
+        </div>
+        <div className="mt-2">{content}</div>
+      </div>
+    );
+  }
 
   if (side) {
     return (

@@ -67,6 +67,34 @@ export function SettingsIcon(props: IconProps) {
   );
 }
 
+export function WeightIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6 5h12l2 14H4L6 5Z" />
+      <path d="M9.5 10a3 3 0 0 1 5 0" />
+      <path d="M12 12.5l1.5-2" />
+    </svg>
+  );
+}
+
+export function ProfileIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c0-3.6 3-6 7-6s7 2.4 7 6" />
+    </svg>
+  );
+}
+
+export function BaselineIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 20V4M4 20h16" />
+      <path d="M8 15l4-4 3 3 5-6" />
+    </svg>
+  );
+}
+
 export function ChevronRightIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

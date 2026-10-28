@@ -260,23 +260,23 @@ Discovery (no build): weather per ride (P19).
 
 ## v0.4.0 — Athlete profile, weight & zones
 Sprint: 3
-Status: planned
+Status: in progress
 Tagline: Your athlete profile, weight tracking with a weekly reminder, your FTP from a guided test week or your own rides, and your power and heart rate zones with a history.
 
 ### Details
 
-> Planned 28 Oct 2026 (epic E1). Draft for the PO: nothing starts before the PO's go and the answers to the
-> open questions below.
+> Planned 28 Oct 2026 (epic E1). Part A is approved by the PO and every open question is decided (P48 to
+> P54); the build runs in parallel streams on `feat/athlete-foundation`.
 
 Goal: the app knows who the athlete is and how strong they are. A minimal athlete profile, a weight log with a
 trend, a current FTP and heart rate baseline, the zones derived from them, and a dated history, so that E2 (training plan) can
 build around the PO's week and give watt and heart rate targets, and E3 can judge sessions against zones.
 
-Two parts; part B starts only after the PO approves part A (D2).
+Two parts; part B started after the PO approved part A (D2, wireframes in `docs/wireframes/V2/`).
 
-**Part A: Discovery and design (gate: PO approves)**
+**Part A: Discovery and design (done, PO approved)**
 
-1. Answer the open questions below (PO), in one round of 3–4 questions with the options laid out.
+1. Answer the open questions (PO), in one round with the options laid out (done, P48 to P54).
 2. Wireframes and design for the new screens in the existing design system (Deep Ocean, light + dark,
    phone + desktop): Athlete profile (view and edit), Weight (log, list, trend, reminder card, Settings reminder), Baseline overview, Guided test week, FTP result and
    confirm, Zones and history.
@@ -298,9 +298,9 @@ Two parts; part B starts only after the PO approves part A (D2).
 5. Data: migration for an athlete baseline (max HR, optional resting HR and LTHR) and a dated
    **baseline history** table (FTP, source, effective date, note), additive, RLS on `auth.uid()`, grants,
    pgTAP tests, `pnpm db:types`. History rows are never overwritten; the current baseline is the newest row.
-6. Baseline page (new menu item, or under Settings if the design says so) with the current FTP and heart
+6. Baseline page (own menu item with the tabs Baseline, Zones and History, P48) with the current FTP and heart
    rate values, and "Update baseline".
-7. Guided FTP test week: protocol steps with the session targets, a checklist per session and a place to
+7. Guided FTP test week as a checklist page (P49): protocol steps with the session targets, a checklist per session and a place to
    enter the result. Both protocols (P39), Coggan zones (P40). The PO chooses the date of each session (P43).
 8. FTP estimate from the stored streams (T13): best 20-minute power from rides that have power, shown as a
    suggestion with the ride it came from (date, link to the ride; P41). The PO confirms it or enters a value by
@@ -327,11 +327,19 @@ Two parts; part B starts only after the PO approves part A (D2).
 - Q-E1-7: weight and weight tracking are in this sprint, as often as the PO wants, with a weekly reminder.
 - Q-E1-8: everything in one sprint, built with several agents.
 
-**Still open for the PO**
+**Decided by the PO, wireframe round (28 Oct 2026, P48 to P54)**
 
-| #      | Question                                  | Options                                                                                                                                                                                    |
-| ------ | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Q-E1-9 | How should the weekly weight reminder reach you? | In-app card only (proposed, P46; simplest, shows when you open the app); or also a push notification (needs a push service, a server job and an installed PWA, and adds a sprint-sized risk); or an email. |
+- Q-E1-9: the weekly weight reminder is an in-app card only; no push notification and no email (P46, P52).
+- Navigation: Rides, Import, Weight, Profile, Baseline, Settings; Baseline has the tabs Baseline, Zones, History (P48).
+- The test week is the checklist page, not the stepper (P49).
+- One set of limits: name 40, goal 200, birth year 1920 to the current year, weight 30 to 250 kg, weight note 100,
+  test notes 1000 (P50). Weekdays are `mon` to `sun` in the logic and 0 to 6 (0 = Sunday) in the database, converted
+  in one place (P51).
+- The weight reminder stays until a weight is logged; Not now hides it until tomorrow; default day Sunday, on (P52).
+- Zones: Coggan 7 power, 5 heart rate (LTHR when set, else max HR); ramp FTP 75 % of the best minute, 20-minute FTP
+  95 %, LTHR from the last 15 minutes of the 20-minute test; new colours `--zone-1` to `--zone-7` (P53).
+- Defaults: newest 60 rides with power, effective date today, a history row for every save, Undo about 8 s
+  without a dialog, trailing 7-day average (P54).
 
 **Out of scope (later epics)**
 
@@ -341,10 +349,10 @@ Two parts; part B starts only after the PO approves part A (D2).
   (E3 and E5).
 - Time in zone per ride (E3), except what the zone table itself needs.
 
-**Acceptance criteria (draft)**
+**Acceptance criteria**
 
 - The PO can log a weight on any day, edit or delete it, see the trend, and gets a bottom card as a weekly
-  reminder when nothing was logged for 7 days; the reminder day can be changed or switched off.
+  reminder that stays until a weight is logged (Not now hides it until tomorrow); the reminder day can be changed or switched off.
 - The PO can fill in and edit the athlete profile section by section; every field is optional and the
   rest of the app works with an empty profile.
 - The PO can see and update a current FTP and heart rate baseline; the old values stay in the history.
@@ -363,7 +371,7 @@ Two parts; part B starts only after the PO approves part A (D2).
   choice, P47). Build in parallel streams with separate files and migrations to keep merges clean, and cut
   the stream estimate first if time runs out.
 - A push reminder would add a service worker push setup, a server job and iOS install requirements; it is
-  not planned (Q-E1-9).
+  decided against for this sprint (Q-E1-9, P52).
 - Little power history (P5): the suggestion can be empty or wrong for sprint-like rides; show the source
   ride so the PO can judge.
 - Streams are gzip JSON per ride in Storage (T13): reading many rides in the browser can be slow, so the

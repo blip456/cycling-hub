@@ -12,12 +12,16 @@ export interface StatusCardSpec {
   message: ReactNode;
   /** A link or button styled with statusActionClass. */
   action?: ReactNode;
+  /** A block under the message, for a card with a small form (the weight reminder, W3). */
+  content?: ReactNode;
   onDismiss?: () => void;
 }
 
 /** Higher wins when several cards want to show; an error replaces an info card (DESIGN.md). */
 export const STATUS_PRIORITY = {
   whatsNew: 10,
+  /** The weight reminder goes before "What's new" (W-PO4, P52). */
+  weightReminder: 15,
   update: 20,
   flash: 30,
   error: 40,
