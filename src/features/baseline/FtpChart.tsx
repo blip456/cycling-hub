@@ -4,9 +4,11 @@ import { MONTHS } from "./format";
 /** A baseline row that sets FTP: the chart draws these. */
 export type FtpPoint = { date: IsoDate; ftp: number };
 
-const W = 600;
-const H = 220;
-const PAD = { left: 44, right: 20, top: 28, bottom: 30 };
+const W = 480;
+const H = 260;
+const PAD = { left: 52, right: 24, top: 32, bottom: 34 };
+/** Room between the axis and the first and last point, so a label never sits on the axis numbers. */
+const INSET = 16;
 
 function monthLabel(month: IsoDate, withYear: boolean): string {
   const name = MONTHS[Number(month.slice(5, 7)) - 1] ?? "";
@@ -57,7 +59,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
   const span = Math.max(1, diffDays(first, end) ?? 1);
   const { min, max } = yRange(sorted.map((p) => p.ftp));
   const x = (date: IsoDate) =>
-    PAD.left + ((diffDays(first, date) ?? 0) / span) * (W - PAD.left - PAD.right);
+    PAD.left + INSET + ((diffDays(first, date) ?? 0) / span) * (W - PAD.left - PAD.right - INSET);
   const y = (ftp: number) => PAD.top + (1 - (ftp - min) / (max - min)) * (H - PAD.top - PAD.bottom);
 
   let path = "";
@@ -81,7 +83,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
         viewBox={`0 0 ${String(W)} ${String(H)}`}
         role="img"
         aria-label={`FTP over time. ${description}`}
-        className="h-auto w-full max-w-[640px] text-text"
+        className="h-auto w-full text-text"
       >
         {yTicks.map((tick) => (
           <g key={tick}>
@@ -96,7 +98,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
               x={PAD.left - 6}
               y={y(tick) + 4}
               textAnchor="end"
-              fontSize="12"
+              fontSize="14"
               fill="var(--muted)"
             >
               {tick}
@@ -107,9 +109,9 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
           <text
             key={month}
             x={x(month < first ? first : month)}
-            y={H - 8}
+            y={H - 10}
             textAnchor="middle"
-            fontSize="12"
+            fontSize="14"
             fill="var(--muted)"
           >
             {monthLabel(month, multiYear)}
@@ -130,7 +132,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
               x={x(p.date)}
               y={y(p.ftp) - 10}
               textAnchor="middle"
-              fontSize="12"
+              fontSize="14"
               fontWeight="600"
               fill="currentColor"
             >
