@@ -8,6 +8,7 @@ export const SCOPES = [
   "import",
   "rides",
   "settings",
+  "extension",
   "design",
   "db",
   "ci",

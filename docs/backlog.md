@@ -179,7 +179,7 @@ Goal: import the backfill and every later export reliably, and see the app's ver
 ## v0.3.0 — Rides
 Sprint: 2
 Status: in progress
-Tagline: All your rides by week or month, sortable and filterable, with the details of every ride.
+Tagline: All your rides by week or month, sortable and filterable, with the details of every ride, and a Chrome extension that exports them from Strava with power and heart rate.
 
 ### Details
 
@@ -219,7 +219,22 @@ Part B — ride detail, delete, export (design V1: B4):
 8. Tests: list grouping and totals, sorting and filtering, detail page states, delete + undo, export
    contents (CSV escaping, JSON re-imports with the Sprint 1 parser).
 
-Discovery (no build): weather per ride (P19), export format v2 for power, HR and tags (Q1).
+Part C — Chrome extension and export v2 (PO request, 28 Oct 2026; T11, T12, `docs/export-format.md`):
+
+9. Chrome extension (`extension/`, Manifest V3, loaded unpacked): on strava.com it reads the activity
+   list (`/athlete/training_activities`, all pages), downloads a GPX per ride for the route, power,
+   heart rate and cadence, and saves one export file (format v2). Calls are spaced out; GPX results are
+   cached so a later export only downloads new or changed rides.
+10. Import reads v2 next to v1: correct start times (T11), averages and maxima into the existing
+    columns, the route from the GPX.
+11. Per-second streams saved per ride in Supabase Storage (private bucket, RLS on `auth.uid()`), after
+    the import is saved; a failed upload can be retried without importing again.
+12. Fix: v1 start times are UTC and are converted to Brussels time (T11); the first import after this
+    fix reports the existing rides as updated.
+13. Tests: GPX parsing and averages, polyline encoding, list mapping, v2 parsing, stream upload, the
+    storage policies (pgTAP).
+
+Discovery (no build): weather per ride (P19).
 
 **Acceptance criteria**
 
@@ -231,6 +246,10 @@ Discovery (no build): weather per ride (P19), export format v2 for power, HR and
   earlier".
 - The CSV opens in a spreadsheet with one row per visible ride; the JSON imports again as "Unchanged".
 - Works on phone and desktop, light and dark, WCAG 2.2 AA, no horizontal scrolling on the phone.
+- The extension exports every activity from Strava into one v2 file; importing it shows the rides with
+  start times as on Strava, and power and heart rate where the GPX has them.
+- A second export only downloads GPX files for new or changed rides; importing it reports unchanged.
+- The per-second streams of each ride are in Storage and only readable by the signed-in user.
 
 ## Later
 
