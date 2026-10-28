@@ -108,7 +108,7 @@ export function summarize(points: readonly TrackPoint[]): GpxSummary {
     polyline: routePolyline(route),
     averageWatts: timeWeightedAverage(timed, (p) => p.power),
     maxWatts: maximum(timed, (p) => p.power),
-    averageHeartrate: timeWeightedAverage(timed, (p) => p.hr),
+    averageHeartrate: timeWeightedAverage(timed, (p) => p.hr, { skipZeros: true }),
     maxHeartrate: maximum(timed, (p) => p.hr),
     averageCadence: timeWeightedAverage(timed, (p) => p.cad, { skipZeros: true }),
     streams: buildStreams(timed),

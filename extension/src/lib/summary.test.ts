@@ -63,6 +63,16 @@ describe("averages", () => {
     expect(summary.averageCadence).toBeNull();
   });
 
+  it("leaves heart rate zeros (sensor dropouts) out of the average", () => {
+    const points = parsed([
+      { t: 0, hr: 100 },
+      { t: 1, hr: 0 },
+      { t: 2, hr: 0 },
+      { t: 3, hr: 100 },
+    ]);
+    expect(summarize(points).averageHeartrate).toBe(100);
+  });
+
   it("falls back to the plain mean for a single point", () => {
     expect(timeWeightedAverage(parsed([{ t: 0, hr: 120 }]), (p) => p.hr)).toBe(120);
   });

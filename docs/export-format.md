@@ -71,7 +71,8 @@ Columnar arrays of equal length, one entry per GPX track point, in time order:
 
 - Only points with a value count. Time-weighted over the gaps between points; a gap longer than 30 s
   counts as a pause and is left out.
-- `averageWatts` includes zeros (coasting), like Strava. `averageCadence` leaves out zeros.
+- `averageWatts` includes zeros (coasting), like Strava. `averageCadence` and `averageHeartrate` leave out
+  zeros (a heart rate of 0 is a sensor dropout).
 - Round averages to whole numbers.
 
 ## Reading v1 and v2 (app)
