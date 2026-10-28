@@ -6,10 +6,13 @@ route, power, heart rate, cadence and per-second streams from the GPX file Strav
 
 ## Install
 
-1. `pnpm install`, then `pnpm ext:build` (writes `extension/dist`; `pnpm ext:dev` rebuilds on every change).
-2. Open `chrome://extensions`, turn on **Developer mode**.
-3. **Load unpacked** and choose the `extension/dist` folder. After a rebuild, press the reload icon on
-   the extension's card.
+1. Node 22 or newer. No pnpm yet? `corepack enable` once installs the version pinned in `package.json`.
+2. In the repository root (not in `extension/`): `pnpm install`, then `pnpm ext:build` (writes
+   `extension/dist`; `pnpm ext:dev` rebuilds on every change).
+3. Open `chrome://extensions`, turn on **Developer mode**.
+4. **Load unpacked** and choose the **`extension/dist`** folder: the one with `manifest.json` in it.
+   Choosing `extension/` gives "Manifest file is missing or unreadable". After a rebuild, press the
+   reload icon on the extension's card.
 
 ## Use
 
