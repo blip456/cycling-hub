@@ -89,6 +89,22 @@ These six colours are approved by the PO (D-PO3).
 
 Rules: colour goes on the **value**, never on the label or unit. A missing value is a muted "—" with its unit. Later charts and zones reuse these colours.
 
+### Zone colours
+
+Training zones (P40, P53) have their own sequence from easy to hard, separate from the metric colours. Power zones use `--zone-1` to `--zone-7` (Coggan); the five heart rate zones reuse `--zone-1` to `--zone-5`. All pass 3 : 1 on `--bg`, `--surface` and `--raised` in both themes (UI parts, 1.4.11); `src/styles/zone-tokens.test.ts` checks this.
+
+| Token | Zone | Dark | Light |
+| --- | --- | --- | --- |
+| `--zone-1` | Z1 Active recovery | `#9AA3B2` | `#5A6472` |
+| `--zone-2` | Z2 Endurance | `#6DB6F0` | `#1A62A3` |
+| `--zone-3` | Z3 Tempo | `#56D2AC` | `#0D7050` |
+| `--zone-4` | Z4 Threshold | `#E9CD4C` | `#806200` |
+| `--zone-5` | Z5 VO2 max | `#F0A04B` | `#A64B00` |
+| `--zone-6` | Z6 Anaerobic capacity | `#FF7A6B` | `#B3261E` |
+| `--zone-7` | Z7 Neuromuscular power | `#C58CFF` | `#7A3EC4` |
+
+Rule: colour is never the only signal. A zone always shows its number and name as text next to the colour (swatch, bar or chip); the text itself stays `--text` or `--muted`, only the swatch or bar takes the zone colour.
+
 ## 3. Typography
 
 **Inter** everywhere, one family (P20). Every number uses `font-variant-numeric: tabular-nums`. Nothing below 13 px.
