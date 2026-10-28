@@ -27,7 +27,7 @@
     "test:watch": "vitest",
     "precoverage": "pnpm release-data",
     "coverage": "vitest run --coverage",
-    "db:start": "supabase start -x realtime,storage-api,imgproxy,edge-runtime,logflare,vector,supavisor",
+    "db:start": "supabase start -x realtime,imgproxy,edge-runtime,logflare,vector,supavisor",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",

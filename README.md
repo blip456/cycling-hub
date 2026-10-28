@@ -35,6 +35,9 @@ local URL and publishable key to `.env.local` and creates a local login (`rider@
 restart; it is safe to repeat. Password-reset emails land in the local inbox it prints. To start from an
 empty database run `pnpm db:reset` and then `pnpm local:setup` again (the reset removes the user).
 
+The local Supabase includes Storage (the private `streams` bucket for per-second ride data, T13). If
+yours was started before Storage was added, run `pnpm db:stop` and then `pnpm local:setup` once.
+
 Only the URL and the publishable key ever go into the app. Never commit `.env.local` or any key.
 
 ## Scripts

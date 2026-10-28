@@ -151,7 +151,7 @@ jobs:
         if: steps.changes.outputs.database == 'true'
         run: >-
           supabase start
-          -x realtime,storage-api,imgproxy,mailpit,studio,edge-runtime,logflare,vector,supavisor
+          -x realtime,imgproxy,mailpit,studio,edge-runtime,logflare,vector,supavisor
 
       - name: Apply all migrations to a fresh database
         if: steps.changes.outputs.database == 'true'
