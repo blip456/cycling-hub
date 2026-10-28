@@ -77,12 +77,20 @@ export function useBaseline(): {
   };
 }
 
-/** Saves one baseline row and refreshes everything that shows the baseline. */
+/**
+ * Saves one baseline row and refreshes what shows the baseline: the current values and the history. The
+ * ride scans are left alone: a new baseline does not change what is in the ride files, and refreshing
+ * them would read every file again and replace the page that is saving (the save then never navigates).
+ */
 export function useAddBaseline() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: addBaselineEntry,
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: baselineKeys.all }),
+    onSuccess: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: baselineKeys.current() }),
+        queryClient.invalidateQueries({ queryKey: baselineKeys.entries() }),
+      ]),
   });
 }
 
