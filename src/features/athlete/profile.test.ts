@@ -150,10 +150,13 @@ describe("restingHrSchema", () => {
 });
 
 describe("weightEntrySchema", () => {
-  it("accepts 30 to 250 kg with decimals", () => {
+  it("accepts 30 to 250 kg with one decimal", () => {
     expect(weightEntrySchema.parse({ kg: 30 }).kg).toBe(30);
     expect(weightEntrySchema.parse({ kg: 250 }).kg).toBe(250);
-    expect(weightEntrySchema.parse({ kg: 72.456 }).kg).toBe(72.46);
+    expect(weightEntrySchema.parse({ kg: 72.5 }).kg).toBe(72.5);
+    expect(weightEntrySchema.safeParse({ kg: 72.45 }).error?.issues[0]?.message).toBe(
+      "Use at most one decimal.",
+    );
     expect(weightEntrySchema.safeParse({ kg: 29.9 }).success).toBe(false);
     expect(weightEntrySchema.safeParse({ kg: 250.1 }).success).toBe(false);
     expect(weightEntrySchema.safeParse({ kg: NaN }).success).toBe(false);

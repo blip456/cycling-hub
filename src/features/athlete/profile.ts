@@ -106,7 +106,7 @@ export const baselineSchema = z
 export type BaselineValues = z.output<typeof baselineSchema>;
 
 /**
- * A weight entry: `kg` from 30 to 250 (decimals allowed, rounded to 2 places like the database column) and
+ * A weight entry: `kg` from 30 to 250 (at most one decimal, as in the wireframe; the database column keeps two) and
  * an optional `note` of at most 100 characters (trimmed, empty becomes null). The date is validated by the
  * caller with `isIsoDate` and `weightEntryRules` (one entry per day).
  */
@@ -115,7 +115,7 @@ export const weightEntrySchema = z.object({
     .number("Enter your weight as a number.")
     .min(LIMITS.weight.min, `Weight must be at least ${LIMITS.weight.min} kg.`)
     .max(LIMITS.weight.max, `Weight can be at most ${LIMITS.weight.max} kg.`)
-    .transform((v) => Math.round(v * 100) / 100),
+    .refine((v) => Math.abs(v * 10 - Math.round(v * 10)) < 1e-6, "Use at most one decimal."),
   note: optionalText(LIMITS.weightNoteMax, "Note").default(null),
 });
 
