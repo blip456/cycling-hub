@@ -2,35 +2,11 @@ import { useMutation } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router";
 import { ChevronRightIcon } from "@/components/icons";
+import { actionRow, Group, InfoRow } from "@/features/settings/SettingsGroup";
 import { ThemeSwitch } from "@/features/settings/ThemeSwitch";
+import { WeightReminderSettings } from "@/features/settings/WeightReminderSettings";
 import { APP_VERSION } from "@/features/release/version";
 import { useAuth } from "@/lib/auth/auth-context";
-
-// Group rows (DESIGN.md "Card and group"): 52 px, a 1 px divider inset 16 px between rows.
-const row =
-  "relative flex min-h-[52px] items-center gap-3 px-4 text-[15px] " +
-  "not-first:before:absolute not-first:before:left-4 not-first:before:right-0 not-first:before:top-0 " +
-  "not-first:before:border-t not-first:before:border-border";
-// Rows that act: hover tone step; the focus ring sits inside so the rounded group does not clip it.
-const actionRow = `${row} w-full text-left hover:bg-surface-hover focus-visible:-outline-offset-2`;
-
-function Group({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section>
-      <h2 className="mb-2 text-[15px] font-semibold">{title}</h2>
-      <div className="overflow-hidden rounded-2xl bg-surface">{children}</div>
-    </section>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <div className={row}>
-      <span className="shrink-0 grow">{label}</span>
-      <span className="min-w-0 truncate text-right text-muted">{value}</span>
-    </div>
-  );
-}
 
 function LinkRow({ to, children }: { to: string; children: ReactNode }) {
   return (
@@ -65,6 +41,9 @@ export function SettingsPage() {
           {mutation.isPending ? "Signing out…" : "Sign out"}
         </button>
       </Group>
+
+      {/* owned by settings stream */}
+      <WeightReminderSettings />
 
       <Group title="Appearance">
         <ThemeSwitch />
