@@ -50,12 +50,12 @@ export type Database = {
                   }
                   Relationships: [
                     {
-                      foreignKeyName: "baseline_entries_source_activity_id_fkey"
-                      columns: ["source_activity_id"]
-                      isOneToOne: false
-                      referencedRelation: "activities"
-                      referencedColumns: ["id"]
-                    }
+      foreignKeyName: "baseline_entries_source_activity_id_fkey"
+      columns: ["source_activity_id"]
+isOneToOne: false
+      referencedRelation: "activities"
+      referencedColumns: ["id"]
+    }
                   ]
                 },"imports": {
                   Row: {
@@ -73,14 +73,14 @@ export type Database = {
                   ]
                 },"profiles": {
                   Row: {
-                    "available_days": number[] | null,"birth_year": number | null,"created_at": string,"display_name": string | null,"goal": string | null,"id": string,"last_seen_version": string | null,"updated_at": string,"weight_reminder_day": number,"weight_reminder_enabled": boolean
+                    "available_days": (number)[] | null,"birth_year": number | null,"created_at": string,"display_name": string | null,"goal": string | null,"id": string,"last_seen_version": string | null,"updated_at": string,"weight_reminder_day": number,"weight_reminder_enabled": boolean
                   }
                   ComputedFields: never
                   Insert: {
-                    "available_days"?: number[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id": string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
+                    "available_days"?: (number)[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id": string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
                   }
                   Update: {
-                    "available_days"?: number[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id"?: string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
+                    "available_days"?: (number)[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id"?: string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
                   }
                   Relationships: [
                     
@@ -98,12 +98,12 @@ export type Database = {
                   }
                   Relationships: [
                     {
-                      foreignKeyName: "test_sessions_week_fkey"
-                      columns: ["week_id","user_id"]
-                      isOneToOne: false
-                      referencedRelation: "test_weeks"
-                      referencedColumns: ["id","user_id"]
-                    }
+      foreignKeyName: "test_sessions_week_fkey"
+      columns: ["week_id","user_id"]
+isOneToOne: false
+      referencedRelation: "test_weeks"
+      referencedColumns: ["id","user_id"]
+    }
                   ]
                 },"test_weeks": {
                   Row: {
@@ -137,13 +137,14 @@ export type Database = {
           }
           Views: {
             "current_baseline": {
-              Row: {
-                "ftp_effective_date": string | null,"ftp_w": number | null,"lthr": number | null,"lthr_effective_date": string | null,"max_hr": number | null,"max_hr_effective_date": string | null,"resting_hr": number | null,"resting_hr_effective_date": string | null,"user_id": string | null
-              }
-              Relationships: [
-
-              ]
-            }
+                  Row: {
+                    "ftp_effective_date": string | null,"ftp_w": number | null,"lthr": number | null,"lthr_effective_date": string | null,"max_hr": number | null,"max_hr_effective_date": string | null,"resting_hr": number | null,"resting_hr_effective_date": string | null,"user_id": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                }
           }
           Functions: {
             "import_activities":
