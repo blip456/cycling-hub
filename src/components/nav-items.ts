@@ -1,5 +1,12 @@
 import type { ComponentType, SVGProps } from "react";
-import { ImportIcon, RidesIcon, SettingsIcon } from "./icons";
+import {
+  BaselineIcon,
+  ImportIcon,
+  ProfileIcon,
+  RidesIcon,
+  SettingsIcon,
+  WeightIcon,
+} from "./icons";
 
 export interface NavItem {
   to: string;
@@ -7,10 +14,13 @@ export interface NavItem {
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
 
-/** P7: the side menu destinations. Later epics add items here. */
+/** P7, P48: the side menu destinations. Later epics add items here. */
 export const navItems: NavItem[] = [
   { to: "/rides", label: "Rides", Icon: RidesIcon },
   { to: "/import", label: "Import", Icon: ImportIcon },
+  { to: "/weight", label: "Weight", Icon: WeightIcon },
+  { to: "/profile", label: "Profile", Icon: ProfileIcon },
+  { to: "/baseline", label: "Baseline", Icon: BaselineIcon },
   { to: "/settings", label: "Settings", Icon: SettingsIcon },
 ];
 
@@ -27,6 +37,14 @@ export const subPages: SubPage[] = [
   { to: "/import/history", label: "Import history", parent: "/import" },
   { to: "/settings/whats-new", label: "What's new", parent: "/settings" },
   { to: "/settings/whats-next", label: "What's next", parent: "/settings" },
+
+  // Sprint 3 streams: add the pages below your own menu item (they show Back on the phone). The tabs
+  // themselves (Weight: Log, Trend; Baseline: Baseline, Zones, History) are not sub-pages.
+  // owned by weight stream (add sub-pages of /weight here)
+
+  // owned by profile stream (add sub-pages of /profile here)
+
+  // owned by baseline stream (add sub-pages of /baseline here, e.g. the guided test week)
 ];
 
 /** Whether `pathname` is `to` or below it; a `:param` segment in `to` matches any one segment. */

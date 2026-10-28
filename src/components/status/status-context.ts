@@ -18,6 +18,8 @@ export interface StatusCardSpec {
 /** Higher wins when several cards want to show; an error replaces an info card (DESIGN.md). */
 export const STATUS_PRIORITY = {
   whatsNew: 10,
+  /** The weight reminder goes before "What's new" (W-PO4, P52). */
+  weightReminder: 15,
   update: 20,
   flash: 30,
   error: 40,

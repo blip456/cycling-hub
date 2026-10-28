@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import { useWhatsNew } from "@/features/release/use-whats-new";
 import { APP_VERSION } from "@/features/release/version";
+import { WeightReminder } from "@/features/weight/WeightReminder";
 import { DESKTOP_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { BackIcon, CloseIcon, MenuIcon } from "./icons";
 import { subPageForPath, titleForPath } from "./nav-items";
@@ -102,6 +103,8 @@ export function AppShell() {
 
   return (
     <div className="min-h-dvh">
+      {/* owned by weight stream: the reminder card slot (P12, P31). Renders no markup; fill in WeightReminder.tsx. */}
+      <WeightReminder />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3"
