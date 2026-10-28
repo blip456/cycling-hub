@@ -131,11 +131,15 @@ Two parts; part B starts only after the PO approves part A.
 
 ## v0.2.0 — Import & settings
 Sprint: 1
-Status: in progress
+Status: shipped
 Tagline: Drop your Strava export file and see exactly what was imported, plus settings, What's new and What's next.
 
 ### Details
 
+> Delivered 28 Oct 2026: merged to `main` with `dev` in PR #5. The production release (release PR #6)
+> and the production database migrations are still pending (missing Supabase secrets in the `production`
+> environment, see `docs/setup-production.md`).
+>
 > Built on 18 Oct 2026 on `chore/sprint-1-integration`, verified locally (174 unit tests, 62 pgTAP
 > checks, end-to-end import of the real export: 208 rides + 97 not a ride, second run all unchanged).
 > Waiting for the hosted setup and the PO's test on a preview: `docs/test-checklists/v0.2.0.md`.
