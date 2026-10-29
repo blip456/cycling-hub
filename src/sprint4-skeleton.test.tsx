@@ -65,13 +65,14 @@ describe("Sprint 4 placeholder pages", () => {
     expect(within(tabs).getAllByRole("link", { current: "page" })).toHaveLength(1);
   });
 
-  it.each([
-    ["/plan/changes", "Plan changes"],
-  ])("opens %s with a heading and an empty state and no tabs", async (path, heading) => {
-    renderWithProviders(<App />, { path, auth: signedIn() });
-    expect(await screen.findByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
-    expect(screen.queryByRole("navigation", { name: "Plan" })).not.toBeInTheDocument();
-  });
+  it.each([["/plan/changes", "Plan changes"]])(
+    "opens %s with a heading and an empty state and no tabs",
+    async (path, heading) => {
+      renderWithProviders(<App />, { path, auth: signedIn() });
+      expect(await screen.findByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();
+      expect(screen.queryByRole("navigation", { name: "Plan" })).not.toBeInTheDocument();
+    },
+  );
 
   it("shows a not-found message below an unknown Plan page", async () => {
     renderWithProviders(<App />, { path: "/plan/nope", auth: signedIn() });
