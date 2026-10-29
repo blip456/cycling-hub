@@ -11,6 +11,8 @@ import {
   STATUS_TEXT,
   usePlanSession,
 } from "../data";
+import { MissedSession } from "../adaptation/MissedSession";
+import { SessionReasons } from "../adaptation/ReasonCards";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
@@ -94,36 +96,38 @@ export function SessionPage() {
   const open = canAct(session);
   const event = session.kind === "event";
 
-  const buttons = open ? (
-    <div className="flex flex-col gap-3">
-      <Button
-        block
-        onClick={() => {
-          actions.markDone(session);
-        }}
-      >
-        Mark as done
-      </Button>
-      <Button
-        block
-        variant="secondary"
-        onClick={() => {
-          askMove(session);
-        }}
-      >
-        Move to another day
-      </Button>
-      <Button
-        block
-        variant="secondary"
-        onClick={() => {
-          askSkip(session);
-        }}
-      >
-        Skip
-      </Button>
-    </div>
-  ) : null;
+  const missed = session.status === "missed" && !event;
+  const buttons =
+    open && !missed ? (
+      <div className="flex flex-col gap-3">
+        <Button
+          block
+          onClick={() => {
+            actions.markDone(session);
+          }}
+        >
+          Mark as done
+        </Button>
+        <Button
+          block
+          variant="secondary"
+          onClick={() => {
+            askMove(session);
+          }}
+        >
+          Move to another day
+        </Button>
+        <Button
+          block
+          variant="secondary"
+          onClick={() => {
+            askSkip(session);
+          }}
+        >
+          Skip
+        </Button>
+      </div>
+    ) : null;
 
   return (
     <article
@@ -149,6 +153,8 @@ export function SessionPage() {
           </p>
         </header>
 
+        {missed ? <MissedSession session={session} /> : null}
+
         {!event && environment === "both" && open ? (
           <PlaceChoice
             value={place}
@@ -168,7 +174,7 @@ export function SessionPage() {
           <h3 id="plan-session-why" className="mb-1 text-[17px] font-semibold">
             Why this session
           </h3>
-          <p className="max-w-[65ch] text-[15px]">{session.reason}</p>
+          <SessionReasons session={session} plan={plan} />
         </section>
 
         {!event ? (

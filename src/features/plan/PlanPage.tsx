@@ -1,6 +1,7 @@
 import { Route, Routes, useLocation } from "react-router";
 import { TabNav, type TabItem } from "@/components/TabNav";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { NoPowerPage } from "./adaptation/NoPowerPage";
 import { SessionActionsProvider } from "./components/SessionActions";
 import { TodayCard } from "./components/TodayCard";
 import { usePlanData } from "./data";
@@ -33,6 +34,7 @@ function PlanRoutes() {
         <Route path="new" element={<IntakePage />} />
         <Route path="session/:id" element={<SessionPage />} />
         <Route path="changes" element={<ChangesPage />} />
+        <Route path="no-power" element={<NoPowerPage />} />
         <Route path="summary" element={<SummaryPage />} />
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="*" element={<NotFoundPage />} />
