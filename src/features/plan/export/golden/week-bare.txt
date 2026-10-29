@@ -1,0 +1,28 @@
+# Training week 5 of 12: Mon 19 Oct to Sun 25 Oct 2026
+Made on Mon 26 Oct 2026, 07:40 (Europe/Brussels). Phase: build.
+
+## Planned vs done
+- Tue 20 Oct: planned Threshold 3 x 10 min, 75 min. Done, 74 min.
+- Thu 22 Oct: planned Endurance, 60 min. Done, 58 min.
+- Sat 24 Oct: planned Long ride, 150 min. Done, 142 min, 68.4 km, 410 m climbing, average speed 28.9 km/h.
+- Sun 25 Oct: planned Recovery, 45 min. Missed, no ride.
+- Total: planned 330 min in 4 sessions, done 274 min in 3 sessions (83 %).
+
+## Power (FTP 250 W)
+- Tue: average 178 W, normalised 205 W. Intervals 241 W, 238 W and 236 W against a target of 228 to 262 W (zone 4).
+- Thu: no power data.
+- Sat: average 158 W, normalised 171 W. Target 140 to 187 W (zone 2).
+
+## Heart rate
+- Tue: average 148 bpm, maximum 171 bpm.
+- Thu: average 133 bpm, maximum 149 bpm.
+- Sat: average 137 bpm, maximum 158 bpm.
+
+## Time in zones
+- Power, 216 min with power data: Z1 18 min, Z2 150 min, Z3 12 min, Z4 30 min, Z5 6 min.
+- Heart rate, 274 min: Z1 20 min, Z2 190 min, Z3 24 min, Z4 34 min, Z5 6 min.
+- Power zones: Z1 up to 138 W, Z2 139 to 188, Z3 189 to 225, Z4 226 to 263, Z5 264 to 300, Z6 301 to 375, Z7 376 and up.
+- Heart rate zones: Z1 up to 112 bpm, Z2 113 to 137, Z3 138 to 155, Z4 156 to 173, Z5 174 and up.
+
+## Coming week (week 6, Mon 26 Oct to Sun 1 Nov)
+- Tue Sweet spot 2 x 15 min (75 min), Thu Endurance (60 min), Sat Long ride (150 min), Sun Recovery (45 min).
