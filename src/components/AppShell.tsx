@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
+import { NoPowerDataWarning } from "@/features/plan/NoPowerDataWarning";
+import { PlanUpdatedCard } from "@/features/plan/PlanUpdatedCard";
 import { useWhatsNew } from "@/features/release/use-whats-new";
 import { APP_VERSION } from "@/features/release/version";
 import { WeightReminder } from "@/features/weight/WeightReminder";
@@ -105,6 +107,9 @@ export function AppShell() {
     <div className="min-h-dvh">
       {/* owned by weight stream: the reminder card slot (P12, P31). Renders no markup; fill in WeightReminder.tsx. */}
       <WeightReminder />
+      {/* owned by the plan adaptation stream: the "Plan updated" (R3) and "no power data" (R7) card slots. */}
+      <PlanUpdatedCard />
+      <NoPowerDataWarning />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3"

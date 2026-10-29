@@ -18,7 +18,7 @@ import { SettingsPage } from "@/pages/SettingsPage";
 import { WhatsNewPage } from "@/pages/WhatsNewPage";
 import { WhatsNextPage } from "@/pages/WhatsNextPage";
 
-// Sprint 3 pages are loaded on demand, so the first load stays small. Each stream owns its folder and
+// Sprint 3 and 4 pages are loaded on demand, so the first load stays small. Each stream owns its folder and
 // its page component; the routes below end in /* so each page handles its own sub-routes.
 const WeightPage = lazy(() =>
   import("@/features/weight/WeightPage").then((m) => ({ default: m.WeightPage })),
@@ -28,6 +28,9 @@ const ProfilePage = lazy(() =>
 );
 const BaselinePage = lazy(() =>
   import("@/features/baseline/BaselinePage").then((m) => ({ default: m.BaselinePage })),
+);
+const PlanPage = lazy(() =>
+  import("@/features/plan/PlanPage").then((m) => ({ default: m.PlanPage })),
 );
 
 /** All routes. There is deliberately no sign-up route (A1). */
@@ -74,6 +77,14 @@ export function App() {
           element={
             <Suspense fallback={<PageLoading />}>
               <WeightPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="/plan/*"
+          element={
+            <Suspense fallback={<PageLoading />}>
+              <PlanPage />
             </Suspense>
           }
         />

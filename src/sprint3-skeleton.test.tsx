@@ -24,9 +24,10 @@ vi.mock("@/features/profile/api", async (importOriginal) => ({
 const signedIn = () => fakeAuth({ status: "signedIn", session: fakeSession() });
 
 describe("Sprint 3 navigation (P48)", () => {
-  it("lists Rides, Import, Weight, Profile, Baseline, Settings in that order", () => {
+  it("lists the Sprint 3 pages in that order, with Plan second since Sprint 4 (P68)", () => {
     expect(navItems.map((i) => [i.label, i.to])).toEqual([
       ["Rides", "/rides"],
+      ["Plan", "/plan"],
       ["Import", "/import"],
       ["Weight", "/weight"],
       ["Profile", "/profile"],
