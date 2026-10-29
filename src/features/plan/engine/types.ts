@@ -247,6 +247,7 @@ export type Notice = { code: NoticeCode; message: string; week?: number };
 export type WarningCode =
   | "too-few-days"
   | "no-ftp"
+  | "invalid-input"
   | "event-past"
   | "event-too-soon"
   | "event-far"
