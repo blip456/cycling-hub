@@ -86,6 +86,7 @@ export function evaluateOnce(
   stored: Stored,
   rest: Pick<EvaluateInput, "rides" | "weightEntries" | "today"> & {
     previous?: EvaluateInput["plan"]["previous"];
+    edited?: boolean;
   },
 ): { result: EvaluateResult; next: Stored } {
   const result = evaluatePlan({
@@ -97,6 +98,7 @@ export function evaluateOnce(
     today: rest.today,
     lastFingerprint: stored.fingerprint,
     undoneFingerprint: stored.undone,
+    ...(rest.edited ? { edited: true } : {}),
   });
   return { result, next: applyResult(stored, result) };
 }

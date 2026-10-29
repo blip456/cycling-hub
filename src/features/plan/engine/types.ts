@@ -270,6 +270,8 @@ export const CHANGE_REASONS = [
   "weight-stalled",
   "days-changed",
   "event-changed",
+  /** The PO edited the plan's answers (the intake questions) and saved. */
+  "plan-edited",
 ] as const;
 export type ChangeReason = (typeof CHANGE_REASONS)[number];
 
