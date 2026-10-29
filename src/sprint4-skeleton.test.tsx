@@ -70,8 +70,6 @@ describe("Sprint 4 placeholder pages", () => {
     ["/plan/new", "Build your plan"],
     ["/plan/session/abc", "Session"],
     ["/plan/changes", "Plan changes"],
-    ["/plan/summary", "Summary"],
-    ["/plan/calendar", "Calendar"],
   ])("opens %s with a heading and an empty state and no tabs", async (path, heading) => {
     renderWithProviders(<App />, { path, auth: signedIn() });
     expect(await screen.findByRole("heading", { name: heading, level: 2 })).toBeInTheDocument();

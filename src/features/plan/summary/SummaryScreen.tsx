@@ -341,7 +341,8 @@ function SummaryPanel({
     <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[420px_1fr] lg:items-start">
       <div className="flex flex-col gap-4">
         <fieldset className="rounded-2xl bg-surface p-4">
-          <legend className="mb-1 text-[13px] font-semibold">Include</legend>
+          <legend className="float-left mb-1 w-full text-[13px] font-semibold">Include</legend>
+          <div className="clear-both" />
           <Switch
             label="Weight trend"
             checked={options.includeWeight}
