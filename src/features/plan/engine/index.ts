@@ -7,6 +7,7 @@ export * from "./fingerprint";
 export * from "./level";
 export * from "./library";
 export * from "./mix";
+export { hasUsableFtp, resolveInput, type ResolvedInput } from "./resolve";
 export * from "./types";
 export * from "./weight-loss";
 export { allocateMinutes, assignDays } from "./allocate";

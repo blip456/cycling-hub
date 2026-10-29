@@ -114,7 +114,8 @@ const DOC_D = [
  * Weeks where the engine differs from the doc, with the reason. The doc's recovery weeks round the 70 %
  * up (2.42 h is 70.7 % of 3.42 h); the engine keeps recovery weeks at or under 70 % of the hours planned
  * in the previous loading week, rounded down to 5 minutes. In the doc's test week the test is 70 minutes
- * but the strength note is also on the test day; the engine leaves the note out on a test day.
+ * but the strength note is also on the test day; the engine leaves the note out on a test day. The engine
+ * does not count the FTP test in the quality share (the doc counts its 20 minutes in week 12).
  */
 const DIFFERENCES: Record<string, Record<number, string>> = {
   A: {
