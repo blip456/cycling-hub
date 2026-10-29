@@ -60,6 +60,40 @@ export const levelAnswersSchema = z
   )
   .length(PLAN_LIMITS.levelQuestions, "Answer all five questions.");
 
+/** The stored shape of the level answers (profiles.level_answers) and the engine's input: named, in question order L1 to L5. */
+export const LEVEL_ANSWER_KEYS = [
+  "experience",
+  "weeklyHours",
+  "intervals",
+  "longestRide",
+  "hardSessions",
+] as const;
+
+export type StoredLevelAnswers = Record<(typeof LEVEL_ANSWER_KEYS)[number], 0 | 1 | 2 | 3>;
+
+/** Form answers in question order to the named object that is stored and given to the engine. */
+export function levelAnswersToStored(answers: readonly number[]): StoredLevelAnswers | null {
+  const parsed = levelAnswersSchema.safeParse(answers);
+  if (!parsed.success) return null;
+  const [experience, weeklyHours, intervals, longestRide, hardSessions] = parsed.data as [
+    0 | 1 | 2 | 3,
+    0 | 1 | 2 | 3,
+    0 | 1 | 2 | 3,
+    0 | 1 | 2 | 3,
+    0 | 1 | 2 | 3,
+  ];
+  return { experience, weeklyHours, intervals, longestRide, hardSessions };
+}
+
+/** The stored object back to form answers in question order; null when it is missing or incomplete. */
+export function levelAnswersFromStored(stored: unknown): number[] | null {
+  if (typeof stored !== "object" || stored === null || Array.isArray(stored)) return null;
+  const record = stored as Record<string, unknown>;
+  const answers = LEVEL_ANSWER_KEYS.map((key) => record[key]);
+  const parsed = levelAnswersSchema.safeParse(answers);
+  return parsed.success ? parsed.data : null;
+}
+
 /** A Brussels calendar date strictly after `today`, as `YYYY-MM-DD`. */
 function futureDate(now: Date, message: string) {
   const today = brusselsDate(now);

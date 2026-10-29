@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  levelAnswersFromStored,
   levelAnswersSchema,
+  levelAnswersToStored,
   planProfileSchema,
   trainingPurposesSchema,
   weeklyHoursSchema,
@@ -127,5 +129,25 @@ describe("weeklyRateCapSchema", () => {
     expect(weeklyRateCapSchema.safeParse(0.75).success).toBe(true);
     expect(weeklyRateCapSchema.safeParse(0.8).success).toBe(false);
     expect(weeklyRateCapSchema.safeParse(0).success).toBe(false);
+  });
+});
+
+describe("level answers storage", () => {
+  it("maps form answers to the stored object and back", () => {
+    const stored = levelAnswersToStored([1, 2, 0, 3, 1]);
+    expect(stored).toEqual({
+      experience: 1,
+      weeklyHours: 2,
+      intervals: 0,
+      longestRide: 3,
+      hardSessions: 1,
+    });
+    expect(levelAnswersFromStored(stored)).toEqual([1, 2, 0, 3, 1]);
+  });
+  it("returns null for incomplete or invalid input", () => {
+    expect(levelAnswersToStored([1, 2])).toBeNull();
+    expect(levelAnswersFromStored(null)).toBeNull();
+    expect(levelAnswersFromStored([1, 2, 0, 3, 1])).toBeNull();
+    expect(levelAnswersFromStored({ experience: 1 })).toBeNull();
   });
 });
