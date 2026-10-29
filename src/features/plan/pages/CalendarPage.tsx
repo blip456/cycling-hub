@@ -1,15 +1,6 @@
-import { EmptyState } from "@/components/ui";
+import { CalendarScreen } from "../summary/CalendarScreen";
 
-// owned by calendar stream: this file is yours; the route and the menu item are already wired (nav-items.ts, App.tsx).
-
-/** R10: the ICS download. */
+/** R10a: the ICS download of the plan. */
 export function CalendarPage() {
-  return (
-    <section aria-labelledby="plan-calendar">
-      <h2 id="plan-calendar" className="mb-4 text-lg font-semibold tracking-tight">
-        Calendar
-      </h2>
-      <EmptyState>The calendar export is coming.</EmptyState>
-    </section>
-  );
+  return <CalendarScreen />;
 }
