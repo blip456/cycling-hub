@@ -18,6 +18,13 @@ vi.mock("@/features/profile/api", async (importOriginal) => ({
     birthYear: null,
     availableDays: [],
     goal: null,
+    ridingEnvironment: null,
+    weeklyHours: null,
+    trainingPurposes: [],
+    levelAnswers: null,
+    level: null,
+    eventName: null,
+    eventDate: null,
   })),
 }));
 

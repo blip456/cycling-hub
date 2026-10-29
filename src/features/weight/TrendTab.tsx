@@ -14,6 +14,7 @@ import { formatChange, formatDay, formatKg } from "./format";
 import { useWeightEntries } from "./hooks";
 import { useLoadErrorCard } from "./use-weight-cards";
 import { WeightChart } from "./WeightChart";
+import { WeightGoalCard, WeightPaceCard } from "./WeightGoalCards";
 
 const RANGES: readonly { value: WeightRange; label: string; period: string }[] = [
   { value: "week", label: "Week", period: "this week" },
@@ -87,6 +88,8 @@ export function TrendTab() {
         ))}
       </div>
 
+      <WeightGoalCard />
+
       {query.isPending ? <PageLoading /> : null}
 
       {query.isError ? (
@@ -115,6 +118,8 @@ export function TrendTab() {
           }}
         />
       ) : null}
+
+      <WeightPaceCard />
     </div>
   );
 }

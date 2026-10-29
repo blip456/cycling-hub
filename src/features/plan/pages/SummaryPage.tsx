@@ -1,15 +1,10 @@
-import { EmptyState } from "@/components/ui";
+import { SummaryScreen } from "../summary/SummaryScreen";
 
-// owned by summary stream: this file is yours; the route and the menu item are already wired (nav-items.ts, App.tsx).
-
-/** R11: summary of a session, a week or a month to copy. */
+/**
+ * R11: summary of a session, a week or a month to copy into an AI chat. The address picks the subject:
+ * `/plan/summary?type=session&id=<planned session id>`, `?type=week&date=YYYY-MM-DD` (any day of the week)
+ * or `?type=month&date=YYYY-MM-DD`. Without parameters it is this week.
+ */
 export function SummaryPage() {
-  return (
-    <section aria-labelledby="plan-summary">
-      <h2 id="plan-summary" className="mb-4 text-lg font-semibold tracking-tight">
-        Summary
-      </h2>
-      <EmptyState>The summary is coming.</EmptyState>
-    </section>
-  );
+  return <SummaryScreen />;
 }

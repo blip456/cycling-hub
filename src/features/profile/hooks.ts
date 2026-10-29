@@ -28,7 +28,18 @@ function applyPatch(profile: Profile, patch: ProfilePatch): Profile {
     case "about":
       return { ...profile, displayName: patch.displayName, birthYear: patch.birthYear };
     case "week":
-      return { ...profile, availableDays: patch.availableDays };
+      return {
+        ...profile,
+        availableDays: patch.availableDays,
+        weeklyHours: patch.weeklyHours,
+        ridingEnvironment: patch.ridingEnvironment,
+      };
+    case "purposes":
+      return { ...profile, trainingPurposes: patch.trainingPurposes };
+    case "level":
+      return { ...profile, levelAnswers: patch.levelAnswers, level: patch.level };
+    case "event":
+      return { ...profile, eventName: patch.eventName, eventDate: patch.eventDate };
     case "goal":
       return { ...profile, goal: patch.goal };
   }

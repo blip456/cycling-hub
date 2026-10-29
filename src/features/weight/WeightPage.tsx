@@ -1,6 +1,7 @@
-import { Route, Routes } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 import { TabNav, type TabItem } from "@/components/TabNav";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { GoalPage } from "./GoalPage";
 import { LogTab } from "./LogTab";
 import { TrendTab } from "./TrendTab";
 
@@ -14,12 +15,16 @@ const tabs: readonly TabItem[] = [
 
 /** W1 to W5: the Weight page with the tabs Log and Trend (P48). The shell shows the page title. */
 export function WeightPage() {
+  const { pathname } = useLocation();
+  // The weight goal (R2c) is a sub-page with Back on the phone and no tabs.
+  const onTab = tabs.some((tab) => tab.to === pathname.replace(/(.)\/$/, "$1"));
   return (
     <>
-      <TabNav label="Weight" tabs={tabs} />
+      {onTab ? <TabNav label="Weight" tabs={tabs} /> : null}
       <Routes>
         <Route index element={<LogTab />} />
         <Route path="trend" element={<TrendTab />} />
+        <Route path="goal" element={<GoalPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
