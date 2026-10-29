@@ -71,16 +71,62 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
-                },"profiles": {
+                },"plan_changes": {
                   Row: {
-                    "available_days": (number)[] | null,"birth_year": number | null,"created_at": string,"display_name": string | null,"goal": string | null,"id": string,"last_seen_version": string | null,"updated_at": string,"weight_reminder_day": number,"weight_reminder_enabled": boolean
+                    "changes": NonNullable<Json>,"created_at": string,"id": string,"plan_id": string,"reason": string,"undone_at": string | null,"user_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "available_days"?: (number)[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id": string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
+                    "changes": NonNullable<Json>,"created_at"?: string,"id"?: string,"plan_id": string,"reason": string,"undone_at"?: string | null,"user_id"?: string
                   }
                   Update: {
-                    "available_days"?: (number)[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"goal"?: string | null,"id"?: string,"last_seen_version"?: string | null,"updated_at"?: string,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
+                    "changes"?: NonNullable<Json>,"created_at"?: string,"id"?: string,"plan_id"?: string,"reason"?: string,"undone_at"?: string | null,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "plan_changes_plan_fkey"
+      columns: ["plan_id","user_id"]
+isOneToOne: false
+      referencedRelation: "training_plans"
+      referencedColumns: ["id","user_id"]
+    }
+                  ]
+                },"planned_sessions": {
+                  Row: {
+                    "activity_id": string | null,"created_at": string,"day_order": number,"duration_min": number,"id": string,"indoor": boolean | null,"kind": string,"match_source": string | null,"moved_from": string | null,"phase": string,"plan_id": string,"planned_load": number,"quality_min": number,"reason": string,"session_date": string,"status": string,"steps": NonNullable<Json>,"title": string,"updated_at": string,"user_id": string,"week_number": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "activity_id"?: string | null,"created_at"?: string,"day_order"?: number,"duration_min": number,"id"?: string,"indoor"?: boolean | null,"kind": string,"match_source"?: string | null,"moved_from"?: string | null,"phase": string,"plan_id": string,"planned_load"?: number,"quality_min"?: number,"reason"?: string,"session_date": string,"status"?: string,"steps"?: NonNullable<Json>,"title": string,"updated_at"?: string,"user_id"?: string,"week_number": number
+                  }
+                  Update: {
+                    "activity_id"?: string | null,"created_at"?: string,"day_order"?: number,"duration_min"?: number,"id"?: string,"indoor"?: boolean | null,"kind"?: string,"match_source"?: string | null,"moved_from"?: string | null,"phase"?: string,"plan_id"?: string,"planned_load"?: number,"quality_min"?: number,"reason"?: string,"session_date"?: string,"status"?: string,"steps"?: NonNullable<Json>,"title"?: string,"updated_at"?: string,"user_id"?: string,"week_number"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "planned_sessions_activity_fkey"
+      columns: ["activity_id","user_id"]
+isOneToOne: false
+      referencedRelation: "activities"
+      referencedColumns: ["id","user_id"]
+    },{
+      foreignKeyName: "planned_sessions_plan_fkey"
+      columns: ["plan_id","user_id"]
+isOneToOne: false
+      referencedRelation: "training_plans"
+      referencedColumns: ["id","user_id"]
+    }
+                  ]
+                },"profiles": {
+                  Row: {
+                    "available_days": (number)[] | null,"birth_year": number | null,"created_at": string,"display_name": string | null,"event_date": string | null,"event_name": string | null,"goal": string | null,"id": string,"last_seen_version": string | null,"level": string | null,"level_answers": Json | null,"riding_environment": string | null,"training_purposes": (string)[] | null,"updated_at": string,"weekly_hours": number | null,"weight_reminder_day": number,"weight_reminder_enabled": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "available_days"?: (number)[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"event_date"?: string | null,"event_name"?: string | null,"goal"?: string | null,"id": string,"last_seen_version"?: string | null,"level"?: string | null,"level_answers"?: Json | null,"riding_environment"?: string | null,"training_purposes"?: (string)[] | null,"updated_at"?: string,"weekly_hours"?: number | null,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
+                  }
+                  Update: {
+                    "available_days"?: (number)[] | null,"birth_year"?: number | null,"created_at"?: string,"display_name"?: string | null,"event_date"?: string | null,"event_name"?: string | null,"goal"?: string | null,"id"?: string,"last_seen_version"?: string | null,"level"?: string | null,"level_answers"?: Json | null,"riding_environment"?: string | null,"training_purposes"?: (string)[] | null,"updated_at"?: string,"weekly_hours"?: number | null,"weight_reminder_day"?: number,"weight_reminder_enabled"?: boolean
                   }
                   Relationships: [
                     
@@ -119,6 +165,20 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"training_plans": {
+                  Row: {
+                    "created_at": string,"engine_version": string,"ftp_w": number,"id": string,"input_fingerprint": string,"intake": NonNullable<Json>,"start_date": string,"status": string,"undone_fingerprint": string | null,"updated_at": string,"user_id": string,"weeks": number,"weight_kg": number | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"engine_version": string,"ftp_w": number,"id"?: string,"input_fingerprint": string,"intake": NonNullable<Json>,"start_date": string,"status"?: string,"undone_fingerprint"?: string | null,"updated_at"?: string,"user_id"?: string,"weeks"?: number,"weight_kg"?: number | null
+                  }
+                  Update: {
+                    "created_at"?: string,"engine_version"?: string,"ftp_w"?: number,"id"?: string,"input_fingerprint"?: string,"intake"?: NonNullable<Json>,"start_date"?: string,"status"?: string,"undone_fingerprint"?: string | null,"updated_at"?: string,"user_id"?: string,"weeks"?: number,"weight_kg"?: number | null
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"weight_entries": {
                   Row: {
                     "created_at": string,"entry_date": string,"id": string,"note": string | null,"updated_at": string,"user_id": string,"weight_kg": number
@@ -129,6 +189,20 @@ isOneToOne: false
                   }
                   Update: {
                     "created_at"?: string,"entry_date"?: string,"id"?: string,"note"?: string | null,"updated_at"?: string,"user_id"?: string,"weight_kg"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"weight_goals": {
+                  Row: {
+                    "created_at": string,"id": string,"start_date": string,"start_weight_kg": number,"status": string,"target_date": string,"target_weight_kg": number,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"start_date"?: string,"start_weight_kg": number,"status"?: string,"target_date": string,"target_weight_kg": number,"updated_at"?: string,"user_id"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"start_date"?: string,"start_weight_kg"?: number,"status"?: string,"target_date"?: string,"target_weight_kg"?: number,"updated_at"?: string,"user_id"?: string
                   }
                   Relationships: [
                     
