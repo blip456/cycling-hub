@@ -14,6 +14,7 @@ export function sessionAriaLabel(
   session: PlanSession,
   environment: Intake["environment"],
   today: boolean,
+  changed = false,
 ): string {
   const place = placeOf(session, environment);
   return [
@@ -24,6 +25,7 @@ export function sessionAriaLabel(
     session.kind === "event" ? null : `load ${formatLoad(session.load)}`,
     place,
     STATUS_TEXT[session.status].toLowerCase(),
+    changed ? "changed by the last plan update" : null,
   ]
     .filter((part): part is string => part !== null)
     .join(", ");
