@@ -386,14 +386,15 @@ Tagline: A 12-week training plan built from your goals, week and FTP, that adapt
 ### Details
 
 > Planned 28 Oct 2026 (epic E2, with the plan-related parts of E3, E4 and E5). The PO answered the first
-> eight questions (P58 to P67); the rest are open below. Nothing starts before the PO's go.
+> eight questions (P58 to P67); on 29 Oct 2026 the PO approved the designs and took the recommendations for
+> the rest (P68 to P80). Part A is done; parts B1 and B2 are being built.
 
 Goal: turn what the app knows (profile, goals, FTP and zones, ride history, weight) into a plan the PO can
 follow and that keeps up with real life: a 12-week plan in watts and heart rate, shaped by what the PO
 wants to achieve, recalculated when rides come in or sessions are missed, with an optional event and
 taper, on the PO's calendar, and with copy-and-paste summaries for an AI chat.
 
-Three parts; part B starts only after the PO approves part A (D2).
+Three parts; part B started after the PO approved part A (D2, 29 Oct 2026).
 
 **Part A: Discovery and design (gate: PO approves)**
 
@@ -462,27 +463,14 @@ Three parts; part B starts only after the PO approves part A (D2).
 - Event mode with taper is already taken into account; AI summaries to copy are wanted, AI analysis in the
   app is not a must.
 
-**Working defaults for part A (28 Oct 2026, the PO gave the go for Sprint 4 without answering Q-E2-9 to
-Q-E2-16).** The design round draws these and the PO corrects them while reviewing; they are assumptions,
-not decisions: one sprint is planned but B2 can be cut after the design review (Q-E2-9); calendar is an ICS
-download (Q-E2-10); weight loss uses a target weight and date with a weekly-rate cap (Q-E2-11); muscle
-building means on-bike strength work plus off-bike strength notes (Q-E2-12); purposes are ranked, one main
-and optional secondary (Q-E2-13); re-planning is automatic with a "Plan updated" notice and Undo
-(Q-E2-14); an AI summary has switches for weight and goals and a prompt line that can be switched off
-(Q-E2-15); one event with a taper (Q-E2-16).
-
-**Still open for the PO**
-
-| #       | Question                                              | Options                                                                                                                                                                                                                       |
-| ------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Q-E2-9  | One sprint or two?                                    | One sprint with B1 and B2 (large, as with Sprint 3 it needs several agents and a long review); or split: Sprint 4 = parts A and B1, Sprint 5 = B2 (matching, re-evaluation, weight loop, warning). B1 alone already gives a plan, a calendar and summaries. |
-| Q-E2-10 | How do sessions reach the calendar?                   | An ICS file you download (and download again after changes); or a subscription link your calendar app refreshes by itself (needs a server endpoint with a secret link, new infrastructure and a security review).             |
-| Q-E2-11 | How does weight loss work in the plan?                | A target weight and a date (the app checks the weekly rate against a safe cap, for example up to 0.5 to 1 % of body weight per week) or only "lose weight" with the trend shown; and does it show calories or fuelling? (nutrition is E6, so no). |
-| Q-E2-12 | What does "muscle building" mean on a bike plan?      | On-bike strength work only (low-cadence torque, big-gear hills); or also off-bike strength sessions listed as notes in the plan (no exercise library); or a full strength programme (a different product, not proposed).      |
-| Q-E2-13 | How do several purposes combine?                      | One main and one secondary purpose; or a ranked list; and what wins when they conflict (weight loss against muscle building, endurance against speed)?                                                                          |
-| Q-E2-14 | How visible is the re-planning?                       | Automatic with a "Plan updated" notice and Undo; or the app proposes the change and the PO accepts it; or automatic and silent with a change log.                                                                              |
-| Q-E2-15 | What goes into an AI summary?                         | Training data only; or also weight and goals; with a switch to leave out personal data; and a ready-made prompt line at the top ("analyse this week and give tips") or a neutral text.                                         |
-| Q-E2-16 | Events: one or several?                               | One event with a date and a taper; or a main event plus smaller ones; and a default taper length (for example one week, longer for long events).                                                                              |
+**Decided by the PO (29 Oct 2026, P68 to P80).** The PO approved the designs and took every recommendation,
+so the open questions are decided: one sprint with B1 and B2 (Q-E2-9, P79); the calendar is an ICS download
+(Q-E2-10, P78); weight loss uses a target weight and date with a weekly-rate cap of 0.5 % (setting up to
+0.75 %) (Q-E2-11, P73); muscle building is on-bike strength plus off-bike strength notes (Q-E2-12, P74);
+purposes are ranked, one main and one secondary (Q-E2-13, P75); re-planning is automatic with a "Plan
+updated" notice and Undo (Q-E2-14, P71); an AI summary has switches for weight and goals and an optional
+prompt line (Q-E2-15, P76); one event with a taper (Q-E2-16, P77). The menu, the intake stepper, the
+engine rule set and the other wireframe defaults are P68 to P70, P72 and P80.
 
 **Out of scope (later)**
 
