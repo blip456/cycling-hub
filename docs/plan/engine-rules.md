@@ -494,7 +494,8 @@ a match.
 - **Undo** restores the previous future sessions and stores "this fingerprint was undone": the same inputs are
   not recalculated again. Any new input change clears it.
 - Reason codes in the notice: missed session, extra ride, ramp back, new FTP, new heart rate zones, settings
-  changed, weight faster than cap, weight stalled, days changed, event changed.
+  changed, weight faster than cap, weight stalled, days changed, event changed, plan edited (the PO answered the intake questions again and
+  saved; the start date stays, the same rules apply: only future sessions change, see decision P81).
 
 ## 13. Missed sessions
 

@@ -19,6 +19,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { planKeys, usePlan } from "../data";
 import { createSupabaseRunnerApi, fetchPlanChanges } from "./api";
 import type { PlanChange } from "./changes";
+import { restoreAnswers } from "./restore";
 import { createRunner, type AdaptationView, type Runner, type UndoResult } from "./runner";
 
 export const adaptationKeys = {
@@ -44,6 +45,13 @@ export function runnerFor(queryClient: QueryClient, userId: string): Runner {
   const runner = createRunner(createSupabaseRunnerApi(userId));
   runners.set(queryClient, { userId, runner });
   return runner;
+}
+
+/** The runner of this app, for the screens that start a run themselves (the edit page). */
+export function usePlanRunner(): Runner {
+  const queryClient = useQueryClient();
+  const userId = useAuth().session?.user.id ?? "";
+  return runnerFor(queryClient, userId);
 }
 
 /** True for the query keys whose invalidation means "the plan's inputs may have changed". */
@@ -169,6 +177,11 @@ export function useUndoChange() {
     mutationFn: async (change) => {
       const result = await runnerFor(queryClient, userId).undo(change);
       if (result.status === "failed") throw result.error;
+      const before = change.payload.before.intake;
+      if (result.status === "done" && change.payload.reasons.includes("plan-edited") && before) {
+        await restoreAnswers(userId, before);
+        await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      }
       return result;
     },
     onSettled: async () => {

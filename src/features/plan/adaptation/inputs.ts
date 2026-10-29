@@ -80,11 +80,21 @@ export type Evaluation = {
   profileInput: PlanInput;
 };
 
-/** The input of `evaluatePlan`; null when the stored plan has no readable intake. */
-export function buildEvaluateInput(inputs: RunnerInputs, today: IsoDate): Evaluation | null {
+/**
+ * The input of `evaluatePlan`; null when there is no intake to evaluate. `edit` is the intake the PO just
+ * confirmed on the edit page: it is used as it is (instead of the stored intake with the profile laid over
+ * it), the plan's start date stays, and the result is marked as an edit. Without `edit` a plan whose stored
+ * intake cannot be read is not evaluated.
+ */
+export function buildEvaluateInput(
+  inputs: RunnerInputs,
+  today: IsoDate,
+  edit?: Intake,
+): Evaluation | null {
   const { plan, profile, goal, baseline } = inputs;
-  if (!plan.intake) return null;
-  const intake = currentIntake(plan.intake, profile, goal);
+  const stored = plan.intake ?? edit ?? null;
+  if (!stored) return null;
+  const intake = edit ?? currentIntake(stored, profile, goal);
   const profileInput: PlanInput = {
     intake: { ...intake, startDate: plan.startDate },
     today,
@@ -95,14 +105,18 @@ export function buildEvaluateInput(inputs: RunnerInputs, today: IsoDate): Evalua
   return {
     profileInput,
     input: {
-      plan: { startDate: plan.startDate, previous: { ftp: plan.ftp, intake: plan.intake } },
-      sessions: toStoredSessions(inputs.sessions, plan.intake),
+      plan: {
+        startDate: plan.startDate,
+        previous: { ftp: plan.ftp, ...(plan.intake ? { intake: plan.intake } : {}) },
+      },
+      sessions: toStoredSessions(inputs.sessions, stored),
       rides: inputs.rides.map(toAdaptRide),
       weightEntries: inputs.weights,
       profileInput,
       today,
       lastFingerprint: plan.fingerprint,
       undoneFingerprint: plan.undoneFingerprint,
+      ...(edit ? { edited: true } : {}),
     },
   };
 }

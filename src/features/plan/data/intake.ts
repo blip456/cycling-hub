@@ -2,8 +2,23 @@
  * The plan intake as data (P69, P80, engine-rules section 3): the questions, the answers a draft holds, the
  * validation of each step and the engine input a draft turns into. Pure: no React, no Supabase.
  */
-import { brusselsDate, isIsoDate, type IsoDate, type Weekday } from "@/features/athlete";
-import { mondayOnOrAfter, type Intake, type Level, type PlanInput, type Purpose } from "../engine";
+import {
+  addDays,
+  brusselsDate,
+  diffDays,
+  isIsoDate,
+  type IsoDate,
+  type Weekday,
+} from "@/features/athlete";
+import {
+  mondayOnOrAfter,
+  mondayOnOrBefore,
+  PLAN_WEEKS,
+  type Intake,
+  type Level,
+  type PlanInput,
+  type Purpose,
+} from "../engine";
 import {
   levelAnswersToStored,
   PLAN_LIMITS,
@@ -14,6 +29,7 @@ import {
 } from "../schemas";
 import type { EventDuration } from "../engine";
 import type { PlanProfile, WeightGoalRecord } from "./api";
+import { formatLongDate } from "./model";
 
 // ---- the questions ------------------------------------------------------------------------------
 
@@ -170,6 +186,37 @@ export function draftFromProfile(
   };
 }
 
+/** The answers of an intake in question order (L1 to L5). */
+function levelAnswerList(intake: Intake): number[] {
+  const a = intake.levelAnswers;
+  return [a.experience, a.weeklyHours, a.intervals, a.longestRide, a.hardSessions];
+}
+
+/**
+ * The answers an intake holds, as a draft: what the edit page starts from. The start is the plan's own and
+ * is not asked again. An event that has passed is not carried over (a past event cannot be saved again).
+ */
+export function draftFromIntake(intake: Intake, today: IsoDate): IntakeDraft {
+  const event = intake.event && intake.event.date > today ? intake.event : null;
+  const goal = intake.weightGoal;
+  return {
+    ...EMPTY_DRAFT,
+    purposes: [...intake.purposes],
+    targetKg: goal ? String(goal.targetKg) : "",
+    targetDate: goal && goal.targetDate > today ? goal.targetDate : "",
+    answers: levelAnswerList(intake),
+    hours: String(intake.hoursPerWeek),
+    environment: intake.environment,
+    startChoice: "other",
+    startDate: intake.startDate ?? "",
+    hasEvent: event !== null,
+    eventName: event?.name ?? "",
+    eventDate: event?.date ?? "",
+    eventDuration: event?.duration ?? EMPTY_DRAFT.eventDuration,
+    levelOverride: intake.levelOverride ?? null,
+  };
+}
+
 // ---- validation ----------------------------------------------------------------------------------
 
 export type IntakeErrors = Partial<
@@ -201,12 +248,22 @@ export type IntakeContext = {
   availableDays: readonly Weekday[];
   /** Environment of the profile; null when it is not set (the intake asks). */
   profileEnvironment: RidingEnvironment | null;
+  /**
+   * Set when an existing plan is edited: the plan keeps this start date (a Monday), so the start question is
+   * not asked and an event has to fit between this date and the end of the plan's twelfth week.
+   */
+  fixedStart?: IsoDate;
 };
 
 /** "78,4" or "78.4" to a number; empty gives NaN. */
 export function parseNumber(text: string): number {
   const clean = text.trim().replace(",", ".");
   return clean === "" ? Number.NaN : Number(clean);
+}
+
+/** The Monday the plan starts on: the plan's own when it is edited, else the draft's start choice. */
+export function startOf(draft: IntakeDraft, ctx: IntakeContext): IsoDate {
+  return ctx.fixedStart ?? effectiveStart(draft, ctx.today);
 }
 
 /** The Monday the plan starts on for the draft's start choice (the engine rolls a date forward to a Monday). */
@@ -270,9 +327,23 @@ function stepThree(draft: IntakeDraft, ctx: IntakeContext): IntakeErrors {
   return errors;
 }
 
+/** The event rules of an edit: the start is fixed, so the event has to fall inside weeks 4 to 12 of the plan. */
+function fixedStartEventError(date: IsoDate, start: IsoDate): string | null {
+  const weeksToEvent = (diffDays(start, mondayOnOrBefore(date)) ?? 0) / 7 + 1;
+  if (weeksToEvent < 4) {
+    const earliest = addDays(start, 21);
+    return `The event is too close to the start of your plan (${formatLongDate(start)}). A plan needs at least 4 weeks up to the event${earliest ? `: choose ${formatLongDate(earliest)} or later` : ""}.`;
+  }
+  if (weeksToEvent > PLAN_WEEKS) {
+    const last = addDays(start, PLAN_WEEKS * 7 - 1);
+    return `The event is after the last week of your plan${last ? ` (it ends on ${formatLongDate(last)})` : ""}. Choose an earlier date, or remove this plan and build a new one that starts closer to the event.`;
+  }
+  return null;
+}
+
 function stepFour(draft: IntakeDraft, ctx: IntakeContext): IntakeErrors {
   const errors: IntakeErrors = {};
-  if (draft.startChoice === "other") {
+  if (ctx.fixedStart === undefined && draft.startChoice === "other") {
     if (!isIsoDate(draft.startDate)) errors.startDate = "Enter a valid start date.";
     else if (draft.startDate < ctx.today)
       errors.startDate = "The start date is in the past. Pick today or a later date.";
@@ -283,7 +354,15 @@ function stepFour(draft: IntakeDraft, ctx: IntakeContext): IntakeErrors {
     if (!isIsoDate(draft.eventDate)) errors.eventDate = "Enter the event date.";
     else if (draft.eventDate <= ctx.today)
       errors.eventDate = "The date is in the past. Pick a date from tomorrow.";
-    else if (errors.startDate === undefined && draft.eventDate < effectiveStart(draft, ctx.today))
+    else if (ctx.fixedStart !== undefined) {
+      if (draft.eventDate < ctx.fixedStart)
+        errors.eventDate =
+          "The event is before the start of your plan. Choose a later date, or remove this plan and build a new one.";
+      else {
+        const problem = fixedStartEventError(draft.eventDate, ctx.fixedStart);
+        if (problem) errors.eventDate = problem;
+      }
+    } else if (errors.startDate === undefined && draft.eventDate < effectiveStart(draft, ctx.today))
       errors.eventDate =
         "The event is before the plan starts. Move the start date or choose a later event date.";
   }
@@ -359,9 +438,11 @@ export function engineInput(
           },
         }
       : {}),
-    ...(draft.startChoice === "other" && isIsoDate(draft.startDate)
-      ? { startDate: draft.startDate }
-      : {}),
+    ...(ctx.fixedStart !== undefined
+      ? { startDate: ctx.fixedStart }
+      : draft.startChoice === "other" && isIsoDate(draft.startDate)
+        ? { startDate: draft.startDate }
+        : {}),
     ...(hasWeightLoss(draft.purposes) && ctx.weightKg !== null ? { weightKg: ctx.weightKg } : {}),
     ...(goal ? { weightGoal: { targetKg: goal.targetKg, targetDate: goal.targetDate } } : {}),
   };

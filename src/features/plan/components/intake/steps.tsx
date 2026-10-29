@@ -390,49 +390,62 @@ export function StartStep({ draft, change, errors, ctx }: StepProps) {
     draft.startChoice === "other" && draft.startDate !== "" && chosen !== draft.startDate;
   return (
     <div className="flex max-w-[480px] flex-col gap-6">
-      <Fieldset legend="When should the plan start?">
-        <ChoiceRow
-          type="radio"
-          name="start"
-          value="next-monday"
-          checked={draft.startChoice === "next-monday"}
-          note="Plans run Monday to Sunday"
-          onChange={() => {
-            change({ startChoice: "next-monday" });
-          }}
-        >
-          {formatLongDate(next)}
-        </ChoiceRow>
-        <ChoiceRow
-          type="radio"
-          name="start"
-          value="other"
-          checked={draft.startChoice === "other"}
-          onChange={() => {
-            change({ startChoice: "other" });
-          }}
-        >
-          Another date
-        </ChoiceRow>
-        {draft.startChoice === "other" ? (
-          <div className="mt-2 pl-8">
-            <TextField
-              label="Start date"
-              type="date"
-              value={draft.startDate}
-              error={errors.startDate}
-              helper={
-                moved
-                  ? `Plans run Monday to Sunday, so this plan starts on ${formatLongDate(chosen)}.`
-                  : "Plans run Monday to Sunday."
-              }
-              onChange={(e) => {
-                change({ startDate: e.target.value });
-              }}
-            />
+      {ctx.fixedStart ? (
+        <div>
+          <h3 className="mb-1 text-[13px] font-semibold">Start date</h3>
+          <div className="rounded-md border border-dashed border-input-border px-3.5 py-3 text-[15px]">
+            {formatLongDate(ctx.fixedStart)}
           </div>
-        ) : null}
-      </Fieldset>
+          <p className="mt-1.5 text-[13px] text-muted">
+            The start date of a plan cannot be changed. To start on another date, remove this plan
+            and build a new one.
+          </p>
+        </div>
+      ) : (
+        <Fieldset legend="When should the plan start?">
+          <ChoiceRow
+            type="radio"
+            name="start"
+            value="next-monday"
+            checked={draft.startChoice === "next-monday"}
+            note="Plans run Monday to Sunday"
+            onChange={() => {
+              change({ startChoice: "next-monday" });
+            }}
+          >
+            {formatLongDate(next)}
+          </ChoiceRow>
+          <ChoiceRow
+            type="radio"
+            name="start"
+            value="other"
+            checked={draft.startChoice === "other"}
+            onChange={() => {
+              change({ startChoice: "other" });
+            }}
+          >
+            Another date
+          </ChoiceRow>
+          {draft.startChoice === "other" ? (
+            <div className="mt-2 pl-8">
+              <TextField
+                label="Start date"
+                type="date"
+                value={draft.startDate}
+                error={errors.startDate}
+                helper={
+                  moved
+                    ? `Plans run Monday to Sunday, so this plan starts on ${formatLongDate(chosen)}.`
+                    : "Plans run Monday to Sunday."
+                }
+                onChange={(e) => {
+                  change({ startDate: e.target.value });
+                }}
+              />
+            </div>
+          ) : null}
+        </Fieldset>
+      )}
       <div>
         <ChoiceRow
           type="checkbox"

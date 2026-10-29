@@ -84,6 +84,11 @@ export type EvaluateInput = {
   lastFingerprint: string | null;
   /** The fingerprint an Undo pinned; null when none. */
   undoneFingerprint: string | null;
+  /**
+   * True when the PO just edited the plan's answers: the sessions that change are given the reason
+   * "plan-edited" ("you edited your plan") instead of a guess from what differs.
+   */
+  edited?: boolean;
 };
 
 export type EvaluateOutcome =
@@ -134,6 +139,7 @@ const REASON_PRIORITY: readonly ChangeReason[] = [
   "ramp-back",
   "weight-faster-than-cap",
   "weight-stalled",
+  "plan-edited",
   "days-changed",
   "event-changed",
   "new-ftp",
@@ -241,6 +247,8 @@ function noticeMessage(input: {
       return `${plural(count)} changed because your riding days changed.`;
     case "event-changed":
       return `${plural(count)} changed because your event changed.`;
+    case "plan-edited":
+      return `${plural(count)} changed because you edited your plan.`;
     case "settings-changed":
       return `${plural(count)} changed because your settings changed.`;
   }
@@ -585,6 +593,7 @@ function withUpdate(
   const ftp = profileInput.ftp ?? 0;
   const diff = result.diff;
 
+  const edited = input.edited === true;
   const previous = input.plan.previous ?? {};
   const daysChanged =
     previous.intake !== undefined &&
@@ -665,6 +674,12 @@ function withUpdate(
             : "A missed session is not made up, so the build stays one step behind.",
       };
     }
+    if (edited && change.change !== "targets") {
+      return {
+        code: "plan-edited",
+        reason: "You edited your plan, so this session was recalculated.",
+      };
+    }
     if (daysChanged && change.change !== "targets") {
       return {
         code: "days-changed",
@@ -684,6 +699,12 @@ function withUpdate(
       return {
         code: "new-heart-rate-zones",
         reason: "Targets updated for your new heart rate zones.",
+      };
+    }
+    if (edited) {
+      return {
+        code: "plan-edited",
+        reason: "You edited your plan, so this session was recalculated.",
       };
     }
     return {
@@ -709,7 +730,11 @@ function withUpdate(
   if (changes.length === 0) return result;
 
   const codes = new Set(changes.map((c) => c.reasonCode));
-  const primary = REASON_PRIORITY.find((code) => codes.has(code)) ?? "settings-changed";
+  // An edit names itself in the notice, also when a missed session changes other sessions in the same run.
+  const primary =
+    edited && codes.has("plan-edited")
+      ? "plan-edited"
+      : (REASON_PRIORITY.find((code) => codes.has(code)) ?? "settings-changed");
   const missedDates = settled
     .filter((s) => s.status === "missed" && s.date < today)
     .map((s) => s.date)

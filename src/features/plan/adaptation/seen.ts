@@ -38,6 +38,21 @@ function subscribe(listener: () => void): () => void {
   };
 }
 
+/** Forgets what the PO has seen and dismissed: it described a plan that is gone. */
+export function clearSeenState(): void {
+  for (const key of [SEEN_KEY, NO_POWER_KEY]) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch {
+      // Storage is blocked: only the in-memory copy is left.
+    }
+    memory.delete(key);
+  }
+  listeners.forEach((listener) => {
+    listener();
+  });
+}
+
 /** The id of the last update the PO has seen. */
 export function useSeenUpdate(): { seenId: string | null; markSeen: (id: string) => void } {
   const seenId = useSyncExternalStore(subscribe, () => read(SEEN_KEY));

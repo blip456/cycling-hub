@@ -136,6 +136,15 @@ export async function createPlan(input: NewPlan): Promise<StoredPlan> {
   return planFromRow(row);
 }
 
+/**
+ * Deletes a plan (P82). Its sessions and its update log go with it: they cascade in the database. Rides,
+ * the profile, the weight log and goal and the baseline are other tables and stay.
+ */
+export async function deletePlan(planId: string): Promise<void> {
+  const { error } = await getSupabase().from("training_plans").delete().eq("id", planId);
+  if (error) throw new Error(error.message);
+}
+
 // ---- the plan fields of the profile -------------------------------------------------------------
 
 /** The plan fields of the profile (P60, P62, P65, P66) with the available days. Every field can be empty. */

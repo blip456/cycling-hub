@@ -18,8 +18,8 @@ export type ChangePayload = {
   fingerprint: string;
   /** The inverse diff and the fingerprints for Undo; null when nothing can be undone. */
   undo: UndoPlan | null;
-  /** The inputs the plan was built from before this update, put back by Undo. */
-  before: { ftp: number; intake: Intake | null };
+  /** The inputs the plan was built from before this update, put back by Undo (`weeks` since edits). */
+  before: { ftp: number; intake: Intake | null; weeks?: number };
 };
 
 /** One stored update as the screens read it. */
@@ -50,7 +50,7 @@ const payloadSchema = z.object({
       undoneFingerprint: z.string(),
     })
     .nullable(),
-  before: z.object({ ftp: z.number(), intake: z.unknown() }),
+  before: z.object({ ftp: z.number(), intake: z.unknown(), weeks: z.number().optional() }),
 });
 
 /** The payload of a row, or null when the stored JSON is not in the expected shape (the row is then left out). */
@@ -65,6 +65,10 @@ export function payloadFromJson(json: unknown): ChangePayload | null {
     changes: v.changes,
     fingerprint: v.fingerprint,
     undo: v.undo as UndoPlan | null,
-    before: { ftp: v.before.ftp, intake: intakeFromJson(v.before.intake) },
+    before: {
+      ftp: v.before.ftp,
+      intake: intakeFromJson(v.before.intake),
+      ...(v.before.weeks !== undefined ? { weeks: v.before.weeks } : {}),
+    },
   };
 }
