@@ -56,4 +56,8 @@ export type SessionPatch = {
   date?: IsoDate;
   movedFrom?: IsoDate | null;
   indoor?: boolean | null;
+  /** The ride that counts for the session (null unlinks it). */
+  activityId?: string | null;
+  /** "manual" locks a link, an unlink or a "done without a ride"; adaptation never changes it. */
+  matchSource?: "auto" | "manual" | null;
 };

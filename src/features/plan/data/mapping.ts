@@ -67,7 +67,7 @@ export function kindToDb(kind: SessionKind): string {
   return KIND_TO_DB[kind];
 }
 
-function phaseToDb(week: Week | undefined): StoredPhase {
+export function phaseToDb(week: Week | undefined): StoredPhase {
   if (!week) return "base";
   if (week.type === "recovery") return "recovery";
   return week.phase;
@@ -289,7 +289,7 @@ export function planInsert(input: {
 }
 
 /** Minutes of work at 88 % FTP and up (the same measure as the engine's quality minutes). */
-function qualityOf(session: PlannedSession): number {
+export function qualityOf(session: PlannedSession): number {
   return session.steps
     .filter((s) => s.kind === "work" && s.target.percentFtp >= 88)
     .reduce((sum, s) => sum + s.durationSec / 60, 0);

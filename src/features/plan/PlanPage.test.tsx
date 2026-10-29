@@ -257,7 +257,7 @@ describe("actions with Undo", () => {
     await user.click(within(card).getByRole("button", { name: "Mark as done" }));
     await waitFor(() => {
       expect(api.updateSessions).toHaveBeenCalledWith([
-        { id: today.id, patch: { status: "done" } },
+        { id: today.id, patch: { status: "done", matchSource: "manual" } },
       ]);
     });
     expect(await screen.findByText(`${today.title} marked as done.`)).toBeInTheDocument();
@@ -265,7 +265,7 @@ describe("actions with Undo", () => {
     await user.click(screen.getByRole("button", { name: "Undo" }));
     await waitFor(() => {
       expect(api.updateSessions).toHaveBeenLastCalledWith([
-        { id: today.id, patch: { status: "planned" } },
+        { id: today.id, patch: { status: "planned", matchSource: null } },
       ]);
     });
     expect(await screen.findByText("Change undone.")).toBeInTheDocument();
@@ -569,7 +569,7 @@ describe("Session page", () => {
     await user.click(screen.getByRole("button", { name: "Mark as done" }));
     await waitFor(() => {
       expect(api.updateSessions).toHaveBeenCalledWith([
-        { id: quality.id, patch: { status: "done" } },
+        { id: quality.id, patch: { status: "done", matchSource: "manual" } },
       ]);
     });
     expect(await screen.findByText(/· Done$/)).toBeInTheDocument();

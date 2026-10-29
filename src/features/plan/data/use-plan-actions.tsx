@@ -177,7 +177,9 @@ export function usePlanActions(sessions: readonly PlanSession[]): PlanActions {
   const markDone = useCallback(
     (session: PlanSession) => {
       void run({
-        ...changesFor(sessions, [{ id: session.id, patch: { status: "done" } }]),
+        ...changesFor(sessions, [
+          { id: session.id, patch: { status: "done", matchSource: "manual" } },
+        ]),
         message: `${session.title} marked as done.`,
       });
     },

@@ -57,6 +57,8 @@ function sessionColumns(patch: SessionPatch) {
     ...(patch.date !== undefined ? { session_date: patch.date } : {}),
     ...(patch.movedFrom !== undefined ? { moved_from: patch.movedFrom } : {}),
     ...(patch.indoor !== undefined ? { indoor: patch.indoor } : {}),
+    ...(patch.activityId !== undefined ? { activity_id: patch.activityId } : {}),
+    ...(patch.matchSource !== undefined ? { match_source: patch.matchSource } : {}),
   };
 }
 

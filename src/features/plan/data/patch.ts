@@ -8,6 +8,8 @@ export function applyPatch(session: PlanSession, patch: SessionPatch): PlanSessi
     ...(patch.date !== undefined ? { date: patch.date } : {}),
     ...(patch.movedFrom !== undefined ? { movedFrom: patch.movedFrom } : {}),
     ...(patch.indoor !== undefined ? { indoor: patch.indoor } : {}),
+    ...(patch.activityId !== undefined ? { activityId: patch.activityId } : {}),
+    ...(patch.matchSource !== undefined ? { matchSource: patch.matchSource } : {}),
   };
 }
 
@@ -18,5 +20,7 @@ export function inversePatch(session: PlanSession, patch: SessionPatch): Session
     ...(patch.date !== undefined ? { date: session.date } : {}),
     ...(patch.movedFrom !== undefined ? { movedFrom: session.movedFrom } : {}),
     ...(patch.indoor !== undefined ? { indoor: session.indoor } : {}),
+    ...(patch.activityId !== undefined ? { activityId: session.activityId } : {}),
+    ...(patch.matchSource !== undefined ? { matchSource: session.matchSource } : {}),
   };
 }
