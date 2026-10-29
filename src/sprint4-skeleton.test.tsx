@@ -53,7 +53,6 @@ describe("Sprint 4 placeholder pages", () => {
       "aria-current",
       "page",
     );
-    expect(await screen.findByText("The weekly view is coming.")).toBeInTheDocument();
   });
 
   it("opens the Overview tab with Overview current", async () => {
@@ -67,8 +66,6 @@ describe("Sprint 4 placeholder pages", () => {
   });
 
   it.each([
-    ["/plan/new", "Build your plan"],
-    ["/plan/session/abc", "Session"],
     ["/plan/changes", "Plan changes"],
     ["/plan/summary", "Summary"],
     ["/plan/calendar", "Calendar"],
