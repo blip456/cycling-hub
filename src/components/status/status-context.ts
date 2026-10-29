@@ -20,8 +20,12 @@ export interface StatusCardSpec {
 /** Higher wins when several cards want to show; an error replaces an info card (DESIGN.md). */
 export const STATUS_PRIORITY = {
   whatsNew: 10,
+  /** The no-power-data warning (R7, P64): a lasting warning, so it goes below the reminder and the notices. */
+  noPowerData: 12,
   /** The weight reminder goes before "What's new" (W-PO4, P52). */
   weightReminder: 15,
+  /** "Plan updated" with Undo (R3, P71): the result of something that just happened, so it goes first. */
+  planUpdated: 18,
   update: 20,
   flash: 30,
   error: 40,

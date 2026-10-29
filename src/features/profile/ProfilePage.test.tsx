@@ -16,6 +16,13 @@ const FILLED: Profile = {
   birthYear: 1988,
   availableDays: ["tue", "thu", "sat", "sun"],
   goal: "Ride 200 km in one day.",
+  ridingEnvironment: null,
+  weeklyHours: null,
+  trainingPurposes: [],
+  levelAnswers: null,
+  level: null,
+  eventName: null,
+  eventDate: null,
 };
 
 function renderPage() {
@@ -31,13 +38,8 @@ describe("Profile (H1 to H3)", () => {
     let stored = initial;
     vi.mocked(fetchProfile).mockImplementation(async () => stored);
     vi.mocked(saveProfileSection).mockImplementation(async (_userId, patch) => {
-      if (patch.section === "about") {
-        stored = { ...stored, displayName: patch.displayName, birthYear: patch.birthYear };
-      } else if (patch.section === "week") {
-        stored = { ...stored, availableDays: patch.availableDays };
-      } else {
-        stored = { ...stored, goal: patch.goal };
-      }
+      const { section: _section, ...fields } = patch;
+      stored = { ...stored, ...fields };
     });
   }
 
@@ -71,7 +73,13 @@ describe("Profile (H1 to H3)", () => {
     useStore(EMPTY_PROFILE);
     renderPage();
     expect(await screen.findByText("Your profile is empty")).toBeInTheDocument();
-    for (const name of ["Add details", "Add days", "Add a goal"]) {
+    for (const name of [
+      "Add details",
+      "Add your week",
+      "Add purposes",
+      "Add an event",
+      "Add a goal",
+    ]) {
       expect(screen.getByRole("button", { name })).toBeInTheDocument();
     }
     expect(screen.queryByRole("button", { name: /^Edit/ })).not.toBeInTheDocument();
@@ -240,7 +248,7 @@ describe("Profile (H1 to H3)", () => {
     const user = userEvent.setup();
     useStore(EMPTY_PROFILE);
     renderPage();
-    await user.click(await screen.findByRole("button", { name: "Add days" }));
+    await user.click(await screen.findByRole("button", { name: "Add your week" }));
     const group = screen.getByRole("group", { name: "Available training days" });
     await user.click(within(group).getByRole("checkbox", { name: "Saturday" }));
     await user.click(within(group).getByRole("checkbox", { name: "Tuesday" }));
@@ -249,6 +257,8 @@ describe("Profile (H1 to H3)", () => {
       expect(saveProfileSection).toHaveBeenCalledWith(expect.any(String), {
         section: "week",
         availableDays: ["tue", "sat"],
+        weeklyHours: null,
+        ridingEnvironment: null,
       });
     });
     expect(await screen.findByRole("button", { name: "Edit Training week" })).toBeInTheDocument();

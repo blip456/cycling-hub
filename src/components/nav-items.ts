@@ -2,6 +2,7 @@ import type { ComponentType, SVGProps } from "react";
 import {
   BaselineIcon,
   ImportIcon,
+  PlanIcon,
   ProfileIcon,
   RidesIcon,
   SettingsIcon,
@@ -14,9 +15,10 @@ export interface NavItem {
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
 
-/** P7, P48: the side menu destinations. Later epics add items here. */
+/** P7, P48, P68: the side menu destinations. Later epics add items here. */
 export const navItems: NavItem[] = [
   { to: "/rides", label: "Rides", Icon: RidesIcon },
+  { to: "/plan", label: "Plan", Icon: PlanIcon },
   { to: "/import", label: "Import", Icon: ImportIcon },
   { to: "/weight", label: "Weight", Icon: WeightIcon },
   { to: "/profile", label: "Profile", Icon: ProfileIcon },
@@ -41,8 +43,21 @@ export const subPages: SubPage[] = [
   // Sprint 3 streams: add the pages below your own menu item (they show Back on the phone). The tabs
   // themselves (Weight: Log, Trend; Baseline: Baseline, Zones, History) are not sub-pages.
   // owned by weight stream (add sub-pages of /weight here)
+  { to: "/weight/goal", label: "Weight goal", parent: "/weight/trend" },
 
   // owned by profile stream (add sub-pages of /profile here)
+
+  // owned by plan streams (Sprint 4): the tabs Week and Overview are not sub-pages. Each line has one owner.
+  // owned by intake stream
+  { to: "/plan/new", label: "New plan", parent: "/plan" },
+  // owned by session stream
+  { to: "/plan/session/:id", label: "Session", parent: "/plan" },
+  // owned by changes stream
+  { to: "/plan/changes", label: "Plan changes", parent: "/plan" },
+  // owned by summary stream
+  { to: "/plan/summary", label: "Summary", parent: "/plan" },
+  // owned by calendar stream
+  { to: "/plan/calendar", label: "Calendar", parent: "/plan" },
 
   // owned by baseline stream (add sub-pages of /baseline here, e.g. the guided test week)
   { to: "/baseline/update", label: "Update baseline", parent: "/baseline" },

@@ -1,0 +1,24 @@
+# Training month: October 2026 (1 to 28 Oct)
+Made on Wed 28 Oct 2026, 10:05 (Europe/Brussels). Plan weeks 2 to 6 of 12.
+
+## Planned vs done
+- 1 to 4 Oct (week 2): planned 2 sessions, 3 h 15; done 2 sessions, 3 h 10.
+- 5 to 11 Oct (week 3): planned 4 sessions, 5 h 00; done 4 sessions, 4 h 50.
+- 12 to 18 Oct (week 4, recovery week): planned 4 sessions, 4 h 00; done 3 sessions, 3 h 05 (Sun 18 Oct missed).
+- 19 to 25 Oct (week 5): planned 4 sessions, 5 h 30; done 3 sessions, 4 h 34 (Sun 25 Oct missed).
+- 26 to 28 Oct (week 6): planned 1 session, 1 h 15; done 0 (Tue 27 Oct missed).
+- Total: planned 15 sessions, 19 h 00; done 12 sessions, 15 h 39 (82 %), plus 2 extra rides.
+
+## Rides
+- 14 rides, 92.7 km, 510 m climbing, 16 h 49 moving time.
+- Longest ride: Sat 24 Oct, 68.4 km, 142 min.
+
+## Power (FTP 250 W)
+- 3 of 14 rides have power data. Average power 159 W.
+- Time in zones: Z1 0 h 48, Z2 2 h 30, Z3 0 h 12, Z4 0 h 30, Z5 0 h 06.
+- Power zones: Z1 up to 138 W, Z2 139 to 188, Z3 189 to 225, Z4 226 to 263, Z5 264 to 300, Z6 301 to 375, Z7 376 and up.
+- Hard sessions: 2 done of 3 planned. All targets reached except Thu 15 Oct (short by 4 min).
+
+## Heart rate
+- Average 138 bpm over 4 of 14 rides. Time in zones: Z1 0 h 30, Z2 3 h 40, Z3 0 h 24, Z4 0 h 34, Z5 0 h 06.
+- Heart rate zones: Z1 up to 112 bpm, Z2 113 to 137, Z3 138 to 155, Z4 156 to 173, Z5 174 and up.
