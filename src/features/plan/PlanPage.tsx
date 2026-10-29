@@ -27,7 +27,9 @@ function PlanRoutes() {
   return (
     <>
       {withPlan ? <TodayCard /> : null}
-      {withPlan ? <TabNav label="Plan" tabs={tabs} trailing={plan ? <PlanMenu /> : null} /> : null}
+      {withPlan ? (
+        <TabNav label="Plan" tabs={tabs} trailing={plan ? <PlanMenu plan={plan} /> : null} />
+      ) : null}
       <Routes>
         <Route index element={<WeekPage />} />
         <Route path="overview" element={<OverviewPage />} />
