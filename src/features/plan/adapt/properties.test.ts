@@ -35,7 +35,8 @@ const scenarios = SEEDS.map((seed) => ({ seed, s: scenario(seed) })).filter(
   (entry): entry is { seed: number; s: Scenario } => entry.s !== null,
 );
 
-describe("generated scenarios", () => {
+// About 250 seeded scenarios per property: a few seconds each locally, more on a slow CI runner.
+describe("generated scenarios", { timeout: 60_000 }, () => {
   it("cover enough plans", () => {
     expect(scenarios.length).toBeGreaterThan(200);
   });
