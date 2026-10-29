@@ -4,13 +4,9 @@ import { PageLoading } from "@/components/PageLoading";
 import { STATUS_PRIORITY, useStatusCard } from "@/components/status/status-context";
 import { isProfileEmpty } from "./api";
 import { useProfile } from "./hooks";
-import {
-  AboutSection,
-  GoalSection,
-  WeekSection,
-  type SaveReport,
-  type SectionId,
-} from "./sections";
+import type { SaveReport, SectionId } from "./form-parts";
+import { EventSection, LevelSection, PurposesSection } from "./plan-sections";
+import { AboutSection, GoalSection, WeekSection } from "./sections";
 
 /**
  * H1 to H3: the athlete profile (P44), edited section by section. Everything is optional and nothing
@@ -82,11 +78,12 @@ export function ProfilePage() {
           </p>
         </div>
       ) : null}
-      <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start">
-        <div className="flex flex-col gap-4">
-          <AboutSection profile={data} report={report} />
-          <WeekSection profile={data} report={report} />
-        </div>
+      <div className="flex flex-col gap-4 lg:block lg:columns-2 lg:gap-4 lg:space-y-4 lg:[&>*]:break-inside-avoid">
+        <AboutSection profile={data} report={report} />
+        <WeekSection profile={data} report={report} />
+        <PurposesSection profile={data} report={report} />
+        <LevelSection profile={data} report={report} />
+        <EventSection profile={data} report={report} />
         <GoalSection profile={data} report={report} />
       </div>
     </div>
