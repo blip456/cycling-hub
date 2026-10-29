@@ -43,6 +43,7 @@ export const subPages: SubPage[] = [
   // Sprint 3 streams: add the pages below your own menu item (they show Back on the phone). The tabs
   // themselves (Weight: Log, Trend; Baseline: Baseline, Zones, History) are not sub-pages.
   // owned by weight stream (add sub-pages of /weight here)
+  { to: "/weight/goal", label: "Weight goal", parent: "/weight/trend" },
 
   // owned by profile stream (add sub-pages of /profile here)
 
