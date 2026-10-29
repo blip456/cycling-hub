@@ -8,6 +8,7 @@ import {
   useStatusCard,
 } from "@/components/status/status-context";
 import { deletePlan } from "../data/api";
+import { usePlanRunner } from "../adaptation/hooks";
 import { clearPlanCaches } from "./clear-plan-caches";
 
 const REMOVED_ID = "plan-removed";
@@ -23,9 +24,14 @@ export function useRemovePlan() {
   const registry = useContext(StatusRegistryContext);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const runner = usePlanRunner();
   const [failedFor, setFailedFor] = useState<string | null>(null);
   const mutation = useMutation({
-    mutationFn: (planId: string) => deletePlan(planId),
+    mutationFn: async (planId: string) => {
+      // A run in progress finishes first, so it cannot write to a plan that is being deleted.
+      await runner.whenIdle();
+      await deletePlan(planId);
+    },
     onSuccess: (_data, planId) => clearPlanCaches(queryClient, planId),
   });
 

@@ -8,6 +8,7 @@ import {
   type DayCell,
   type PlanSession,
 } from "../data";
+import { useChangedDates } from "../adaptation/hooks";
 import { ActionsMenu } from "./SessionActions";
 import { sessionAriaLabel } from "./session-label";
 
@@ -41,6 +42,7 @@ export function SessionItem({
   layout?: "row" | "card";
 }) {
   const card = layout === "card";
+  const changed = useChangedDates().has(session.date);
   return (
     <div
       className={
@@ -50,7 +52,7 @@ export function SessionItem({
     >
       <Link
         to={`/plan/session/${session.id}`}
-        aria-label={sessionAriaLabel(session, environment, isToday)}
+        aria-label={sessionAriaLabel(session, environment, isToday, changed)}
         className="flex min-h-14 min-w-0 flex-1 flex-col gap-0.5 rounded-xl px-3.5 py-2.5"
       >
         <span className="text-[15px] leading-5 font-semibold [overflow-wrap:anywhere]">
@@ -66,6 +68,12 @@ export function SessionItem({
           <span className="text-[13px] text-muted">{sessionFacts(session, environment)}</span>
         )}
         <StatusText status={session.status} />
+        {changed ? (
+          <span className="text-[13px] font-medium text-muted">
+            <span aria-hidden="true">✎ </span>
+            Changed
+          </span>
+        ) : null}
       </Link>
       <div className={card ? "flex justify-end px-1 pb-1" : ""}>
         <ActionsMenu session={session} />

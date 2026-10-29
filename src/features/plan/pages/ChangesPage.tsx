@@ -1,60 +1,37 @@
-import { useQuery } from "@tanstack/react-query";
-import type { ReactNode } from "react";
-import { Link } from "react-router";
-import { buttonClass } from "@/components/button-class";
-import { EmptyState } from "@/components/ui";
-import { brusselsDate } from "@/features/athlete";
+import { useEffect, useState } from "react";
+import { Button, EmptyState } from "@/components/ui";
 import { useMediaQuery } from "@/lib/use-media-query";
-import { fetchPlanChanges } from "../adaptation/api";
+import { ChangeList } from "../adaptation/ChangeList";
+import { formatUpdated } from "../adaptation/format";
+import { undoableChange, usePlanChanges } from "../adaptation/hooks";
+import { useSeenUpdate } from "../adaptation/seen";
+import { useUndoFlow } from "../adaptation/use-undo-flow";
 import type { PlanChange } from "../adaptation/changes";
-import type { AdaptChange } from "../adapt";
-import { formatDay, kindName, usePlan } from "../data";
 import { GRID_QUERY, usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
-import { changesKey } from "../manage/clear-plan-caches";
+import { NoPlanState } from "../components/NoPlan";
+import { usePlan } from "../data";
 
-const LIMIT = 20;
-
-/** "Threshold, 75 min, 3x12" or "no session". */
-function side(value: AdaptChange["before"]): string {
-  if (!value) return "no session";
-  return `${kindName(value.kind)}, ${String(value.durationMin)} min${value.mainSet ? `, ${value.mainSet}` : ""}`;
-}
-
-function Update({ change }: { change: PlanChange }) {
-  const day = brusselsDate(new Date(change.createdAt));
+function Header({ change }: { change: PlanChange }) {
   return (
-    <section aria-label={change.message} className="rounded-2xl bg-surface px-4 py-4">
-      <h3 className="text-[17px] leading-6 font-semibold">{change.message}</h3>
-      <p className="text-[13px] text-muted">
-        {day ? formatDay(day) : ""}
-        {change.undoneAt ? " · Undone" : ""}
-      </p>
-      <ul className="mt-2 flex flex-col gap-2 text-[15px]">
-        {change.payload.changes.map((c) => (
-          <li key={`${c.date}-${c.change}`}>
-            <span className="font-semibold">{formatDay(c.date)}</span>: {side(c.before)}
-            <span aria-hidden="true"> → </span>
-            <span className="sr-only"> becomes </span>
-            {side(c.after)}
-            <span className="block text-[13px] text-muted">{c.reason}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div className="rounded-2xl bg-surface px-4 py-3.5 text-[15px]">
+      <p className="font-semibold">Updated {formatUpdated(change.createdAt)}</p>
+      <p className="mt-0.5">{change.message}</p>
+      {change.undoneAt ? (
+        <p className="mt-0.5 text-muted">Undone {formatUpdated(change.undoneAt)}.</p>
+      ) : null}
+    </div>
   );
 }
 
-/** R4: what moved and why, newest update first. Undo is on the "Plan updated" card right after an update. */
+/** R4: what moved and why, with Undo all and a short log of earlier updates (the last 10). */
 export function ChangesPage() {
   const plan = usePlan();
-  const planId = plan.data?.id;
-  const grid = useMediaQuery(GRID_QUERY);
-  const changes = useQuery({
-    queryKey: changesKey(planId ?? ""),
-    queryFn: () => fetchPlanChanges(planId ?? "", LIMIT),
-    enabled: planId !== undefined,
-  });
+  const changes = usePlanChanges();
+  const desktop = useMediaQuery(GRID_QUERY);
+  const { markSeen } = useSeenUpdate();
+  const { undo, isPending } = useUndoFlow("plan-changes-undo");
+  const [open, setOpen] = useState<string | null>(null);
   const failed = plan.isError || changes.isError;
   const retry = () => {
     void plan.refetch();
@@ -62,35 +39,94 @@ export function ChangesPage() {
   };
   usePlanLoadErrorCard(failed, retry);
 
-  let body: ReactNode;
-  if (failed) body = <PlanLoadError retry={retry} />;
-  else if (plan.isPending || (planId !== undefined && changes.isPending))
-    body = <PlanSkeleton desktop={grid} />;
-  else if (planId === undefined)
-    body = (
-      <div className="flex flex-col items-start gap-3">
-        <EmptyState>There is no plan, so there are no updates.</EmptyState>
-        <Link to="/plan/new" className={buttonClass("primary")}>
-          Create my plan
-        </Link>
-      </div>
-    );
-  else if ((changes.data ?? []).length === 0)
-    body = <EmptyState>Your plan has not been updated yet.</EmptyState>;
-  else
-    body = (
-      <div className="flex flex-col gap-3">
-        {(changes.data ?? []).map((change) => (
-          <Update key={change.id} change={change} />
-        ))}
-      </div>
-    );
+  const latest = changes.data?.[0];
+  useEffect(() => {
+    if (latest) markSeen(latest.id);
+  }, [latest, markSeen]);
+
+  if (failed) return <PlanLoadError retry={retry} />;
+  if (plan.isPending || (plan.data && changes.isPending)) return <PlanSkeleton desktop={false} />;
+  if (!plan.data) return <NoPlanState />;
+
+  const earlier = (changes.data ?? []).slice(1);
+  const canUndo = undoableChange(changes.data, plan.data.fingerprint);
+
   return (
-    <section aria-labelledby="plan-changes" className="max-w-[640px]">
-      <h2 id="plan-changes" className="mb-4 text-lg font-semibold tracking-tight">
+    <section aria-labelledby="plan-changes" className="flex max-w-4xl flex-col gap-4">
+      <h2 id="plan-changes" className="sr-only">
         Plan changes
       </h2>
-      {body}
+      {!latest ? (
+        <EmptyState>
+          No plan updates yet. When a missed session, a ride or a new FTP changes your plan, you see
+          here what moved and why.
+        </EmptyState>
+      ) : (
+        <>
+          <Header change={latest} />
+          <ChangeList
+            changes={latest.payload.changes}
+            table={desktop}
+            label={`Sessions changed on ${formatUpdated(latest.createdAt)}`}
+          />
+          {canUndo?.payload.undo ? (
+            <div>
+              <Button
+                variant="secondary"
+                disabled={isPending}
+                onClick={() => {
+                  undo(canUndo);
+                }}
+              >
+                Undo all
+              </Button>
+              <p className="mt-1.5 max-w-[60ch] text-[13px] text-muted">
+                {canUndo.payload.undo.description}
+              </p>
+            </div>
+          ) : null}
+        </>
+      )}
+      {earlier.length > 0 ? (
+        <section aria-labelledby="plan-earlier">
+          <h3 id="plan-earlier" className="mb-1.5 text-[17px] font-semibold">
+            Earlier updates ({earlier.length})
+          </h3>
+          <ul className="flex flex-col gap-1.5">
+            {earlier.map((change) => {
+              const expanded = open === change.id;
+              return (
+                <li key={change.id} className="rounded-2xl bg-surface">
+                  <button
+                    type="button"
+                    aria-expanded={expanded}
+                    aria-controls={`earlier-${change.id}`}
+                    className="flex min-h-11 w-full flex-col items-start rounded-2xl px-4 py-2.5 text-left text-[15px] hover:bg-surface-hover"
+                    onClick={() => {
+                      setOpen(expanded ? null : change.id);
+                    }}
+                  >
+                    <span className="font-semibold">{formatUpdated(change.createdAt)}</span>
+                    <span className="text-muted">
+                      {change.message}
+                      {change.undoneAt ? " Undone." : ""}
+                    </span>
+                  </button>
+                  {expanded ? (
+                    <div id={`earlier-${change.id}`} className="px-3 pb-3">
+                      <ChangeList
+                        changes={change.payload.changes}
+                        table={desktop}
+                        label={`Sessions changed on ${formatUpdated(change.createdAt)}`}
+                      />
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
     </section>
   );
 }

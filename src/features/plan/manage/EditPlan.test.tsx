@@ -12,8 +12,6 @@ import * as api from "../data/api";
 import { NOW, TODAY } from "../data/test-support";
 import { PlanPage } from "../PlanPage";
 import { PlanUpdatedCard } from "../PlanUpdatedCard";
-import { resetPlanRunners } from "./runner";
-import { clearPlanUpdate } from "./update-store";
 import { editDb, wireDb } from "./test-support";
 
 vi.mock("../data/api", async (importOriginal) => ({
@@ -67,8 +65,6 @@ beforeEach(async () => {
   vi.setSystemTime(NOW);
   viewport = mockViewport(390);
   window.localStorage.clear();
-  resetPlanRunners();
-  clearPlanUpdate();
   db = editDb();
   runnerApi = await wireDb(db);
 });
@@ -501,7 +497,9 @@ describe("Undo", () => {
     await next(user, "Review the summary", "Check your changes");
     await user.click(await screen.findByRole("button", { name: "Save changes" }));
     await user.click(await screen.findByRole("button", { name: "Undo" }));
-    expect(await screen.findByText("Update undone. Your plan is as it was.")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Plan restored. Updated again when something changes."),
+    ).toBeInTheDocument();
     expect(db.sessions).toEqual(sessionsBefore);
     expect(db.plan.intake).toEqual(intakeBefore);
     expect(db.profile).toEqual(profileBefore);
@@ -564,7 +562,6 @@ describe("when something goes wrong", () => {
       ...runnerApi,
       load: () => Promise.resolve(null),
     });
-    resetPlanRunners();
     await user.click(await screen.findByRole("button", { name: "Save changes" }));
     await waitFor(() => {
       expect(screen.queryByRole("heading", { name: "Check your changes" })).not.toBeInTheDocument();

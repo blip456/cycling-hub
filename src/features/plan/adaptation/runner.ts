@@ -147,6 +147,8 @@ export type Runner = {
   run: (today: IsoDate, options?: RunOptions) => Promise<RunResult>;
   /** Evaluates an edit like `run` would and returns what it would change, writing nothing. */
   preview: (today: IsoDate, edit: Intake) => Promise<PreviewResult>;
+  /** Resolves when everything queued so far has finished (before a plan is deleted). */
+  whenIdle: () => Promise<void>;
   /** Takes an update back. Only the latest update of the current plan can be undone. */
   undo: (change: PlanChange, now?: Date) => Promise<UndoResult>;
 };
@@ -287,6 +289,10 @@ export function createRunner(api: RunnerApi): Runner {
       };
       waiting = slot;
       return slot.promise;
+    },
+
+    whenIdle() {
+      return tail.then(() => undefined);
     },
 
     preview(today, edit) {

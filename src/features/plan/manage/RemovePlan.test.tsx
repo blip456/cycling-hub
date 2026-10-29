@@ -25,9 +25,8 @@ import {
 import { summaryKeys } from "../summary/hooks";
 import { ICS_STORAGE_KEY, SUMMARY_STORAGE_KEY } from "../summary/storage";
 import { PLAN_DATA } from "../summary/test-support";
-import { runnerFor, resetPlanRunners } from "./runner";
+import { adaptationKeys, runnerFor } from "../adaptation/hooks";
 import { editDb, wireDb } from "./test-support";
-import { currentPlanUpdate, showPlanUpdate } from "./update-store";
 
 vi.mock("../data/api", async (importOriginal) => ({
   ...(await importOriginal<typeof api>()),
@@ -106,7 +105,6 @@ beforeEach(async () => {
   vi.setSystemTime(NOW);
   viewport = mockViewport(390);
   window.localStorage.clear();
-  resetPlanRunners();
   db = editDb();
   runnerApi = await wireDb(db);
   removed = false;
@@ -252,26 +250,8 @@ describe("removing", () => {
       SUMMARY_STORAGE_KEY,
       JSON.stringify({ week: { includeWeight: false } }),
     );
-    showPlanUpdate({
-      change: {
-        id: "c-9",
-        planId: "plan-1",
-        createdAt: "2026-10-28T08:00:00Z",
-        undoneAt: null,
-        message: "2 sessions changed because you edited your plan.",
-        payload: {
-          version: 1,
-          message: "2 sessions changed because you edited your plan.",
-          reasons: ["plan-edited"],
-          changes: [],
-          fingerprint: "f",
-          undo: null,
-          before: { ftp: 250, intake: null },
-        },
-      },
-      restore: null,
-    });
-    expect(await screen.findByText("Plan updated")).toBeInTheDocument();
+    window.localStorage.setItem("cycling-hub:plan-update-seen", "c-9");
+    window.localStorage.setItem("cycling-hub:no-power-dismissed", "4");
 
     const dialog = await openDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Remove plan" }));
@@ -282,8 +262,9 @@ describe("removing", () => {
     expect(queryClient.getQueryData(summaryKeys.plan())).toEqual({ plan: null, sessions: [] });
     expect(queryClient.getQueryData(summaryKeys.changes("plan-1"))).toBeUndefined();
     expect(window.localStorage.getItem(ICS_STORAGE_KEY)).toBeNull();
-    expect(currentPlanUpdate()).toBeNull();
-    expect(screen.queryByText("Plan updated")).not.toBeInTheDocument();
+    expect(window.localStorage.getItem("cycling-hub:plan-update-seen")).toBeNull();
+    expect(window.localStorage.getItem("cycling-hub:no-power-dismissed")).toBeNull();
+    expect(queryClient.getQueryData(adaptationKeys.view())).toBeNull();
     // The Copy button choices are the PO's, not the plan's.
     expect(window.localStorage.getItem(SUMMARY_STORAGE_KEY)).not.toBeNull();
     // Rides, profile, goal and baseline were not touched.
@@ -343,12 +324,12 @@ describe("when it does not work", () => {
 describe("the runner without a plan", () => {
   it("does nothing: it does not evaluate, write or recreate anything", async () => {
     const user = setup();
-    renderApp();
+    const { queryClient } = renderApp();
     const dialog = await openDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Remove plan" }));
     await screen.findByText("No training plan yet");
     runnerApi.writes.length = 0;
-    const runner = runnerFor(fakeSession().user.id);
+    const runner = runnerFor(queryClient, fakeSession().user.id);
     expect(await runner.run(TODAY)).toEqual({ status: "no-plan" });
     expect(await runner.preview(TODAY, db.plan.intake ?? ({} as never))).toEqual({
       status: "no-plan",

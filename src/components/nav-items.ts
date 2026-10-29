@@ -55,6 +55,7 @@ export const subPages: SubPage[] = [
   { to: "/plan/session/:id", label: "Session", parent: "/plan" },
   // owned by changes stream
   { to: "/plan/changes", label: "Plan changes", parent: "/plan" },
+  { to: "/plan/no-power", label: "No power data", parent: "/plan" },
   // owned by summary stream
   { to: "/plan/summary", label: "Summary", parent: "/plan" },
   // owned by calendar stream

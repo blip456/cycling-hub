@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { BackIcon } from "@/components/icons";
+import { RideMatchCard } from "@/features/plan/adaptation/RideMatchCard";
 import type { Ride } from "../api";
 import { formatDistanceKm, rideTags } from "../format";
 import {
@@ -175,6 +176,7 @@ export function RideDetail({
           <div className="flex flex-col gap-4">
             <Distance ride={ride} labelled />
             <Metrics ride={ride} />
+            <RideMatchCard ride={ride} />
           </div>
         </div>
       </article>
@@ -189,6 +191,7 @@ export function RideDetail({
       </div>
       <RouteDrawing polyline={ride.polyline} name={ride.name} heightClass="h-[150px]" />
       <Metrics ride={ride} />
+      <RideMatchCard ride={ride} />
       <Details ride={ride} />
       <div className="mt-3">
         <DeleteButton onDelete={onDelete} block />

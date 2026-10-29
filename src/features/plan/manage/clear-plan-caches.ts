@@ -2,10 +2,8 @@ import type { QueryClient } from "@tanstack/react-query";
 import { planKeys } from "../data/hooks";
 import { clearIcsDownload } from "../summary/storage";
 import { summaryKeys } from "../summary/hooks";
-import { clearPlanUpdate } from "./update-store";
-
-/** React Query key of the list of updates (the Changes page); under `planKeys.all`, so it goes with the plan. */
-export const changesKey = (planId: string) => [...planKeys.all, "changes", planId] as const;
+import { adaptationKeys } from "../adaptation/hooks";
+import { clearSeenState } from "../adaptation/seen";
 
 /**
  * Everything the app keeps about a plan that has just been removed (P82): the plan and session queries of the
@@ -19,12 +17,13 @@ export async function clearPlanCaches(queryClient: QueryClient, planId: string):
     queryClient.cancelQueries({ queryKey: planKeys.all }),
     queryClient.cancelQueries({ queryKey: summaryKeys.all }),
   ]);
-  clearPlanUpdate();
+  clearSeenState();
   clearIcsDownload();
   queryClient.setQueryData(planKeys.active(), null);
   queryClient.setQueryData(summaryKeys.plan(), { plan: null, sessions: [] });
   queryClient.removeQueries({ queryKey: planKeys.sessions(planId) });
-  queryClient.removeQueries({ queryKey: changesKey(planId) });
+  queryClient.removeQueries({ queryKey: adaptationKeys.changes(planId) });
+  queryClient.setQueryData(adaptationKeys.view(), null);
   queryClient.removeQueries({ queryKey: summaryKeys.changes(planId) });
   await Promise.all([
     queryClient.invalidateQueries({ queryKey: planKeys.all }),

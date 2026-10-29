@@ -11,6 +11,7 @@ import {
   weekRange,
   weekSummaries,
 } from "../data";
+import { WeekReasonCard } from "../adaptation/ReasonCards";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
@@ -80,6 +81,7 @@ export function WeekPage() {
         {count} {count === 1 ? "session" : "sessions"} · {formatDuration(week.minutes)} · Load{" "}
         {formatLoad(week.load)}
       </p>
+      <WeekReasonCard plan={plan} week={week} weeks={weeks} isCurrent={number === current} />
       <ol
         aria-label={`Days of week ${String(number)}`}
         className={grid ? "grid grid-cols-7 items-start gap-2" : "flex flex-col gap-1"}

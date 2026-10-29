@@ -20,6 +20,7 @@ import {
   type StoredPlan,
   type WeekSummary,
 } from "../data";
+import { EventCard } from "../adaptation/ReasonCards";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
@@ -316,6 +317,7 @@ export function OverviewPage() {
           </Link>
         </p>
       </div>
+      {!desktop ? <EventCard plan={plan} sessions={sessions} weeks={weeks} today={today} /> : null}
       <div
         className={
           desktop ? "grid grid-cols-[minmax(0,1fr)_18rem] items-start gap-6" : "flex flex-col gap-5"
@@ -346,7 +348,14 @@ export function OverviewPage() {
             <PhaseList groups={groups} max={max} current={current} />
           )}
         </div>
-        {showWeight ? <WeightCard plan={plan} today={today} /> : null}
+        {(desktop && eventSession) || showWeight ? (
+          <div className="flex flex-col gap-4">
+            {desktop ? (
+              <EventCard plan={plan} sessions={sessions} weeks={weeks} today={today} />
+            ) : null}
+            {showWeight ? <WeightCard plan={plan} today={today} /> : null}
+          </div>
+        ) : null}
       </div>
     </section>
   );

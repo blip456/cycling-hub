@@ -16,8 +16,7 @@ import { saveWeightGoal, savePlanProfile } from "../data/api";
 import type { EditSave } from "../data/edit";
 import { planKeys } from "../data/hooks";
 import { summaryKeys } from "../summary/hooks";
-import { usePlanRunner } from "./runner";
-import { showPlanUpdate } from "./update-store";
+import { usePlanRunner } from "../adaptation/hooks";
 
 const NOTHING_ID = "plan-edit-nothing";
 const NOTHING_MS = 8000;
@@ -120,9 +119,8 @@ export function useEditPlan() {
             return;
           }
           const change = result?.status === "done" ? result.change : null;
-          if (change) {
-            showPlanUpdate({ change, restore: edit.restore });
-          } else if (registry) {
+          // A change is a stored update: the Plan updated card shows it (unseen), with See changes and Undo.
+          if (!change && registry) {
             flash(registry, NOTHING_ID, {
               tone: "success",
               message: (

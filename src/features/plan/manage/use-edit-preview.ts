@@ -3,7 +3,7 @@ import type { IsoDate } from "@/features/athlete";
 import type { Warning } from "../engine";
 import type { EditSave } from "../data/edit";
 import { planKeys } from "../data/hooks";
-import { usePlanRunner } from "./runner";
+import { usePlanRunner } from "../adaptation/hooks";
 
 export type EditPreview =
   | { status: "loading" }

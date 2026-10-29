@@ -1,149 +1,76 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useContext, useState } from "react";
 import { Link } from "react-router";
 import {
   STATUS_PRIORITY,
-  StatusRegistryContext,
   statusActionClass,
   useStatusCard,
-  type StatusCardSpec,
 } from "@/components/status/status-context";
-import { goalKeys } from "@/features/weight/goal-hooks";
-import { useAuth } from "@/lib/auth/auth-context";
-import { saveWeightGoal, savePlanProfile } from "./data/api";
-import { planKeys } from "./data/hooks";
-import { usePlanRunner } from "./manage/runner";
-import { clearPlanUpdate, usePlanUpdateNotice } from "./manage/update-store";
-import { summaryKeys } from "./summary/hooks";
-
-const FOLLOW_UP_ID = "plan-update-follow-up";
-const FOLLOW_UP_MS = 6000;
-let followUpTimer: ReturnType<typeof setTimeout> | undefined;
+import { usePlan } from "./data";
+import { undoableChange, useAdaptationRunner, usePlanChanges } from "./adaptation/hooks";
+import { useSeenUpdate } from "./adaptation/seen";
+import { useUndoFlow } from "./adaptation/use-undo-flow";
 
 /**
- * The "Plan updated" status card (R3, P71): what changed and why, See changes and Undo. It shows the update the
- * app just made (an edit of the plan today; later also the automatic updates) and stays until it is dismissed,
- * See changes is opened, Undo is used or the next update replaces it. Mounted in the app shell, so it shows on
- * every page. After an edit, Undo also puts the answers (profile and weight goal) back.
+ * R3: the "Plan updated" status card, and the place the re-evaluation runner lives (the shell mounts this
+ * on every page once the PO is signed in). The card shows the newest update the PO has not seen yet: what
+ * changed and why in one sentence, See changes (R4) and Undo. It stays until the changes are opened, Undo
+ * is used, it is dismissed or the next update replaces it (R3-PO1). Without a change there is no card.
  */
 export function PlanUpdatedCard() {
-  const notice = usePlanUpdateNotice();
-  const registry = useContext(StatusRegistryContext);
-  const queryClient = useQueryClient();
-  const runner = usePlanRunner();
-  const userId = useAuth().session?.user.id ?? "";
-  const [undoing, setUndoing] = useState(false);
+  useAdaptationRunner();
+  const plan = usePlan();
+  const changes = usePlanChanges();
+  const { seenId, markSeen } = useSeenUpdate();
+  const { undo, isPending } = useUndoFlow("plan-updated-undo");
 
-  function followUp(spec: StatusCardSpec | null, priority: number = STATUS_PRIORITY.flash) {
-    if (!registry) return;
-    registry.set(FOLLOW_UP_ID, priority, spec);
-    if (followUpTimer !== undefined) clearTimeout(followUpTimer);
-    if (spec) {
-      followUpTimer = setTimeout(() => {
-        followUpTimer = undefined;
-        registry.set(FOLLOW_UP_ID, priority, null);
-      }, FOLLOW_UP_MS);
-    }
-  }
-
-  async function undo() {
-    if (!notice || undoing) return;
-    setUndoing(true);
-    try {
-      const result = await runner.undo(notice.change);
-      if (result.status === "stale") {
-        clearPlanUpdate();
-        followUp({
-          tone: "info",
-          message: "The plan has changed since, so this update can no longer be undone.",
-          onDismiss: () => {
-            followUp(null);
-          },
-        });
-        return;
-      }
-      if (result.status === "failed") {
-        followUp(
-          {
-            tone: "error",
-            message: "Could not undo the update. Your plan is as it was after the update.",
-            onDismiss: () => {
-              followUp(null, STATUS_PRIORITY.error);
-            },
-          },
-          STATUS_PRIORITY.error,
-        );
-        return;
-      }
-      clearPlanUpdate();
-      if (notice.restore) {
-        try {
-          await savePlanProfile(userId, notice.restore.profilePatch);
-          if (notice.restore.goal !== undefined) await saveWeightGoal(notice.restore.goal);
-        } catch {
-          followUp({
-            tone: "info",
-            message: "Update undone. Your saved answers could not be put back: check your profile.",
-            onDismiss: () => {
-              followUp(null);
-            },
-          });
-          return;
-        }
-      }
-      followUp({
-        tone: "success",
-        message: "Update undone. Your plan is as it was.",
-        onDismiss: () => {
-          followUp(null);
-        },
-      });
-    } finally {
-      setUndoing(false);
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: planKeys.all }),
-        queryClient.invalidateQueries({ queryKey: summaryKeys.all }),
-        queryClient.invalidateQueries({ queryKey: ["profile"] }),
-        queryClient.invalidateQueries({ queryKey: goalKeys.active() }),
-      ]);
-    }
-  }
+  const newest = changes.data?.[0];
+  const unseen = newest && newest.undoneAt === null && newest.id !== seenId ? newest : null;
+  const canUndo =
+    unseen !== null && undoableChange(changes.data, plan.data?.fingerprint)?.id === unseen.id;
 
   useStatusCard(
     "plan-updated",
     STATUS_PRIORITY.planUpdated,
-    notice
+    unseen
       ? {
           tone: "info",
           message: (
             <>
               <strong className="font-semibold">Plan updated</strong>
               <br />
-              {notice.change.message}
+              {unseen.message}
             </>
           ),
           action: (
-            <>
-              <Link to="/plan/changes" className={statusActionClass} onClick={clearPlanUpdate}>
+            <span className="flex flex-wrap items-center">
+              <Link
+                to="/plan/changes"
+                className={statusActionClass}
+                onClick={() => {
+                  markSeen(unseen.id);
+                }}
+              >
                 See changes
               </Link>
-              {notice.change.payload.undo ? (
+              {canUndo ? (
                 <button
                   type="button"
                   className={statusActionClass}
-                  aria-disabled={undoing}
+                  disabled={isPending}
                   onClick={() => {
-                    void undo();
+                    undo(unseen);
                   }}
                 >
                   Undo
                 </button>
               ) : null}
-            </>
+            </span>
           ),
-          onDismiss: clearPlanUpdate,
+          onDismiss: () => {
+            markSeen(unseen.id);
+          },
         }
       : null,
   );
+
   return null;
 }
