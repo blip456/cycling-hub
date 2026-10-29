@@ -309,6 +309,12 @@ export function OverviewPage() {
         {eventSession ? (
           <p className="text-[15px] text-muted">{eventText(eventSession.date, today)}</p>
         ) : null}
+        <p className="text-[15px] text-muted">
+          Built from your answers.{" "}
+          <Link to="/plan/edit" className="font-semibold text-accent underline">
+            Edit plan
+          </Link>
+        </p>
       </div>
       <div
         className={

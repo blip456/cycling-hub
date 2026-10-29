@@ -50,6 +50,7 @@ export const subPages: SubPage[] = [
   // owned by plan streams (Sprint 4): the tabs Week and Overview are not sub-pages. Each line has one owner.
   // owned by intake stream
   { to: "/plan/new", label: "New plan", parent: "/plan" },
+  { to: "/plan/edit", label: "Edit your plan", parent: "/plan" },
   // owned by session stream
   { to: "/plan/session/:id", label: "Session", parent: "/plan" },
   // owned by changes stream

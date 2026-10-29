@@ -1,5 +1,7 @@
 import { useContext, useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
+import { EmptyState } from "@/components/ui";
+import { buttonClass } from "@/components/button-class";
 import {
   STATUS_PRIORITY,
   StatusRegistryContext,
@@ -10,8 +12,15 @@ import { Button } from "@/components/ui";
 import { useBaseline } from "@/features/baseline/hooks";
 import { useMediaQuery, DESKTOP_QUERY } from "@/lib/use-media-query";
 import { buildPlan } from "../engine";
+import { currentIntake } from "../adaptation/inputs";
+import { EditChanges } from "../manage/EditChanges";
+import { useEditPlan } from "../manage/use-edit-plan";
+import { useEditPreview } from "../manage/use-edit-preview";
 import {
+  describeEdit,
+  draftFromIntake,
   draftFromProfile,
+  editSave,
   engineInput,
   firstInvalidStep,
   formatDay,
@@ -27,14 +36,17 @@ import {
   usePlanProfile,
   useSavePlanProfile,
   validateStep,
+  type EditCurrent,
   type EngineContext,
   type IntakeDraft,
   type IntakeErrors,
   type IntakeStep,
+  type StoredPlan,
 } from "../data";
 import { BaselineNeeded } from "../components/NoPlan";
 import { usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
+import { StepBaseContext } from "../components/intake/step-base";
 import { Summary } from "../components/intake/Summary";
 import {
   LevelStep,
@@ -51,6 +63,8 @@ const TITLES: Record<IntakeStep | "summary", string> = {
   4: "When do you start?",
   summary: "Check your answers",
 };
+
+const EDIT_SUMMARY_TITLE = "Check your changes";
 
 const NEXT_LABEL: Record<IntakeStep, string> = {
   1: "Next: Level",
@@ -118,12 +132,15 @@ function IntakeForm({
   availableDays,
   profileEnvironment,
   hasExisting,
+  edit,
 }: {
   initial: IntakeDraft;
   baseline: { ftp: number; lthr: number | null; maxHr: number | null };
   availableDays: EngineContext["availableDays"];
   profileEnvironment: EngineContext["profileEnvironment"];
   hasExisting: boolean;
+  /** Set when the plan is edited (P81): the plan, and its answers as they are now. */
+  edit?: { plan: StoredPlan; current: EditCurrent };
 }) {
   const navigate = useNavigate();
   const registry = useContext(StatusRegistryContext);
@@ -133,6 +150,7 @@ function IntakeForm({
   const weight = useCurrentWeight(today);
   const saveProfile = useSavePlanProfile();
   const create = useCreatePlan();
+  const editing = useEditPlan();
   const [draft, setDraft] = useState(initial);
   const [errors, setErrors] = useState<IntakeErrors>({});
   const [focusTick, setFocusTick] = useState(0);
@@ -152,9 +170,11 @@ function IntakeForm({
       ftp: baseline.ftp,
       lthr: baseline.lthr,
       maxHr: baseline.maxHr,
+      ...(edit ? { fixedStart: edit.plan.startDate } : {}),
     }),
-    [today, weight.weight?.kg, availableDays, profileEnvironment, baseline],
+    [today, weight.weight?.kg, availableDays, profileEnvironment, baseline, edit],
   );
+  const base = edit ? "/plan/edit" : "/plan/new";
 
   useEffect(() => {
     if (firstRender.current) {
@@ -183,9 +203,14 @@ function IntakeForm({
       : null,
   );
 
+  // An edit saves the plan's own start weight unless the weight target changes (see `editSave`).
+  const save = useMemo(
+    () => (edit && step === "summary" ? editSave(draft, ctx, edit.current) : null),
+    [edit, step, draft, ctx],
+  );
   const preview = useMemo(() => {
     if (step !== "summary") return null;
-    const input = engineInput(draft, ctx);
+    const input = save ? save.input : engineInput(draft, ctx);
     if (!input) return null;
     const calculated = engineInput(draft, ctx, null);
     return {
@@ -193,7 +218,8 @@ function IntakeForm({
       plan: buildPlan(input),
       calculatedLevel: calculated ? buildPlan(calculated).level : buildPlan(input).level,
     };
-  }, [step, draft, ctx]);
+  }, [step, draft, ctx, save]);
+  const editPreview = useEditPreview(save, today);
 
   function change(patch: Partial<IntakeDraft>) {
     setDraft((d) => ({ ...d, ...patch }));
@@ -216,13 +242,20 @@ function IntakeForm({
       setFocusTick((t) => t + 1);
       return;
     }
-    const patch = profilePatchFor(step, draft, ctx);
-    saveProfile.mutate(patch, {
-      onError: () => {
-        setSaveFailed(true);
-      },
-    });
+    // Editing changes nothing until "Save changes": the answers are kept on this page, not in the profile.
+    if (!edit) {
+      const patch = profilePatchFor(step, draft, ctx);
+      saveProfile.mutate(patch, {
+        onError: () => {
+          setSaveFailed(true);
+        },
+      });
+    }
     goTo(step === 4 ? "summary" : ((step + 1) as IntakeStep));
+  }
+
+  function cancel() {
+    void navigate("/plan");
   }
 
   function onBack() {
@@ -232,6 +265,10 @@ function IntakeForm({
 
   function build() {
     if (!preview || preview.plan.status !== "ok") return;
+    if (edit) {
+      if (save && !editing.isPending) editing.save(save, today);
+      return;
+    }
     const { plan, input } = preview;
     const goal = goalOf(draft);
     const startKg = ctx.weightKg;
@@ -306,65 +343,106 @@ function IntakeForm({
   const missing = step === "summary" ? firstInvalidStep(draft, ctx) : null;
 
   return (
-    <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
-      <Progress step={step} desktop={desktop} />
-      <section aria-labelledby="intake-heading" className="min-w-0 flex-1">
-        <h2
-          id="intake-heading"
-          ref={headingRef}
-          tabIndex={-1}
-          className="mb-4 text-xl font-semibold tracking-tight outline-none"
-        >
-          {TITLES[step]}
-        </h2>
-        {step === "summary" ? (
-          missing !== null || !preview ? (
-            <div role="alert" className="max-w-[560px] rounded-md bg-subtle px-4 py-3 text-[15px]">
-              <p className="font-semibold">Some answers are missing</p>
-              <p className="mt-1">
-                <Link
-                  to={`/plan/new?step=${String(missing ?? 1)}`}
-                  className="font-semibold text-accent underline"
-                >
-                  Go to step {String(missing ?? 1)}
-                </Link>{" "}
-                to finish them.
-              </p>
-            </div>
+    <StepBaseContext.Provider value={base}>
+      <div className="flex flex-col gap-6 lg:flex-row lg:gap-10">
+        <Progress step={step} desktop={desktop} />
+        <section aria-labelledby="intake-heading" className="min-w-0 flex-1">
+          <h2
+            id="intake-heading"
+            ref={headingRef}
+            tabIndex={-1}
+            className="mb-4 text-xl font-semibold tracking-tight outline-none"
+          >
+            {step === "summary" && edit ? EDIT_SUMMARY_TITLE : TITLES[step]}
+          </h2>
+          {edit && step === 1 ? (
+            <p className="mb-4 max-w-[60ch] text-[15px] text-muted">
+              Your current answers are filled in. Nothing changes until you save on the last step.
+            </p>
+          ) : null}
+          {step === "summary" ? (
+            missing !== null || !preview ? (
+              <div
+                role="alert"
+                className="max-w-[560px] rounded-md bg-subtle px-4 py-3 text-[15px]"
+              >
+                <p className="font-semibold">Some answers are missing</p>
+                <p className="mt-1">
+                  <Link
+                    to={`${base}?step=${String(missing ?? 1)}`}
+                    className="font-semibold text-accent underline"
+                  >
+                    Go to step {String(missing ?? 1)}
+                  </Link>{" "}
+                  to finish them.
+                </p>
+              </div>
+            ) : (
+              <Summary
+                draft={draft}
+                change={change}
+                input={preview.input}
+                plan={preview.plan}
+                calculatedLevel={preview.calculatedLevel}
+                hasExisting={hasExisting}
+                building={edit ? editing.isPending : create.isPending}
+                onBuild={build}
+                onBack={onBack}
+                {...(edit
+                  ? {
+                      edit: {
+                        changes: (
+                          <EditChanges
+                            lines={describeEdit(edit.current.intake, preview.input.intake)}
+                            preview={editPreview}
+                          />
+                        ),
+                        onCancel: cancel,
+                      },
+                    }
+                  : {})}
+              />
+            )
           ) : (
-            <Summary
-              draft={draft}
-              change={change}
-              input={preview.input}
-              plan={preview.plan}
-              calculatedLevel={preview.calculatedLevel}
-              hasExisting={hasExisting}
-              building={create.isPending}
-              onBuild={build}
-              onBack={onBack}
-            />
-          )
-        ) : (
-          <form ref={formRef} onSubmit={onNext} noValidate>
-            {step === 1 ? <PurposesStep {...stepProps} weightLabel={weightLabel} /> : null}
-            {step === 2 ? <LevelStep {...stepProps} /> : null}
-            {step === 3 ? <TimeStep {...stepProps} /> : null}
-            {step === 4 ? <StartStep {...stepProps} /> : null}
-            <div className="mt-6 flex gap-3">
-              <Button variant="secondary" onClick={onBack}>
-                Back
-              </Button>
-              <Button type="submit">{NEXT_LABEL[step]}</Button>
-            </div>
-          </form>
-        )}
-      </section>
-    </div>
+            <form ref={formRef} onSubmit={onNext} noValidate>
+              {step === 1 ? <PurposesStep {...stepProps} weightLabel={weightLabel} /> : null}
+              {step === 2 ? <LevelStep {...stepProps} /> : null}
+              {step === 3 ? <TimeStep {...stepProps} /> : null}
+              {step === 4 ? <StartStep {...stepProps} /> : null}
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Button variant="secondary" onClick={onBack}>
+                  {edit && step === 1 ? "Cancel" : "Back"}
+                </Button>
+                <Button type="submit">{NEXT_LABEL[step]}</Button>
+                {edit && step !== 1 ? (
+                  <Button variant="ghost" onClick={cancel}>
+                    Cancel
+                  </Button>
+                ) : null}
+              </div>
+            </form>
+          )}
+        </section>
+      </div>
+    </StepBaseContext.Provider>
   );
 }
 
-/** T1, T2, T3, T9c: the intake stepper at /plan/new. Answers are saved in the profile as they are given. */
-export function IntakePage() {
+/** What an edit starts from: the plan's stored answers with the profile and the active goal laid over them. */
+function editCurrent(
+  plan: StoredPlan,
+  profile: Parameters<typeof currentIntake>[1],
+  goal: Parameters<typeof currentIntake>[2],
+): EditCurrent | null {
+  return plan.intake ? { intake: currentIntake(plan.intake, profile, goal), profile, goal } : null;
+}
+
+/**
+ * T1, T2, T3, T9c: the intake stepper at /plan/new. Answers are saved in the profile as they are given.
+ * With `edit` (/plan/edit) it is the same stepper for the plan that exists (P81): the current answers are filled
+ * in, nothing is saved until "Save changes", and the plan's start date is shown and cannot be changed.
+ */
+export function IntakePage({ edit = false }: { edit?: boolean }) {
   const baseline = useBaseline();
   const profile = usePlanProfile();
   const goal = useActiveWeightGoal();
@@ -383,9 +461,37 @@ export function IntakePage() {
     return <PlanSkeleton desktop={desktop} />;
   const ftp = baseline.baseline?.ftp?.value ?? null;
   if (ftp === null) return <BaselineNeeded />;
+  const plan = existing.data;
+  if (edit && plan === null)
+    return (
+      <div className="flex max-w-[560px] flex-col items-start gap-3">
+        <EmptyState>There is no plan to edit yet.</EmptyState>
+        <Link to="/plan/new" className={buttonClass("primary")}>
+          Create my plan
+        </Link>
+      </div>
+    );
+  const current = edit && plan ? editCurrent(plan, profile.data, goal.data ?? null) : null;
+  if (edit && plan && current === null)
+    return (
+      <div className="flex max-w-[560px] flex-col items-start gap-3">
+        <EmptyState>
+          The saved answers of your plan could not be read, so it cannot be edited. You can remove
+          the plan and build a new one.
+        </EmptyState>
+        <Link to="/plan" className={buttonClass("secondary")}>
+          Back to the plan
+        </Link>
+      </div>
+    );
   return (
     <IntakeForm
-      initial={draftFromProfile(profile.data, goal.data ?? null, intakeToday())}
+      initial={
+        edit && current
+          ? draftFromIntake(current.intake, intakeToday())
+          : draftFromProfile(profile.data, goal.data ?? null, intakeToday())
+      }
+      {...(edit && plan && current ? { edit: { plan, current } } : {})}
       baseline={{
         ftp,
         lthr: baseline.baseline?.lthr?.value ?? null,

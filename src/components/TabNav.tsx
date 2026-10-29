@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { NavLink } from "react-router";
 
 export interface TabItem {
@@ -13,7 +14,16 @@ export interface TabItem {
  * readers work without extra behaviour: `aria-current="page"` marks the current tab, and the current tab
  * is also bold with an underline, so colour is never the only signal. 44 px targets.
  */
-export function TabNav({ label, tabs }: { label: string; tabs: readonly TabItem[] }) {
+export function TabNav({
+  label,
+  tabs,
+  trailing,
+}: {
+  label: string;
+  tabs: readonly TabItem[];
+  /** An action at the end of the tab row (Plan options). It is not a tab. */
+  trailing?: ReactNode;
+}) {
   return (
     <nav aria-label={label} className="mb-5">
       <ul className="flex gap-1 border-b border-border">
@@ -33,6 +43,7 @@ export function TabNav({ label, tabs }: { label: string; tabs: readonly TabItem[
             </NavLink>
           </li>
         ))}
+        {trailing ? <li className="ml-auto">{trailing}</li> : null}
       </ul>
     </nav>
   );

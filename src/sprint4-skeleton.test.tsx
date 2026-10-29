@@ -31,6 +31,7 @@ describe("Sprint 4 navigation (P68)", () => {
     expect(subPageForPath("/plan/overview")).toBeUndefined();
     for (const path of [
       "/plan/new",
+      "/plan/edit",
       "/plan/session/abc",
       "/plan/changes",
       "/plan/summary",

@@ -7,6 +7,7 @@ import { usePlanData } from "./data";
 import { CalendarPage } from "./pages/CalendarPage";
 import { ChangesPage } from "./pages/ChangesPage";
 import { IntakePage } from "./pages/IntakePage";
+import { PlanMenu } from "./manage/PlanMenu";
 import { OverviewPage } from "./pages/OverviewPage";
 import { SessionPage } from "./pages/SessionPage";
 import { SummaryPage } from "./pages/SummaryPage";
@@ -26,11 +27,12 @@ function PlanRoutes() {
   return (
     <>
       {withPlan ? <TodayCard /> : null}
-      {withPlan ? <TabNav label="Plan" tabs={tabs} /> : null}
+      {withPlan ? <TabNav label="Plan" tabs={tabs} trailing={plan ? <PlanMenu /> : null} /> : null}
       <Routes>
         <Route index element={<WeekPage />} />
         <Route path="overview" element={<OverviewPage />} />
         <Route path="new" element={<IntakePage />} />
+        <Route path="edit" element={<IntakePage edit />} />
         <Route path="session/:id" element={<SessionPage />} />
         <Route path="changes" element={<ChangesPage />} />
         <Route path="summary" element={<SummaryPage />} />

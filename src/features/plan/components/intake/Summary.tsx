@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useContext, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui";
 import { ConfirmDialog } from "@/features/rides/detail/ConfirmDialog";
@@ -16,6 +16,7 @@ import {
   type IntakeStep,
 } from "../../data";
 import { ChoiceRow, FactRow } from "../parts";
+import { StepBaseContext } from "./step-base";
 
 const DAY_SHORT: Record<string, string> = {
   mon: "Mon",
@@ -29,9 +30,10 @@ const DAY_SHORT: Record<string, string> = {
 const ENV_TEXT = { indoor: "Indoor", outdoor: "Outdoor", both: "Both indoor and outdoor" } as const;
 
 function Change({ step, what }: { step: IntakeStep; what: string }) {
+  const base = useContext(StepBaseContext);
   return (
     <Link
-      to={`/plan/new?step=${String(step)}`}
+      to={`${base}?step=${String(step)}`}
       aria-label={`Change ${what}`}
       className="ml-3 inline-flex min-h-11 items-center font-semibold text-accent underline"
     >
@@ -70,6 +72,7 @@ export function Summary({
   building,
   onBuild,
   onBack,
+  edit,
 }: {
   draft: IntakeDraft;
   change: (patch: Partial<IntakeDraft>) => void;
@@ -80,6 +83,8 @@ export function Summary({
   building: boolean;
   onBuild: () => void;
   onBack: () => void;
+  /** Set when an existing plan is edited: what will change, and Cancel. The start date is the plan's own. */
+  edit?: { changes: ReactNode; onCancel: () => void };
 }) {
   const [editLevel, setEditLevel] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -90,7 +95,7 @@ export function Summary({
 
   function press() {
     if (building) return;
-    if (hasExisting) setConfirm(true);
+    if (hasExisting && !edit) setConfirm(true);
     else onBuild();
   }
 
@@ -142,6 +147,11 @@ export function Summary({
           <Row label="Length">
             {String(plan.weeks.length)} weeks, {formatDay(plan.startDate)} to{" "}
             {formatDay(plan.endDate)}
+            {edit ? (
+              <span className="block text-[13px] text-muted">
+                The start date cannot be changed.
+              </span>
+            ) : null}
           </Row>
           {plan.event ? (
             <Row label="Event" action={<Change step={4} what="the event" />}>
@@ -187,6 +197,7 @@ export function Summary({
       </section>
 
       <section aria-labelledby="intake-assume" className="flex flex-col gap-4">
+        {edit ? edit.changes : null}
         <div>
           <h3 id="intake-assume" className="mb-1 text-[17px] font-semibold">
             What the plan will assume
@@ -197,7 +208,7 @@ export function Summary({
             ))}
           </ul>
         </div>
-        {hasExisting ? (
+        {hasExisting && !edit ? (
           <p role="note" className="rounded-md bg-subtle px-4 py-3 text-[15px]">
             You already have a plan. Building a new one replaces it.
           </p>
@@ -229,12 +240,19 @@ export function Summary({
                   aria-hidden="true"
                   className="size-4 rounded-full border-2 border-current border-t-transparent motion-safe:animate-spin"
                 />
-                Building your plan
+                {edit ? "Saving your changes" : "Building your plan"}
               </>
+            ) : edit ? (
+              "Save changes"
             ) : (
               "Build my plan"
             )}
           </Button>
+          {edit ? (
+            <Button variant="ghost" onClick={edit.onCancel}>
+              Cancel
+            </Button>
+          ) : null}
         </div>
       </section>
 
