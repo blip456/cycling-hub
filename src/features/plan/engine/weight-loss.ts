@@ -47,7 +47,7 @@ export function weightPlan(input: {
     };
   }
   const days = isIsoDate(goal.targetDate) ? diffDays(startDate, goal.targetDate) : null;
-  if (days === null || days <= 0) {
+  if (days === null || days < 1) {
     return {
       plan: null,
       warnings: [
@@ -60,11 +60,12 @@ export function weightPlan(input: {
   }
   const cap = weightRateCap(startKg, input.capPercent);
   const toLose = startKg - goal.targetKg;
-  const needed = toLose / (days / 7);
+  // The target day counts as a whole day: the last day of week 12 is 84 days after the start.
+  const needed = toLose / ((days + 1) / 7);
   const planned = Math.min(needed, cap);
   const capped = needed > cap;
   const weeksNeeded = Math.ceil(toLose / planned - 1e-9);
-  const earliestDate = plusDays(startDate, Math.ceil((toLose / planned) * 7 - 1e-9));
+  const earliestDate = plusDays(startDate, Math.ceil((toLose / planned) * 7 - 1e-9) - 1);
   const line = Array.from({ length: input.weeks }, (_, i) => ({
     week: i + 1,
     date: plusDays(startDate, 7 * (i + 1) - 1),

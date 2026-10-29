@@ -106,8 +106,12 @@ function metrics(sessions: readonly PlannedSession[]): Metrics {
   return {
     minutes: own.reduce((sum, s) => sum + s.durationMin, 0),
     load: own.reduce((sum, s) => sum + s.load, 0),
-    quality: own.reduce((sum, s) => sum + qualityMinutes(s.steps), 0),
-    above: own.reduce((sum, s) => sum + aboveThresholdMinutes(s.steps), 0),
+    // The FTP test is a measurement the rules ask for (P39): it is not counted in the intensity caps.
+    quality: own.reduce((sum, s) => sum + (s.kind === "test" ? 0 : qualityMinutes(s.steps)), 0),
+    above: own.reduce(
+      (sum, s) => sum + (s.kind === "test" ? 0 : aboveThresholdMinutes(s.steps)),
+      0,
+    ),
     hard: own.filter((s) => isHard(s.kind, s.mainSet)).length,
   };
 }
@@ -173,8 +177,6 @@ export function buildPlan(input: PlanInput): Plan {
       ? plusDays(eventDate, -1)
       : null;
   const templateQ2 = hasSecondSlot(level, purposes);
-  const longHardTemplate =
-    level === "semi-pro" && (purposes.main === "endurance" || purposes.main === "muscle-building");
   const rides = rideCount({
     level,
     hoursPerWeek,
@@ -409,15 +411,16 @@ export function buildPlan(input: PlanInput): Plan {
       };
     };
 
-    const hasLong = !eventHere;
-    let layout = assignDays({
-      days,
-      rides: rideTarget,
-      hasLong,
-      hasQ1: true,
-      hasQ2: templateQ2,
-      longIsHard: longHardTemplate,
-    });
+    let hasLong = !eventHere;
+    const layoutFor = (count: number): ReturnType<typeof assignDays> =>
+      assignDays({
+        days,
+        rides: count,
+        hasLong,
+        hasQ1: true,
+        hasQ2: templateQ2,
+        longIsHard: blocks !== null,
+      });
     const kindFor = (slot: Slot): SessionKind => {
       if (slot === "long") return "long";
       if (slot === "q1") return q1Kind;
@@ -427,24 +430,28 @@ export function buildPlan(input: PlanInput): Plan {
     const fixedMinutes = openersHere ? OPENERS_MINUTES : 0;
     const itemsFor = (current: typeof layout): AllocationItem[] =>
       current.map((a) => bounds(a.slot, kindFor(a.slot), dates[a.day] ?? ""));
-    // Drop easy rides, then others, while the minimum lengths do not fit the ceiling.
-    for (;;) {
-      const items = itemsFor(layout);
-      const need = items.reduce((sum, item) => sum + item.min, 0) + fixedMinutes;
-      if (need <= ceiling || rideTarget <= 1 || layout.length <= 1) break;
+    const needed = (list: readonly AllocationItem[]): number =>
+      list.reduce((sum, item) => sum + item.min, 0) + fixedMinutes;
+    // Fixed sessions (the test) keep their length; every other minimum drops to 30.
+    const relaxed = (list: readonly AllocationItem[]): AllocationItem[] =>
+      list.map((item) => (item.min === item.max ? item : { ...item, min: Math.min(item.min, 30) }));
+    let layout = layoutFor(rideTarget);
+    // Drop easy rides, then Q2, while the minimum lengths do not fit the ceiling (down to 2 rides).
+    // The openers and the event are rides too, so they count towards the 2.
+    const fewestRides = Math.max(1, 2 - reserved);
+    while (needed(itemsFor(layout)) > ceiling && rideTarget > fewestRides) {
       rideTarget -= 1;
-      layout = assignDays({
-        days,
-        rides: rideTarget,
-        hasLong,
-        hasQ1: true,
-        hasQ2: templateQ2,
-        longIsHard: longHardTemplate,
-      });
+      layout = layoutFor(rideTarget);
     }
     let items = itemsFor(layout);
-    if (items.reduce((sum, item) => sum + item.min, 0) + fixedMinutes > ceiling) {
-      items = items.map((item) => ({ ...item, min: Math.min(item.min, 30) }));
+    if (needed(items) > ceiling) {
+      items = relaxed(items);
+      if (needed(items) > ceiling && hasLong && layout.length > 1) {
+        // Not even the test and a short long ride fit: the long ride goes.
+        hasLong = false;
+        layout = layoutFor(layout.length - 1);
+        items = relaxed(itemsFor(layout));
+      }
     }
     const minutes = allocateMinutes(items, Math.max(0, ceiling - fixedMinutes));
 
@@ -594,13 +601,62 @@ export function buildPlan(input: PlanInput): Plan {
         }
       }
       if (!fixed) {
-        // Load only: shorten the longest easy ride, 5 minutes at a time, down to its minimum.
-        const easy = drafts
+        // Only the load is too high and no main set can go lower: shorten the longest easy ride, 5
+        // minutes at a time down to its minimum, then drop the shortest easy ride (C1), keeping 2 rides.
+        if (!overLoad) break;
+        const easier: Partial<Record<SessionKind, SessionKind>> = {
+          sprint: "vo2",
+          vo2: "threshold",
+          threshold: "sweet-spot",
+          "sweet-spot": "tempo",
+          torque: "tempo",
+        };
+        const harder = drafts
+          .filter((d) => d.slot === "q1" || d.slot === "q2")
+          .map((d) => ({ draft: d, next: easier[d.kind] }))
+          .find((d) => d.next !== undefined);
+        if (harder?.next) {
+          // The lowest step of the type is still too much: use the next lighter type.
+          harder.draft.kind = harder.next;
+          harder.draft.wantedStep = 0;
+          harder.draft.loweredByCap = true;
+          changed = true;
+          sessions = drafts.map(materialize);
+          continue;
+        }
+        const easies = drafts
           .filter((d) => (d.kind === "endurance" || d.kind === "recovery") && d.slot === "easy")
-          .sort((a, b) => b.minutes - a.minutes)[0];
+          .sort((a, b) => b.minutes - a.minutes);
+        const easy = easies[0];
         const floor = easy?.kind === "recovery" ? 30 : settings.easy[0];
-        if (!easy || easy.minutes - 5 < floor) break;
-        easy.minutes -= 5;
+        if (easy && easy.minutes - 5 >= floor) {
+          easy.minutes -= 5;
+        } else {
+          const shortest = easies[easies.length - 1];
+          const rides = drafts.filter((d) => d.kind !== "event").length;
+          if (shortest && rides > 2) {
+            drafts.splice(drafts.indexOf(shortest), 1);
+          } else {
+            // Two rides left: shorten the longest hard session towards the shortest length that holds its
+            // set, then the long ride towards its level minimum.
+            const room = (d: Draft): number =>
+              d.minutes -
+              Math.max(
+                settings.structured[0],
+                minimumMinutes({ kind: d.kind, level, indoor: d.indoor }) ?? 0,
+              );
+            const hardDraft = drafts
+              .filter((d) => (d.slot === "q1" || d.slot === "q2") && d.kind !== "test")
+              .filter((d) => room(d) >= 5)
+              .sort((a, b) => b.minutes - a.minutes)[0];
+            const longDraft = drafts.find(
+              (d) => d.slot === "long" && d.minutes - 5 >= settings.long[0],
+            );
+            const target = hardDraft ?? longDraft;
+            if (!target) break;
+            target.minutes -= 5;
+          }
+        }
       }
       changed = true;
       sessions = drafts.map(materialize);
@@ -653,8 +709,22 @@ export function buildPlan(input: PlanInput): Plan {
     }
   }
 
-  // No hard sessions on consecutive days (C8), across week borders. The later one becomes endurance.
+  // No hard sessions on consecutive days (C8), across week borders. The later one becomes endurance, or
+  // the earlier one when the later one is the FTP test.
   const flat = sessionsByWeek.flat().sort((a, b) => (a.date < b.date ? -1 : 1));
+  const demote = (session: PlannedSession, at: number): void => {
+    const draft = draftsByWeek[session.week - 1]?.find((d) => d.date === session.date);
+    const list = sessionsByWeek[session.week - 1];
+    if (!draft || !list) return;
+    if (draft.slot === "long") draft.longBlocks = null;
+    else {
+      draft.kind = "endurance";
+      draft.wantedStep = null;
+    }
+    const rebuilt = materialize(draft);
+    list[list.findIndex((s) => s.date === session.date)] = rebuilt;
+    flat[at] = rebuilt;
+  };
   for (let i = 1; i < flat.length; i += 1) {
     const prev = flat[i - 1];
     const current = flat[i];
@@ -664,22 +734,8 @@ export function buildPlan(input: PlanInput): Plan {
       isHard(prev.kind, prev.mainSet) &&
       isHard(current.kind, current.mainSet)
     ) {
-      const draft = draftsByWeek[current.week - 1]?.find((d) => d.date === current.date);
-      if (draft && current.kind !== "test") {
-        if (draft.slot === "long") draft.longBlocks = null;
-        else {
-          draft.kind = "endurance";
-          draft.wantedStep = null;
-        }
-        const weekIndex = current.week - 1;
-        const list = sessionsByWeek[weekIndex];
-        if (list) {
-          const at = list.findIndex((s) => s.date === current.date);
-          const rebuilt = materialize(draft);
-          list[at] = rebuilt;
-          flat[i] = rebuilt;
-        }
-      }
+      if (current.kind === "test") demote(prev, i - 1);
+      else demote(current, i);
     }
   }
 

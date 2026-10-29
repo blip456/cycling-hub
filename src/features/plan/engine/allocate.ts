@@ -129,20 +129,30 @@ export function allocateMinutes(items: readonly AllocationItem[], total: number)
     if (freeIdx.length === 0) break;
     const weightSum = freeIdx.reduce((sum, i) => sum + (items[i]?.weight ?? 0), 0);
     const left = Math.max(0, total - fixedSum);
-    let changed = false;
+    // Water-filling: fix the items that break a bound in the direction with the larger total violation
+    // (so an item clamped at its minimum can still grow when others hit their maximum).
+    const lows: number[] = [];
+    const highs: number[] = [];
+    let lowTotal = 0;
+    let highTotal = 0;
     for (const i of freeIdx) {
       const item = items[i];
       if (!item) continue;
       const share = (left * item.weight) / weightSum;
       if (share < item.min) {
-        result[i] = item.min;
-        changed = true;
+        lows.push(i);
+        lowTotal += item.min - share;
       } else if (share > item.max) {
-        result[i] = item.max;
-        changed = true;
+        highs.push(i);
+        highTotal += share - item.max;
       }
     }
-    if (!changed) break;
+    if (lows.length === 0 && highs.length === 0) break;
+    const fixLows = highs.length === 0 || (lows.length > 0 && lowTotal > highTotal);
+    for (const i of fixLows ? lows : highs) {
+      const item = items[i];
+      if (item) result[i] = fixLows ? item.min : item.max;
+    }
   }
 
   const fixedSum = result.reduce<number>((sum, v) => sum + (v ?? 0), 0);
