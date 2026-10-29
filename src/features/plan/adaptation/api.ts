@@ -114,6 +114,7 @@ export function createSupabaseRunnerApi(userId: string): RunnerApi {
           ? { undone_fingerprint: write.undoneFingerprint }
           : {}),
         ...(write.ftp !== undefined ? { ftp_w: write.ftp } : {}),
+        ...(write.weeks !== undefined ? { weeks: write.weeks } : {}),
         ...(write.intake ? { intake: toJson(write.intake) } : {}),
       };
       const { error } = await getSupabase().from("training_plans").update(columns).eq("id", planId);

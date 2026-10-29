@@ -7,7 +7,7 @@ import { vi } from "vitest";
 import type { IsoDate, WeightEntry } from "@/features/athlete";
 import type { Ride } from "@/features/rides/api";
 import { buildPlan, type PlanInput } from "../engine";
-import type { PlanProfile } from "../data/api";
+import type { PlanProfile, WeightGoalRecord } from "../data/api";
 import { planFromRow, sessionFromRow, sessionInserts, toJson } from "../data/mapping";
 import type { PlanSession, StoredPlan } from "../data/types";
 import { purposesToProfile } from "../data/intake";
@@ -25,6 +25,8 @@ export type FakeDb = {
   rides: Ride[];
   weights: WeightEntry[];
   profile: PlanProfile;
+  /** The active weight goal, if any. */
+  goal?: WeightGoalRecord | null;
   baseline: { ftp: number | null; lthr: number | null; maxHr: number | null };
 };
 
@@ -164,7 +166,7 @@ export function fakeApi(db: FakeDb): FakeApi {
         weights: db.weights,
         baseline: db.baseline,
         profile: db.profile,
-        goal: null,
+        goal: db.goal ?? null,
       });
     }),
     writeStatuses: vi.fn<RunnerApi["writeStatuses"]>((updates) => {
@@ -228,7 +230,9 @@ export function fakeApi(db: FakeDb): FakeApi {
       return Promise.resolve(id);
     }),
     writePlan: vi.fn<RunnerApi["writePlan"]>((_planId, write) => {
-      guard(write.fingerprint !== undefined || write.ftp !== undefined ? "plan" : "pin");
+      guard(
+        write.fingerprint !== undefined || write.ftp !== undefined || write.intake ? "plan" : "pin",
+      );
       db.plan = {
         ...db.plan,
         ...(write.fingerprint !== undefined ? { fingerprint: write.fingerprint } : {}),
@@ -236,6 +240,7 @@ export function fakeApi(db: FakeDb): FakeApi {
           ? { undoneFingerprint: write.undoneFingerprint }
           : {}),
         ...(write.ftp !== undefined ? { ftp: write.ftp } : {}),
+        ...(write.weeks !== undefined ? { weeks: write.weeks } : {}),
         ...(write.intake ? { intake: write.intake } : {}),
       };
       return Promise.resolve();
