@@ -3,6 +3,7 @@
  * fields of the profile and the weight goal, plus the pure helpers the screens share. The adaptation UI
  * (changes, missed sessions, matching) builds on these hooks.
  */
+export { deletePlan } from "./api";
 export type {
   NewPlan,
   PlanProfile,
@@ -28,6 +29,7 @@ export {
   type PlanData,
 } from "./hooks";
 export { assumptionLines } from "./assumptions";
+export * from "./edit";
 export * from "./intake";
 export { kindFromDb, kindToDb } from "./mapping";
 export * from "./model";

@@ -107,3 +107,12 @@ export function loadIcsDownload(): StoredIcsDownload | null {
 export function saveIcsDownload(download: StoredIcsDownload): void {
   write(ICS_STORAGE_KEY, download);
 }
+
+/** Forgets the calendar download: it describes a plan that is gone. */
+export function clearIcsDownload(): void {
+  try {
+    window.localStorage.removeItem(ICS_STORAGE_KEY);
+  } catch {
+    // Storage is blocked: there is nothing to forget.
+  }
+}
