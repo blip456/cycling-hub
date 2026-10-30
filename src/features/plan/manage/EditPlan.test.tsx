@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { configure, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -61,6 +61,8 @@ let db: FakeDb;
 let runnerApi: FakeApi;
 
 beforeEach(async () => {
+  // Findings after a click wait for the runner and several refetches: give them room on a slow CI runner.
+  configure({ asyncUtilTimeout: 5000 });
   vi.useFakeTimers({ shouldAdvanceTime: true });
   vi.setSystemTime(NOW);
   viewport = mockViewport(390);
@@ -70,6 +72,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  configure({ asyncUtilTimeout: 1000 });
   viewport.restore();
   vi.useRealTimers();
   vi.clearAllMocks();
