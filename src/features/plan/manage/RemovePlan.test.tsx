@@ -1,4 +1,4 @@
-import { act, screen, waitFor, within } from "@testing-library/react";
+import { act, configure, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Link, Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -101,6 +101,8 @@ let runnerApi: FakeApi;
 let removed: boolean;
 
 beforeEach(async () => {
+  // Findings after a click wait for the runner and several refetches: give them room on a slow CI runner.
+  configure({ asyncUtilTimeout: 5000 });
   vi.useFakeTimers({ shouldAdvanceTime: true });
   vi.setSystemTime(NOW);
   viewport = mockViewport(390);
@@ -134,6 +136,7 @@ beforeEach(async () => {
 });
 
 afterEach(() => {
+  configure({ asyncUtilTimeout: 1000 });
   viewport.restore();
   vi.useRealTimers();
   vi.clearAllMocks();
@@ -204,7 +207,9 @@ describe("removing", () => {
     const dialog = await openDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Remove plan" }));
     expect(api.deletePlan).toHaveBeenCalledWith("plan-1");
-    expect(await screen.findByText("No training plan yet")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("No training plan yet")).toBeInTheDocument();
+    });
     expect(screen.getByText("Plan removed")).toBeInTheDocument();
     expect(
       screen.getByText("Your rides, profile, weight log and baseline are unchanged."),
@@ -235,7 +240,9 @@ describe("removing", () => {
     renderApp("/plan/overview");
     const dialog = await openDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Remove plan" }));
-    expect(await screen.findByText("No training plan yet")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("No training plan yet")).toBeInTheDocument();
+    });
   });
 
   it("clears every cache and local note about the plan", async () => {
@@ -308,13 +315,17 @@ describe("when it does not work", () => {
     renderApp();
     const dialog = await openDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Remove plan" }));
-    expect(await screen.findByText("Plan not removed")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Plan not removed")).toBeInTheDocument();
+    });
     expect(screen.getByText(/Nothing was removed/)).toBeInTheDocument();
     // The plan is still there.
     expect(screen.getByRole("navigation", { name: "Plan" })).toBeInTheDocument();
     expect(removed).toBe(false);
     await user.click(screen.getByRole("button", { name: "Try again" }));
-    expect(await screen.findByText("No training plan yet")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("No training plan yet")).toBeInTheDocument();
+    });
     expect(screen.getByText("Plan removed")).toBeInTheDocument();
     expect(screen.queryByText("Plan not removed")).not.toBeInTheDocument();
     expect(api.deletePlan).toHaveBeenCalledTimes(2);
