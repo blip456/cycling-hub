@@ -203,7 +203,9 @@ describe("the questions with the current answers", () => {
   it("says there is no plan to edit when there is none", async () => {
     vi.mocked(api.fetchActivePlan).mockResolvedValue(null);
     renderApp("/plan/edit");
-    expect(await screen.findByText("There is no plan to edit yet.")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("There is no plan to edit yet.")).toBeInTheDocument();
+    });
     expect(screen.getByRole("link", { name: "Create my plan" })).toHaveAttribute(
       "href",
       "/plan/new",
@@ -305,7 +307,9 @@ describe("the summary", () => {
     await openEdit(user);
     await toSummary(user);
     expect(screen.getByText("You have not changed any answer.")).toBeInTheDocument();
-    expect(await screen.findByText("No planned session changes.")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("No planned session changes.")).toBeInTheDocument();
+    });
   });
 
   it("keeps the Change links in the edit page", async () => {
@@ -386,7 +390,9 @@ describe("saving", () => {
     await openEdit(user);
     await toSummary(user);
     await user.click(await screen.findByRole("button", { name: "Save changes" }));
-    expect(await screen.findByText("Nothing changed")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Nothing changed")).toBeInTheDocument();
+    });
     expect(screen.queryByText("Plan updated")).not.toBeInTheDocument();
     expect(db.changes).toEqual([]);
     expect(runnerApi.writes).toEqual([]);
@@ -521,12 +527,16 @@ describe("when something goes wrong", () => {
     const user = setup();
     vi.mocked(api.savePlanProfile).mockRejectedValueOnce(new Error("offline"));
     await saveUnchanged(user);
-    expect(await screen.findByText("Changes not saved")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Changes not saved")).toBeInTheDocument();
+    });
     expect(runnerApi.writes).toEqual([]);
     // Still on the summary with the answers.
     expect(screen.getByRole("heading", { name: "Check your changes" })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Try again" }));
-    expect(await screen.findByText("Nothing changed")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Nothing changed")).toBeInTheDocument();
+    });
   });
 
   it("puts the profile back when the weight goal cannot be saved", async () => {
@@ -538,7 +548,9 @@ describe("when something goes wrong", () => {
     await user.type(screen.getByLabelText("Target date"), "2027-01-23");
     await toSummary(user);
     await user.click(await screen.findByRole("button", { name: "Save changes" }));
-    expect(await screen.findByText("Changes not saved")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Changes not saved")).toBeInTheDocument();
+    });
     expect(api.savePlanProfile).toHaveBeenCalledTimes(2);
     expect(vi.mocked(api.savePlanProfile).mock.calls[1]?.[1]).toMatchObject({
       trainingPurposes: ["weight_loss", "endurance"],
@@ -549,11 +561,15 @@ describe("when something goes wrong", () => {
     const user = setup();
     runnerApi.failOn("load");
     await saveUnchanged(user);
-    expect(await screen.findByText("Plan not updated")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Plan not updated")).toBeInTheDocument();
+    });
     expect(api.savePlanProfile).toHaveBeenCalledTimes(1);
     runnerApi.failOn(null);
     await user.click(screen.getByRole("button", { name: "Try again" }));
-    expect(await screen.findByText("Nothing changed")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Nothing changed")).toBeInTheDocument();
+    });
     expect(api.savePlanProfile).toHaveBeenCalledTimes(1);
   });
 
