@@ -27,7 +27,7 @@ import { sessionFromRow } from "./adapt";
 import { fetchPlanChanges } from "./api";
 import { summaryKeys, usePlanSessions } from "./hooks";
 import { loadIcsDownload, saveIcsDownload, type StoredIcsDownload } from "./storage";
-import { Switch } from "./Switch";
+import { Toggle } from "@/components/Toggle";
 
 /** The event day of the plan has a fixed id, so it keeps its calendar entry when the plan is rebuilt. */
 const EVENT_ID = "event";
@@ -240,7 +240,7 @@ function CalendarForm({
             setStartTime(e.target.value);
           }}
         />
-        <Switch
+        <Toggle
           label="Add steps and targets to the description"
           checked={includeSteps}
           onChange={setIncludeSteps}
