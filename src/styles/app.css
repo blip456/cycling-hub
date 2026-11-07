@@ -60,6 +60,9 @@
     "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --default-mono-font-family: var(--font-sans);
+  /* Motion tokens (DESIGN.md section 8): colour and hover transitions are --dur-fast. */
+  --default-transition-duration: var(--dur-fast);
+  --default-transition-timing-function: var(--ease-out);
 }
 
 /*
