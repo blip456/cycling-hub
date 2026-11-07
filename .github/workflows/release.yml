@@ -1,0 +1,56 @@
+# Every push to dev is a release (decision D10): the next semantic version comes from the Conventional
+# Commits since the last tag (scripts/next-release.mjs), the tag and GitHub release are created on that
+# commit, and then Vercel builds it for production through the deploy hook. Pushes without a feat, fix,
+# perf or breaking change make no release. The app reads the published notes at build time (T15).
+name: Release
+
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-dev
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Work out the next version
+        id: next
+        run: node scripts/next-release.mjs --out "$RUNNER_TEMP/release-notes.md"
+
+      - name: Tag the commit and publish the GitHub release
+        if: steps.next.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.next.outputs.version }}
+        run: |
+          tag="v$VERSION"
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "$tag"
+          gh release create "$tag" --repo "$GITHUB_REPOSITORY" --title "$tag" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" --target "$GITHUB_SHA" --verify-tag
+          echo "Released $tag" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Deploy production through Vercel
+        # The deploy hook builds the dev branch only after the tag exists, so the build reads the new release.
+        if: steps.next.outputs.release == 'true'
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK" ]; then
+            echo "::error::Set the VERCEL_DEPLOY_HOOK secret (docs/setup-production.md) to deploy this release."
+            exit 1
+          fi
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK"

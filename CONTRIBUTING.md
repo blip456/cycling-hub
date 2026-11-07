@@ -55,7 +55,7 @@ changelog the app shows in What's new, so write them for someone reading that ch
 
 - PR into `dev`, fill in the template, keep it small. CI must be green; check the Vercel preview.
 - Work branches are **squash-merged** into `dev`; the PR title becomes the commit and the changelog line.
-- `dev` → `main` and the back-merge `main` → `dev` use a **merge commit**. The release PR is squash-merged.
+- Pushing to `dev` releases to production (D10); `dev` is the only deployed branch for now.
 
 ## Code
 
