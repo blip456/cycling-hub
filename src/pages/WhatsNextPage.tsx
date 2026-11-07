@@ -19,30 +19,30 @@ export function WhatsNextPage({ items = roadmap }: { items?: RoadmapItem[] }) {
 
   return (
     <div className="flex max-w-[640px] flex-col gap-3">
-      <p className="px-0.5 text-[13px] text-muted">Plans can change.</p>
+      <p className="px-0.5 text-caption text-muted">Plans can change.</p>
       {items.map((item) => (
         <section
           key={item.version}
           aria-labelledby={`next-${item.version}`}
-          className="flex flex-col gap-2 rounded-2xl bg-surface p-4"
+          className="flex flex-col gap-2 rounded-lg bg-surface p-4"
         >
           <div className="flex items-start justify-between gap-3">
-            <h2 id={`next-${item.version}`} className="text-xl font-semibold tracking-tight">
+            <h2 id={`next-${item.version}`} className="text-title">
               {item.title}
             </h2>
             <p
               className={
-                "shrink-0 pt-1 text-[13px] " +
+                "shrink-0 pt-1 text-caption " +
                 (item.status === "in progress" ? "font-semibold text-accent" : "text-muted")
               }
             >
               {STATUS_TEXT[item.status]}
             </p>
           </div>
-          <p className="text-[13px] text-muted tabular-nums">
+          <p className="text-caption text-muted tabular-nums">
             v{item.version} · Sprint {item.sprint}
           </p>
-          <p className="text-[15px] leading-[22px]">{item.tagline}</p>
+          <p className="text-body">{item.tagline}</p>
         </section>
       ))}
     </div>

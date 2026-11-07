@@ -9,7 +9,7 @@ import { navItems } from "./nav-items";
 export function SideMenu({ onNavigate, status }: { onNavigate?: () => void; status?: ReactNode }) {
   return (
     <div className="flex h-full flex-col">
-      <p className="px-3 pb-6 text-base font-semibold tracking-tight text-text">Cycling Hub</p>
+      <p className="px-3 pb-6 text-body-lg text-text">Cycling Hub</p>
       <nav aria-label="Main">
         <ul className="flex flex-col gap-1">
           {navItems.map(({ to, label, Icon }) => (
@@ -18,7 +18,7 @@ export function SideMenu({ onNavigate, status }: { onNavigate?: () => void; stat
                 to={to}
                 onClick={onNavigate}
                 className={({ isActive }) =>
-                  "flex min-h-11 items-center gap-3 rounded-md px-3 text-[15px] transition-colors " +
+                  "flex min-h-11 items-center gap-3 rounded-md px-3 text-body transition-colors " +
                   // DESIGN.md: hover is the --fill tone step; active is accent-soft. Desktop: on the page background.
                   (isActive
                     ? "bg-accent-soft font-semibold text-text"
@@ -37,10 +37,12 @@ export function SideMenu({ onNavigate, status }: { onNavigate?: () => void; stat
         </ul>
       </nav>
       {status ? <div className="mt-auto pt-6">{status}</div> : null}
-      <p className={`px-3 text-[13px] text-muted tabular-nums ${status ? "pt-3" : "mt-auto pt-6"}`}>
+      <p
+        className={`px-3 text-caption text-muted tabular-nums ${status ? "pt-3" : "mt-auto pt-6"}`}
+      >
         Version {__APP_VERSION__}
       </p>
-      <p className="px-3 text-[13px] text-muted tabular-nums">Build {__BUILD_ID__}</p>
+      <p className="px-3 text-caption text-muted tabular-nums">Build {__BUILD_ID__}</p>
     </div>
   );
 }

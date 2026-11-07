@@ -5,7 +5,7 @@ export function PageLoading() {
       <span className="sr-only">Loading</span>
       <div
         aria-hidden="true"
-        className="h-24 max-w-[560px] rounded-2xl bg-surface motion-safe:animate-[pulse_1.6s_ease-in-out_infinite]"
+        className="h-24 max-w-[560px] rounded-lg bg-surface motion-safe:animate-[pulse_1.6s_ease-in-out_infinite]"
       />
     </div>
   );

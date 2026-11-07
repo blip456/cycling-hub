@@ -56,24 +56,21 @@ export function WhatsNewPage({
         <section
           key={release.version}
           aria-labelledby={`release-${release.version}`}
-          className="flex flex-col gap-4 rounded-2xl bg-surface p-4"
+          className="flex flex-col gap-4 rounded-lg bg-surface p-4"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-col">
-              <h2
-                id={`release-${release.version}`}
-                className="text-xl font-semibold tracking-tight tabular-nums"
-              >
+              <h2 id={`release-${release.version}`} className="text-title tabular-nums">
                 v{release.version}
               </h2>
               {release.date ? (
-                <p className="text-[13px] text-muted tabular-nums">
+                <p className="text-caption text-muted tabular-nums">
                   {formatReleaseDate(release.date)}
                 </p>
               ) : null}
             </div>
             {isNew(release.version) ? (
-              <p className="flex items-center gap-1.5 pt-1 text-[13px] font-semibold text-accent">
+              <p className="flex items-center gap-1.5 pt-1 text-caption font-semibold text-accent">
                 <span aria-hidden="true" className="size-[7px] rounded-full bg-accent" />
                 New
               </p>
@@ -85,7 +82,7 @@ export function WhatsNewPage({
                 <li
                   // Entries have no id and are never reordered.
                   key={`${entry.type}-${index}`}
-                  className="grid grid-cols-[84px_minmax(0,1fr)] items-start gap-x-3 text-[15px] leading-[22px]"
+                  className="grid grid-cols-[84px_minmax(0,1fr)] items-start gap-x-3 text-body"
                 >
                   <ChangeLabel type={entry.type} />
                   <span>{entry.text}</span>
@@ -93,7 +90,7 @@ export function WhatsNewPage({
               ))}
             </ul>
           ) : (
-            <p className="text-[15px] text-muted">Maintenance release.</p>
+            <p className="text-body text-muted">Maintenance release.</p>
           )}
         </section>
       ))}
