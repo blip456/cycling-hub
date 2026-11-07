@@ -89,6 +89,22 @@ These six colours are approved by the PO (D-PO3).
 
 Rules: colour goes on the **value**, never on the label or unit. A missing value is a muted "—" with its unit. Later charts and zones reuse these colours.
 
+### Zone colours
+
+Training zones (P40, P53) have their own sequence from easy to hard, separate from the metric colours. Power zones use `--zone-1` to `--zone-7` (Coggan); the five heart rate zones reuse `--zone-1` to `--zone-5`. All pass 3 : 1 on `--bg`, `--surface` and `--raised` in both themes (UI parts, 1.4.11); `src/styles/zone-tokens.test.ts` checks this.
+
+| Token | Zone | Dark | Light |
+| --- | --- | --- | --- |
+| `--zone-1` | Z1 Active recovery | `#9AA3B2` | `#5A6472` |
+| `--zone-2` | Z2 Endurance | `#6DB6F0` | `#1A62A3` |
+| `--zone-3` | Z3 Tempo | `#56D2AC` | `#0D7050` |
+| `--zone-4` | Z4 Threshold | `#E9CD4C` | `#806200` |
+| `--zone-5` | Z5 VO2 max | `#F0A04B` | `#A64B00` |
+| `--zone-6` | Z6 Anaerobic capacity | `#FF7A6B` | `#B3261E` |
+| `--zone-7` | Z7 Neuromuscular power | `#C58CFF` | `#7A3EC4` |
+
+Rule: colour is never the only signal. A zone always shows its number and name as text next to the colour (swatch, bar or chip); the text itself stays `--text` or `--muted`, only the swatch or bar takes the zone colour.
+
 ## 3. Typography
 
 **Inter** everywhere, one family (P20). Every number uses `font-variant-numeric: tabular-nums`. Nothing below 13 px.
@@ -110,6 +126,20 @@ Rules: colour goes on the **value**, never on the label or unit. A missing value
 | `--fs-body-lg` | 17 / 24 | 600 | −0.01em | Metric values on ride cards, ride name |
 | `--fs-body` | 15 / 22 | 400 (buttons 600) | 0 | Text, rows, inputs, buttons, table cells |
 | `--fs-caption` | 13 / 18 | 400–600 | 0 | Meta, units, helper text, labels, table header |
+
+**Utilities** (`src/styles/app.css`). One class per token sets size, line height, tracking and weight together; use these, never `text-[15px]`, `text-xl`, `tracking-tight` or `leading-*`. `text-body` and `text-caption` default to 400, the others to 600; `font-medium` or `font-semibold` on the same element still wins. `scripts/design-tokens.test.mjs` checks that this table, `tokens.css`, `tokens.json` and the utilities agree.
+
+| Utility | Token | Role |
+| --- | --- | --- |
+| `text-display` | `--fs-display` | The one hero number of a screen |
+| `text-stat` | `--fs-stat` | Outcome numbers |
+| `text-heading` | `--fs-heading` | Page title, phone headline, stat tile value |
+| `text-title` | `--fs-title` | Top bar title, card titles |
+| `text-body-lg` | `--fs-body-lg` | Metric values on cards, ride name, wordmark |
+| `text-body` | `--fs-body` | Text, rows, inputs, buttons (add `font-semibold`), table cells |
+| `text-caption` | `--fs-caption` | Meta, units, helper text, labels, table header |
+
+**Font rules** (set once on `html` in `app.css`): family `--font-sans` inherited by every element, including `button`, `input`, `select`, `textarea`, `pre` and `code` (browsers do not inherit it for form controls; there is no monospace anywhere); `font-synthesis: none` (a missing weight or style is never faked); `font-optical-sizing: auto`; `-webkit-text-size-adjust: 100%`; `font-variant-numeric: tabular-nums` on the whole page, so every number is tabular without a class. The Latin subset is preloaded, and the Latin and Latin Extended files are precached by the service worker for the installed app. `scripts/design-audit/foundation.mjs` (Playwright) checks the computed family on every element kind, the loaded face (`document.fonts`), the font Chromium really painted, the preload and the service worker precache.
 
 - Sentence case everywhere. No uppercase, no letter-spaced labels, no monospace.
 - Left-aligned. Centre only the sign-in card on desktop and button labels.
@@ -134,7 +164,7 @@ Three tone steps: `--bg` → `--surface` → `--raised` / `--fill`. That is the 
 - **The background is the gradient splash** (P25; decided by the PO, D-PO1, closes Q4). `--page` (= `--splash`) layers three large radial fields (accent, distance colour, accent; 18/13/8 % dark, 16/12/7 % light) over `--bg`. Put it on the screen root only, never on a single element, and keep cards opaque.
 - **Flat is a technical fallback only:** `data-background="flat"` on `<html>` sets `--page` to `--bg` (for example for print, tests or a browser without `color-mix`). It is not a choice in Settings.
 - The flow-lines variant (P26, P27) is dropped.
-- The top bar is transparent over the splash; once the page scrolls it gets `--bg` (solid, never blurred glass).
+- **The top bar blends into the page at every scroll position** (P83). The splash is a fixed layer behind the page (not `background-attachment: fixed`, which iOS ignores, so there it scrolled while the bar stood still), and the phone top bar paints the same splash in its own fixed layer (same size and origin), so there is no step between bar and page, and the bar still hides what scrolls under it. Never blurred glass, never a flat `--bg` block.
 
 ## 7. Iconography
 
@@ -188,11 +218,19 @@ Height 44, radius 12, padding 0 20, 15 px / 600. Full width on phone forms. Disa
 
 ### Segmented control
 
-`--track` container (radius 12, 3 px padding, 44 high); segments 15 px / 500 `--muted`; selected segment `--raised`, `--text` 600, with a 1 px inset `--input-border` edge (3 : 1). Used for Week / Month and System / Light / Dark. Arrow keys move the selection (radio-group semantics).
+`--track` container (radius 12, 3 px padding, 44 high); segments 15 px / 500 `--muted`; segment radius 9 (the container's 12 minus its 3 px padding, so the corners stay concentric); selected segment `--raised`, `--text` 600, with a 1 px inset `--input-border` edge (3 : 1). Used for Week / Month and System / Light / Dark. Arrow keys move the selection (radio-group semantics).
 
 ### Checkbox
 
 20 px box, radius 6, 2 px `--input-border`; checked: `--accent` fill with an `--on-accent` check. Whole row with label is the 44 px target. Used for "Hide commutes".
+
+### Links in text
+
+A link inside a sentence is `--accent`, 600 and always underlined (offset 2 px), so colour is never the only signal (WCAG 1.4.1); hover `--accent-hover`. Built as `linkClass` in `src/components/button-class.ts`. Links that are buttons (ghost, "Forgot password?") and nav items are not underlined.
+
+### Toggle
+
+A real switch (`role="switch"`, `aria-checked`) for a setting that is on or off and applies at once. Row at least 48 px high, label (`text-body`) on the left, track on the right, helper text below wired with `aria-describedby`. Track 52 x 32, radius 16, 2 px border; off: `--track` fill, `--input-border` border, `--muted` thumb on the left; on: `--accent` fill and border, `--on-accent` thumb on the right. Thumb 24 px. No glow or shadow; the thumb moves only when motion is allowed. State is told by position and by the label, never by colour alone. Used for the weight reminder and the Summary and Calendar options. Built as `src/components/Toggle.tsx`.
 
 ### Card and group
 
@@ -235,7 +273,7 @@ Route thumbnail + name (17 px / 600, one line, ellipsis) + meta line `Sun 11 Oct
 ### Side menu and top bar
 
 - **Phone (< 960 px):** top bar 56 px: menu button, page title (20 px / 600), one page action on the right (Import on Rides). The menu is a drawer from the left (`--raised`, radius 0 20 20 0, float shadow, `--overlay` scrim); closes on scrim tap, swipe left, Escape or choosing an item; focus is trapped inside; the page behind is `inert`.
-- **Desktop (≥ 960 px):** permanent side menu 232 px on the page background: wordmark, items, then at the bottom the status card when there is one, and the version.
+- **Desktop (≥ 960 px):** permanent side menu 232 px on the page background: wordmark, items, then at the bottom the status card when there is one, the version and the short commit id of the build (P84).
 - Nav item: 44 px, radius 12, icon + label 15 px. Hover `--fill`. Active: `--accent-soft` fill, label 600, icon `--accent`, `aria-current="page"`.
 
 ### Bottom status card (P12)

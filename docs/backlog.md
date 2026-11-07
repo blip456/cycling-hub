@@ -26,11 +26,11 @@ rebuild).
 | #   | Epic                                   | Outcome                                                                                                                                  | Sprints     | Open discovery questions                                                                                          |
 | --- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | E0  | **Foundation, import & rides**         | Design system, repo + standards + CI/CD, login, import with history, settings + release pages, ride list and ride detail.               | S0, S1, S2  | Export format v2 and its timing (Q1). Weather source (P19). Export format for "export rides".                    |
-| E1  | **Baseline & zones**                   | Athlete profile, guided FTP test week, power and HR zones from the test, zone history.                                                  | —           | Test protocol (20-min, ramp)? Zone models? Manual test entry or automatic from streams (needs export v2 streams)? |
-| E2  | **Training plan — general fitness**    | Periodized plan (base / build / peak) around Wed / Sun / optional ride, weekly view, session detail with watt and HR targets.           | —           | Rule-based, Claude API or hybrid? How does the plan adapt to missed sessions?                                    |
-| E3  | **Plan vs actual & progress**          | Match rides to sessions, compliance, trends: FTP estimate, power curve, efficiency factor, aerobic decoupling, fitness / fatigue / form. | —           | Which metrics are reliable from the export? Most history has no power or HR (P5).                                 |
-| E4  | **Event mode**                         | Event with date, distance, elevation, goal; plan built backwards, taper, pacing and fueling targets.                                    | —           | Do event mode and general mode coexist?                                                                           |
-| E5  | **Body composition**                   | Weight log and trend, linked to training load.                                                                                          | —           | Manual entry or smart-scale import?                                                                               |
+| E1  | **Baseline & zones**                   | Athlete profile, guided FTP test week, power and HR zones from the test, zone history.                                                  | S3          | Test protocol (20-min, ramp)? Zone models? Manual test entry or automatic from streams (needs export v2 streams)? |
+| E2  | **Training plan — general fitness**    | Periodized plan (base / build / peak) around Wed / Sun / optional ride, weekly view, session detail with watt and HR targets.           | S4          | Rule-based, Claude API or hybrid? How does the plan adapt to missed sessions?                                    |
+| E3  | **Plan vs actual & progress**          | Match rides to sessions, compliance, trends: FTP estimate, power curve, efficiency factor, aerobic decoupling, fitness / fatigue / form. | S4 (part)   | Which metrics are reliable from the export? Most history has no power or HR (P5).                                 |
+| E4  | **Event mode**                         | Event with date, distance, elevation, goal; plan built backwards, taper, pacing and fueling targets.                                    | S4 (part)   | Do event mode and general mode coexist?                                                                           |
+| E5  | **Body composition**                   | Weight log and trend (weight log delivered in S3, P45); body composition and the link to training load remain.                          | S3 (part)   | Manual entry or smart-scale import?                                                                               |
 | E6  | **Nutrition**                          | Food logging, ride-day vs rest-day targets, daily meal plans.                                                                           | —           | Food database source? Acceptable logging effort?                                                                  |
 
 Out of scope: medical data, multi-user, Strava API, printable/PDF plans, maps (P34).
@@ -131,11 +131,15 @@ Two parts; part B starts only after the PO approves part A.
 
 ## v0.2.0 — Import & settings
 Sprint: 1
-Status: in progress
+Status: shipped
 Tagline: Drop your Strava export file and see exactly what was imported, plus settings, What's new and What's next.
 
 ### Details
 
+> Delivered 28 Oct 2026: merged to `main` with `dev` in PR #5. The production release (release PR #6)
+> and the production database migrations are still pending (missing Supabase secrets in the `production`
+> environment, see `docs/setup-production.md`).
+>
 > Built on 18 Oct 2026 on `chore/sprint-1-integration`, verified locally (174 unit tests, 62 pgTAP
 > checks, end-to-end import of the real export: 208 rides + 97 not a ride, second run all unchanged).
 > Waiting for the hosted setup and the PO's test on a preview: `docs/test-checklists/v0.2.0.md`.
@@ -178,11 +182,14 @@ Goal: import the backfill and every later export reliably, and see the app's ver
 
 ## v0.3.0 — Rides
 Sprint: 2
-Status: in progress
+Status: shipped
 Tagline: All your rides by week or month, sortable and filterable, with the details of every ride, and a Chrome extension that exports them from Strava with power and heart rate.
 
 ### Details
 
+> Delivered 28 Oct 2026: tested and approved by the PO; merged to `main` with `dev` in PR #5. The
+> production release (release PR #6) and the production database migrations are still pending (see v0.2.0).
+>
 > Progress (27 Oct 2026): built and integrated on `chore/sprint-2-integration`, verified locally against
 > the real export (208 rides, 118 week and 52 month groups, every sort and filter, delete + undo, re-import
 > "Deleted earlier 1", CSV 207 rows, JSON re-import "Unchanged 207"; 253 unit tests, lint, typecheck,
@@ -250,6 +257,254 @@ Discovery (no build): weather per ride (P19).
   start times as on Strava, and power and heart rate where the GPX has them.
 - A second export only downloads GPX files for new or changed rides; importing it reports unchanged.
 - The per-second streams of each ride are in Storage and only readable by the signed-in user.
+
+## v0.4.0 — Athlete profile, weight & zones
+Sprint: 3
+Status: in progress
+Tagline: Your athlete profile, weight tracking with a weekly reminder, your FTP from a guided test week or your own rides, and your power and heart rate zones with a history.
+
+### Details
+
+> Planned 28 Oct 2026 (epic E1). Part A is approved by the PO and every open question is decided (P48 to
+> P54); the build runs in parallel streams on `feat/athlete-foundation`.
+
+Goal: the app knows who the athlete is and how strong they are. A minimal athlete profile, a weight log with a
+trend, a current FTP and heart rate baseline, the zones derived from them, and a dated history, so that E2 (training plan) can
+build around the PO's week and give watt and heart rate targets, and E3 can judge sessions against zones.
+
+Two parts; part B started after the PO approved part A (D2, wireframes in `docs/wireframes/V2/`).
+
+**Part A: Discovery and design (done, PO approved)**
+
+1. Answer the open questions (PO), in one round with the options laid out (done, P48 to P54).
+2. Wireframes and design for the new screens in the existing design system (Deep Ocean, light + dark,
+   phone + desktop): Athlete profile (view and edit), Weight (log, list, trend, reminder card, Settings reminder), Baseline overview, Guided test week, FTP result and
+   confirm, Zones and history.
+3. Write the decisions in `docs/decisions.md` (a new row each) and update `docs/export-format.md` only if
+   the streams are not enough.
+
+**Part B: Build**
+
+4. **Athlete profile** (minimal set, P44; on the existing `profiles` row, additive migration, RLS and pgTAP as
+   for every table): display name, birth year (for age-based heart rate estimates), available training
+   days and one free-text goal. Every field is optional and nothing blocks the rest of the app. Visible
+   labels, helper text, no example values in inputs. Medical data stays out of scope (P1, P34).
+4a. **Weight tracking** (P45, P46): table `weight_entries` (date, kg, optional note; one entry per day,
+   editing a day replaces it; RLS, grants, pgTAP). Quick "Log weight" from the weight page and from the
+   reminder card, a list with edit and delete (Undo), and a trend view (7-day average line plus the raw
+   points, week / month / 3 months / year). The weekly reminder is an in-app status card at the bottom of
+   the page (P12) when nothing was logged in 7 days; Settings has the reminder day and an off switch
+   (stored on the profile). Metric units only (P6).
+5. Data: migration for an athlete baseline (max HR, optional resting HR and LTHR) and a dated
+   **baseline history** table (FTP, source, effective date, note), additive, RLS on `auth.uid()`, grants,
+   pgTAP tests, `pnpm db:types`. History rows are never overwritten; the current baseline is the newest row.
+6. Baseline page (own menu item with the tabs Baseline, Zones and History, P48) with the current FTP and heart
+   rate values, and "Update baseline".
+7. Guided FTP test week as a checklist page (P49): protocol steps with the session targets, a checklist per session and a place to
+   enter the result. Both protocols (P39), Coggan zones (P40). The PO chooses the date of each session (P43).
+8. FTP estimate from the stored streams (T13): best 20-minute power from rides that have power, shown as a
+   suggestion with the ride it came from (date, link to the ride; P41). The PO confirms it or enters a value by
+   hand; nothing changes the baseline without a confirm.
+9. Zones: power zones from FTP and heart rate zones from the chosen reference, shown as a table with
+   ranges in W and bpm, and a zone colour per zone from the design tokens.
+10. Zone history: list of past baselines with their zones and a simple FTP-over-time view; nothing is lost
+   when a new FTP is set.
+11. Empty, loading and error states, copy in plain English, metric units (P6).
+12. Tests: weight entry rules (one per day, replace, delete + undo), trend averaging and the reminder rule (7 days, day setting, off), best-effort power calculation (20 min, gaps and dropouts), Coggan zone calculation (power and heart rate),
+    baseline history rules (newest wins, no overwrite), stream reading and the confirm flow.
+
+**Decided by the PO (28 Oct 2026, P39 to P43)**
+
+- Q-E1-1: both the 20-minute and the ramp test, picked per test week.
+- Q-E1-2: Coggan 7 power zones and 5 heart rate zones.
+- Q-E1-3: FTP manual and automatic (suggestion from streams, confirmed by the PO).
+- Q-E1-4: heart rate reference manual and automatic (typed value or highest value in the data).
+- Q-E1-5: the PO picks the date of each test session; the app does not schedule for them.
+
+**Decided by the PO, continued (P44 to P47)**
+
+- Q-E1-6: minimal profile (name, birth year, available days, goal).
+- Q-E1-7: weight and weight tracking are in this sprint, as often as the PO wants, with a weekly reminder.
+- Q-E1-8: everything in one sprint, built with several agents.
+
+**Decided by the PO, wireframe round (28 Oct 2026, P48 to P54)**
+
+- Q-E1-9: the weekly weight reminder is an in-app card only; no push notification and no email (P46, P52).
+- Navigation: Rides, Import, Weight, Profile, Baseline, Settings; Baseline has the tabs Baseline, Zones, History (P48).
+- The test week is the checklist page, not the stepper (P49).
+- One set of limits: name 40, goal 200, birth year 1920 to the current year, weight 30 to 250 kg, weight note 100,
+  test notes 1000 (P50). Weekdays are `mon` to `sun` in the logic and 0 to 6 (0 = Sunday) in the database, converted
+  in one place (P51).
+- The weight reminder stays until a weight is logged; Not now hides it until tomorrow; default day Sunday, on (P52).
+- Zones: Coggan 7 power, 5 heart rate (LTHR when set, else max HR); ramp FTP 75 % of the best minute, 20-minute FTP
+  95 %, LTHR from the last 15 minutes of the 20-minute test; new colours `--zone-1` to `--zone-7` (P53).
+- Defaults: newest 60 rides with power, effective date today, a history row for every save, Undo about 8 s
+  without a dialog, trailing 7-day average (P54).
+
+**Out of scope (later epics)**
+
+- Plan generation, weekly view, adapting to missed sessions (E2).
+- Compliance, power curve, fitness / fatigue / form, decoupling (E3).
+- Body composition beyond weight, smart-scale import, and weight linked to training load or FTP in W/kg
+  (E3 and E5).
+- Time in zone per ride (E3), except what the zone table itself needs.
+
+**Acceptance criteria**
+
+- The PO can log a weight on any day, edit or delete it, see the trend, and gets a bottom card as a weekly
+  reminder that stays until a weight is logged (Not now hides it until tomorrow); the reminder day can be changed or switched off.
+- The PO can fill in and edit the athlete profile section by section; every field is optional and the
+  rest of the app works with an empty profile.
+- The PO can see and update a current FTP and heart rate baseline; the old values stay in the history.
+- The app suggests an FTP from existing rides with power, names the ride it came from and changes nothing
+  until the PO confirms.
+- A guided test week can be followed step by step, and its result becomes a baseline entry.
+- Power and heart rate zones show ranges in W and bpm and follow Coggan 7 (power) and 5 (heart rate) zones.
+- The history lists every baseline with its date, source and zones.
+- Rides without power or heart rate never break the page; a user with no power data sees a clear empty
+  state with the manual route.
+- Phone and desktop, light and dark, WCAG 2.2 AA, no horizontal scrolling on the phone.
+
+**Risks**
+
+- Size: the profile, weight tracking, baseline, guided test week and zones are a lot for one sprint (PO
+  choice, P47). Build in parallel streams with separate files and migrations to keep merges clean, and cut
+  the stream estimate first if time runs out.
+- A push reminder would add a service worker push setup, a server job and iOS install requirements; it is
+  decided against for this sprint (Q-E1-9, P52).
+- Little power history (P5): the suggestion can be empty or wrong for sprint-like rides; show the source
+  ride so the PO can judge.
+- Streams are gzip JSON per ride in Storage (T13): reading many rides in the browser can be slow, so the
+  best-effort search should run on the newest rides with power first, or in a database function.
+- FTP from a 20-minute effort is an estimate; label it as such.
+
+## v0.5.0 — Training plan
+Sprint: 4
+Status: in progress
+Tagline: A 12-week training plan built from your goals, week and FTP, that adapts to your rides, goes on your calendar and comes with summaries for an AI chat.
+
+### Details
+
+> Planned 28 Oct 2026 (epic E2, with the plan-related parts of E3, E4 and E5). The PO answered the first
+> eight questions (P58 to P67); on 29 Oct 2026 the PO approved the designs and took the recommendations for
+> the rest (P68 to P80). Part A is done; parts B1 and B2 are being built.
+
+Goal: turn what the app knows (profile, goals, FTP and zones, ride history, weight) into a plan the PO can
+follow and that keeps up with real life: a 12-week plan in watts and heart rate, shaped by what the PO
+wants to achieve, recalculated when rides come in or sessions are missed, with an optional event and
+taper, on the PO's calendar, and with copy-and-paste summaries for an AI chat.
+
+Three parts; part B started after the PO approved part A (D2, 29 Oct 2026).
+
+**Part A: Discovery and design (gate: PO approves)**
+
+1. Answer the open questions below.
+2. The plan intake: the questions the app asks (purposes, level, hours, indoor / outdoor, event), written
+   with the PO.
+3. Wireframes and design (Deep Ocean, light + dark, phone + desktop): Plan intake, Plan overview (phases
+   and weeks), Weekly view (phone list, desktop week grid), Session detail, Plan changed notice (what was
+   recalculated and why), Missed session, Warning without power data, Event and taper, Calendar export,
+   Summary (session, week, month) with a Copy button, Plan needs a baseline (empty state).
+4. Example plans for three profiles (amateur, committed, semi-pro) and two purposes, reviewed by the PO
+   before any build, to check the training load rules (the biggest risk).
+5. Decisions written to `docs/decisions.md`.
+
+**Part B1: Build the plan (core)**
+
+6. Profile additions (extends P44, additive migration, RLS, pgTAP): indoor / outdoor / both (P62),
+   average hours per week, training purposes (muscle building, weight loss, endurance, speed; ranked),
+   level answers, and an optional event (name, date) (P66).
+7. Plan data: `training_plans` (start date, 12 weeks, intake answers, FTP and weight snapshot, status) and
+   `planned_sessions` (date, kind, title, duration, steps, status planned / done / missed / skipped,
+   nullable `activity_id`), additive, RLS, pgTAP, `pnpm db:types`.
+8. Plan engine (pure TypeScript, deterministic, heavy tests) in `src/features/plan/`: periodization with
+   base, build, peak and recovery weeks; load progression with caps; the available days from the profile;
+   a session library with steps in % of FTP turned into watts and heart rate zones (P40); different
+   mixes per purpose (endurance: more long and easy volume; speed: short hard intervals; muscle building:
+   low-cadence torque work and strength notes (Q-E2-12); weight loss: more easy volume, a capped weekly
+   weight-loss rate and no big deficit on hard days (Q-E2-11)); the amount of work scaled to hours per
+   week and level (amateur to semi-pro, P60); indoor / outdoor variants (P62).
+9. Plan intake flow and Plan pages: a Plan menu item, create, overview, weekly view, today's session on
+   top, session detail with the steps, watts, bpm and a short reason. Needs an FTP (else a pointer to the
+   baseline).
+10. Taper (P66): with an event, the plan is built backwards from the date and the last stretch is lighter.
+11. Calendar (P63): an ICS file of the planned sessions (Q-E2-10 for subscription).
+12. AI-minded summaries (P67): copy-and-paste text for one session, one week or one month; plain text or
+    markdown with the data an AI chat needs (what was planned, what was done, zones, power, heart rate,
+    weight trend, goals) and a short instruction line at the top; a Copy button; no AI service involved.
+
+**Part B2: Build the adaptation**
+
+13. Matching rides to sessions (basic, from E3): a ride on or near a planned day with fitting duration
+    counts as that session; the PO can fix a match.
+14. Re-evaluation (P59, P61): after an import, when the app is opened, and after a ride, the sessions that
+    have not happened yet are recalculated; a missed session triggers the recalculation of the rest of
+    the week and the weeks after. A "Plan updated" notice lists what changed, with Undo (Q-E2-14).
+15. The weight and purposes in the loop (P65): the engine reads the weight trend and the target; a weight
+    loss faster than the cap or a stalled trend changes the next weeks' mix, with the reason shown.
+16. Warning without power data (P64): four or more sessions without power data show a warning card and the
+    way to fix it (power meter, import). The plan itself does not change.
+17. When the baseline changes (new FTP): the targets of future sessions update; past sessions keep theirs.
+18. Empty, loading and error states, plain English, metric units.
+19. Tests: plan engine rules (phases, recovery weeks, caps, days respected, purposes, hours scaling, taper
+    length), re-evaluation (missed session, extra ride, no change), matching rules, weight-loss cap, ICS
+    output, summary text, and the 4-sessions warning.
+
+**Decided by the PO (28 Oct 2026, P58 to P67)**
+
+- Q-E2-1: rule-based plan (option A), no AI service for the plan.
+- Q-E2-2: 12 weeks, re-evaluated after each ride and when the app is opened or rides are imported.
+- Q-E2-3: the app asks questions (purposes, level, hours per week) and uses the profile days.
+- Q-E2-4: a missed session makes the engine recalculate.
+- Q-E2-5: indoor or outdoor is set in the profile.
+- Q-E2-6: sessions go on a calendar.
+- Q-E2-7: the plan stays the same without power data; warn at four sessions or more.
+- Q-E2-8: weight and weight loss play a role; purposes are muscle building, weight loss, endurance, speed.
+- Event mode with taper is already taken into account; AI summaries to copy are wanted, AI analysis in the
+  app is not a must.
+
+**Decided by the PO (29 Oct 2026, P68 to P80).** The PO approved the designs and took every recommendation,
+so the open questions are decided: one sprint with B1 and B2 (Q-E2-9, P79); the calendar is an ICS download
+(Q-E2-10, P78); weight loss uses a target weight and date with a weekly-rate cap of 0.5 % (setting up to
+0.75 %) (Q-E2-11, P73); muscle building is on-bike strength plus off-bike strength notes (Q-E2-12, P74);
+purposes are ranked, one main and one secondary (Q-E2-13, P75); re-planning is automatic with a "Plan
+updated" notice and Undo (Q-E2-14, P71); an AI summary has switches for weight and goals and an optional
+prompt line (Q-E2-15, P76); one event with a taper (Q-E2-16, P77). The menu, the intake stepper, the
+engine rule set and the other wireframe defaults are P68 to P70, P72 and P80.
+
+**Out of scope (later)**
+
+- Fitness / fatigue / form, power curve, efficiency factor, aerobic decoupling (E3).
+- Pacing and fuelling targets for events, event distance and elevation (E4).
+- Nutrition and food logging (E6); body composition beyond weight; printable or PDF plans (P1).
+- AI analysis built into the app (an API service); only copy-and-paste summaries are in.
+
+**Acceptance criteria (draft)**
+
+- The app asks the intake questions and builds a 12-week plan with sessions only on days the PO can ride and
+  an amount of work that fits the hours per week and the level.
+- Different purposes give visibly different plans, with a short reason per session.
+- Each session shows steps with watts and heart rate matching the zones, for indoor or outdoor as set.
+- After an import or opening the app, sessions that have not happened yet are recalculated; a missed
+  session makes the rest of the plan adapt; the PO sees what changed and can undo it.
+- With an event date, the plan ends with a taper.
+- Weight loss never plans faster than the cap; the weight trend is visible next to the plan.
+- Four or more sessions without power data show a warning; the plan stays the same.
+- An ICS file puts the sessions on a calendar.
+- A session, a week or a month can be copied as text for an AI chat.
+- Phone and desktop, light and dark, WCAG 2.2 AA, no horizontal scrolling on the phone.
+
+**Risks**
+
+- Size: this is more than Sprint 3 (profile, intake, engine, matching, re-evaluation, weight loop, calendar,
+  summaries). Q-E2-9 offers the split after B1.
+- Training load and weight loss rules are easy to get wrong and touch health: caps, a conservative
+  default, example plans reviewed by the PO first, and no medical claims (P1: no medical data).
+- Matching rides to sessions is fuzzy (two rides in a day, an unplanned long ride); the PO can always fix
+  a match, and the rules are documented.
+- Re-planning on every app open must be stable (no plan that flips back and forth): recalculate only when
+  the inputs changed and keep the result deterministic.
+- A calendar subscription link needs a server endpoint and a secret; the ICS download needs neither.
 
 ## Later
 

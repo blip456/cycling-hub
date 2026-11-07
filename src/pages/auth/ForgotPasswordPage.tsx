@@ -65,7 +65,7 @@ export function ForgotPasswordPage() {
       <AuthLayout title="Check your email" back={{ to: "/sign-in", label: "Sign in" }}>
         <div ref={headingRef} tabIndex={-1} className="outline-none">
           {formError ? <FormAlert>{formError}</FormAlert> : null}
-          <p className="mb-8 text-[15px] text-text">
+          <p className="mb-8 text-body text-text">
             If an account exists for this address, a reset link is on its way.
           </p>
         </div>
@@ -92,7 +92,7 @@ export function ForgotPasswordPage() {
   return (
     <AuthLayout title="Reset your password" back={{ to: "/sign-in", label: "Sign in" }}>
       {formError ? <FormAlert>{formError}</FormAlert> : null}
-      <p className="mb-6 text-[15px] text-muted">
+      <p className="mb-6 text-body text-muted">
         We will email you a link to choose a new password.
       </p>
       <form noValidate onSubmit={onSubmit} className="flex flex-col gap-5">

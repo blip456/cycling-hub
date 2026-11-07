@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { applyTheme, getStoredTheme, THEME_STORAGE_KEY } from "./theme";
+import { applyStoredTheme, applyTheme, getStoredTheme, THEME_STORAGE_KEY } from "./theme";
 
 function themeColors() {
   return [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')].map(
@@ -47,5 +47,18 @@ describe("theme", () => {
   it("ignores an unknown stored value", () => {
     localStorage.setItem(THEME_STORAGE_KEY, "sepia");
     expect(getStoredTheme()).toBe("system");
+  });
+
+  it.each(["light", "dark"] as const)("applies the stored %s choice at startup", (choice) => {
+    localStorage.setItem(THEME_STORAGE_KEY, choice);
+    applyStoredTheme();
+    expect(document.documentElement).toHaveAttribute("data-theme", choice);
+    expect(document.documentElement.style.colorScheme).toBe(choice);
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe(choice);
+  });
+
+  it("leaves System alone at startup", () => {
+    applyStoredTheme();
+    expect(document.documentElement).not.toHaveAttribute("data-theme");
   });
 });

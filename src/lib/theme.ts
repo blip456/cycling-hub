@@ -1,7 +1,9 @@
 /**
  * P9: theme choice, System (default) / Light / Dark. "system" = no data-theme attribute, so tokens.css
- * follows prefers-color-scheme. index.html reads the same localStorage key before first paint to avoid a
- * flash; keep the key and the colours below in sync with it.
+ * follows prefers-color-scheme. public/theme-init.js reads the same localStorage key before first paint to
+ * avoid a flash (it is an external file because the Content-Security-Policy allows no inline scripts);
+ * keep the key and the colours below in sync with it. `applyStoredTheme` runs at startup as well, so the
+ * choice also holds when that script cannot run.
  */
 export const THEME_STORAGE_KEY = "theme";
 
@@ -20,6 +22,13 @@ export function getStoredTheme(): ThemeChoice {
     // Storage can be unavailable (private mode, blocked cookies): fall back to the system setting.
     return "system";
   }
+}
+
+/** Applies the stored choice at startup without writing anything back. */
+export function applyStoredTheme(): void {
+  const choice = getStoredTheme();
+  if (choice === "system") return;
+  applyTheme(choice);
 }
 
 /** Stores the choice and applies it at once: data-theme, color-scheme and the theme-color metas. */

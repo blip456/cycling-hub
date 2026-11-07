@@ -47,14 +47,14 @@ export function ConfirmDialog({
         if (e.target === e.currentTarget) e.currentTarget.close();
       }}
       className={
-        "confirm-dialog m-0 mt-auto mx-3 mb-[max(1rem,env(safe-area-inset-bottom))] w-auto max-w-none rounded-[20px] bg-raised p-5 text-text shadow-raised " +
+        "confirm-dialog m-0 mt-auto mx-3 mb-[max(1rem,env(safe-area-inset-bottom))] w-auto max-w-none rounded-xl bg-raised p-5 text-text shadow-raised " +
         "backdrop:bg-[var(--overlay)] lg:m-auto lg:w-[400px]"
       }
     >
-      <h2 id={titleId} className="text-xl leading-[26px] font-semibold tracking-tight">
+      <h2 id={titleId} className="text-title">
         {title}
       </h2>
-      <div id={bodyId} className="mt-3 text-[15px] leading-[22px] text-muted">
+      <div id={bodyId} className="mt-3 text-body text-muted">
         {children}
       </div>
       <div className="mt-4 flex flex-col gap-3">{actions}</div>

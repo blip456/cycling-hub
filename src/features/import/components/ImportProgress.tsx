@@ -30,7 +30,7 @@ export function ImportProgress({
           </span>
           <span className="flex min-w-0 flex-col">
             <b className="truncate font-semibold">{fileName}</b>
-            <span className="text-[13px] text-muted tabular-nums">{formatFileSize(fileSize)}</span>
+            <span className="text-caption text-muted tabular-nums">{formatFileSize(fileSize)}</span>
           </span>
         </div>
 
@@ -40,7 +40,7 @@ export function ImportProgress({
               <CheckIcon className="mt-0.5 shrink-0" />
               <span className="flex flex-col">
                 <span className="text-text">File checked</span>
-                <span className="text-[13px] text-muted tabular-nums">
+                <span className="text-caption text-muted tabular-nums">
                   {formatActivityCount(progress.total)}
                   {progress.skipped ? ` · ${progress.skipped} will be skipped` : ""}
                 </span>
@@ -67,7 +67,7 @@ export function ImportProgress({
           <ProgressBar label={progress.step === "checking" ? "Checking the file" : "Saving"} />
         )}
       </div>
-      <p className="px-0.5 text-[13px] text-muted">
+      <p className="px-0.5 text-caption text-muted">
         Keep this screen open until the import is finished.
       </p>
     </div>
@@ -96,11 +96,11 @@ function ProgressBar({ label, value, max }: { label: string; value?: number; max
           <div
             // A new element, so the width does not animate down from the indeterminate bar.
             key="determinate"
-            className="h-full rounded-full bg-accent motion-safe:transition-[width]"
-            style={{ width: `${Math.round((value / max) * 100)}%` }}
+            className="h-full w-full origin-left rounded-full bg-accent motion-safe:transition-transform motion-safe:duration-(--dur-base) motion-safe:ease-(--ease-out)"
+            style={{ transform: `scaleX(${String(Math.min(1, value / max))})` }}
           />
         ) : (
-          <div className="h-full w-full rounded-full bg-accent motion-safe:animate-pulse" />
+          <div className="h-full w-full rounded-full bg-accent motion-safe:animate-[pulse_1.6s_ease-in-out_infinite]" />
         )}
       </div>
     </div>

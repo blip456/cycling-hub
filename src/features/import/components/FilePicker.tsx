@@ -39,10 +39,10 @@ export function FilePicker({
       >
         {dragging ? <UploadIcon width={28} height={28} /> : <FileIcon width={28} height={28} />}
       </span>
-      <span id={titleId} className="text-xl font-semibold tracking-tight">
+      <span id={titleId} className="text-title">
         {dragging ? "Drop the file to import" : "Choose your export file"}
       </span>
-      <span id={helpId} className="max-w-[30ch] text-[13px] text-muted">
+      <span id={helpId} className="max-w-[30ch] text-caption text-muted">
         {dragging
           ? "One .json file from the Cycling Hub extension."
           : "The .json file from the Cycling Hub extension."}

@@ -12,12 +12,20 @@ export interface StatusCardSpec {
   message: ReactNode;
   /** A link or button styled with statusActionClass. */
   action?: ReactNode;
+  /** A block under the message, for a card with a small form (the weight reminder, W3). */
+  content?: ReactNode;
   onDismiss?: () => void;
 }
 
 /** Higher wins when several cards want to show; an error replaces an info card (DESIGN.md). */
 export const STATUS_PRIORITY = {
   whatsNew: 10,
+  /** The no-power-data warning (R7, P64): a lasting warning, so it goes below the reminder and the notices. */
+  noPowerData: 12,
+  /** The weight reminder goes before "What's new" (W-PO4, P52). */
+  weightReminder: 15,
+  /** "Plan updated" with Undo (R3, P71): the result of something that just happened, so it goes first. */
+  planUpdated: 18,
   update: 20,
   flash: 30,
   error: 40,
@@ -67,5 +75,5 @@ export function useCurrentStatus(): StatusCardSpec | null {
 
 /** Text-button look for the card's action (DESIGN.md: accent, 600, 44 px target). */
 export const statusActionClass =
-  "inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-md px-2 text-[15px] " +
+  "inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-md px-2 text-body " +
   "font-semibold text-accent hover:bg-accent-soft";

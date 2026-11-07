@@ -8,7 +8,7 @@ const base: IconProps = {
   viewBox: "0 0 24 24",
   fill: "none",
   stroke: "currentColor",
-  strokeWidth: 1.8,
+  strokeWidth: 1.75,
   strokeLinecap: "round",
   strokeLinejoin: "round",
   "aria-hidden": true,
@@ -63,6 +63,43 @@ export function SettingsIcon(props: IconProps) {
       <path d="M4 7h10M18 7h2M4 17h4M12 17h8" />
       <circle cx="16" cy="7" r="2" />
       <circle cx="10" cy="17" r="2" />
+    </svg>
+  );
+}
+
+export function WeightIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M6 5h12l2 14H4L6 5Z" />
+      <path d="M9.5 10a3 3 0 0 1 5 0" />
+      <path d="M12 12.5l1.5-2" />
+    </svg>
+  );
+}
+
+export function ProfileIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 20c0-3.6 3-6 7-6s7 2.4 7 6" />
+    </svg>
+  );
+}
+
+export function BaselineIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M4 20V4M4 20h16" />
+      <path d="M8 15l4-4 3 3 5-6" />
+    </svg>
+  );
+}
+
+export function PlanIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="4" y="5" width="16" height="15" rx="2" />
+      <path d="M4 10h16M9 3v4M15 3v4" />
     </svg>
   );
 }

@@ -1,0 +1,19 @@
+# Session: Long ride, Sat 24 Oct 2026 (week 5 of 12, build)
+
+## Plan
+- Planned: 150 min steady endurance in zone 2, 140 to 187 W and 125 to 142 bpm.
+- Reason: long easy volume for the endurance purpose.
+
+## Done
+- 142 min, 68.4 km, 410 m climbing, average speed 28.9 km/h.
+- Matched to this session automatically: same day, 95 % of the planned time.
+
+## Power (FTP 250 W)
+- Average 158 W, normalised 171 W.
+- Time in zones: Z2 130 min, Z3 6 min, Z5 6 min.
+- Power zones: Z1 up to 138 W, Z2 139 to 188, Z3 189 to 225, Z4 226 to 263, Z5 264 to 300, Z6 301 to 375, Z7 376 and up.
+
+## Heart rate
+- Average 137 bpm, maximum 158 bpm.
+- Time in zones: Z1 8 min, Z2 118 min, Z3 12 min, Z4 4 min.
+- Heart rate zones: Z1 up to 112 bpm, Z2 113 to 137, Z3 138 to 155, Z4 156 to 173, Z5 174 and up.

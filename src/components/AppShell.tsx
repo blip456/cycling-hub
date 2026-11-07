@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
+import { NoPowerDataWarning } from "@/features/plan/NoPowerDataWarning";
+import { PlanUpdatedCard } from "@/features/plan/PlanUpdatedCard";
 import { useWhatsNew } from "@/features/release/use-whats-new";
 import { APP_VERSION } from "@/features/release/version";
+import { WeightReminder } from "@/features/weight/WeightReminder";
 import { DESKTOP_QUERY, useMediaQuery } from "@/lib/use-media-query";
 import { BackIcon, CloseIcon, MenuIcon } from "./icons";
 import { subPageForPath, titleForPath } from "./nav-items";
@@ -102,6 +105,11 @@ export function AppShell() {
 
   return (
     <div className="min-h-dvh">
+      {/* owned by weight stream: the reminder card slot (P12, P31). Renders no markup; fill in WeightReminder.tsx. */}
+      <WeightReminder />
+      {/* owned by the plan adaptation stream: the "Plan updated" (R3) and "no power data" (R7) card slots. */}
+      <PlanUpdatedCard />
+      <NoPowerDataWarning />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-surface focus:px-4 focus:py-3"
@@ -110,7 +118,7 @@ export function AppShell() {
       </a>
 
       {/* Desktop: permanent side menu on the page background (DESIGN.md) */}
-      <aside className="fixed inset-y-0 left-0 hidden w-56 px-3 py-6 lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-(--sidebar-w) px-3 py-6 lg:block">
         {isDesktop ? <DesktopSideMenu /> : <SideMenu />}
       </aside>
 
@@ -130,7 +138,7 @@ export function AppShell() {
           // A click on the backdrop lands on the <dialog> element itself.
           if (e.target === e.currentTarget) closeMenu();
         }}
-        className="drawer m-0 h-dvh max-h-none w-[min(18rem,85vw)] max-w-none bg-surface p-0 text-text lg:hidden"
+        className="drawer m-0 h-dvh max-h-none w-[min(var(--drawer-w),85vw)] max-w-none rounded-r-xl bg-raised p-0 text-text shadow-raised lg:hidden"
       >
         <div className="flex h-full flex-col px-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex justify-end">
@@ -138,7 +146,7 @@ export function AppShell() {
               type="button"
               onClick={closeMenu}
               aria-label="Close menu"
-              className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+              className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
             >
               <CloseIcon />
             </button>
@@ -149,15 +157,15 @@ export function AppShell() {
         </div>
       </dialog>
 
-      <div className="lg:pl-56">
+      <div className="lg:pl-(--sidebar-w)">
         {/* Phone: top bar */}
-        <header className="sticky top-0 z-10 bg-bg pt-[env(safe-area-inset-top)] lg:hidden">
+        <header className="topbar sticky top-0 z-10 pt-[env(safe-area-inset-top)] lg:hidden">
           <div className="flex h-14 items-center gap-1.5 px-2">
             {subPage ? (
               <Link
                 to={subPage.parent}
                 aria-label="Back"
-                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
               >
                 <BackIcon />
               </Link>
@@ -170,26 +178,21 @@ export function AppShell() {
                 aria-haspopup="dialog"
                 aria-expanded={menuOpen}
                 aria-controls="side-menu"
-                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
               >
                 <MenuIcon />
               </button>
             )}
-            <h1 className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">
-              {title}
-            </h1>
-            <span className="pr-2 text-[13px] font-semibold tracking-tight text-muted">
-              Cycling Hub
-            </span>
+            <h1 className="min-w-0 flex-1 truncate text-title">{title}</h1>
           </div>
         </header>
 
         <main
           id="main"
           tabIndex={-1}
-          className="mx-auto w-full max-w-5xl px-4 pb-28 pt-2 outline-none lg:px-8 lg:pt-8"
+          className="mx-auto w-full max-w-(--content-max) px-4 pb-28 pt-2 outline-none lg:px-8 lg:pt-8"
         >
-          <h1 className="mb-6 hidden text-2xl font-semibold tracking-tight lg:block">{title}</h1>
+          <h1 className="mb-6 hidden text-heading lg:block">{title}</h1>
           <Outlet />
         </main>
       </div>

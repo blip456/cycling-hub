@@ -14,7 +14,7 @@ export function StatusCard({
   spec: StatusCardSpec;
   placement: StatusPlacement;
 }) {
-  const { tone, message, action, onDismiss } = spec;
+  const { tone, message, action, content, onDismiss } = spec;
   const side = placement === "side";
 
   const indicator =
@@ -38,13 +38,35 @@ export function StatusCard({
     </button>
   ) : null;
 
+  if (content) {
+    return (
+      <div
+        role={tone === "error" ? "alert" : "status"}
+        data-placement={placement}
+        className={
+          "status-in rounded-lg bg-raised py-3 pl-3.5 pr-3 text-body text-text " +
+          (side
+            ? ""
+            : "fixed inset-x-3 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 mx-auto max-w-md shadow-raised")
+        }
+      >
+        <div className="flex items-start gap-2.5">
+          <span className={"flex " + (tone === "error" ? "mt-0.5" : "mt-[7px]")}>{indicator}</span>
+          <span className="min-w-0 flex-1">{message}</span>
+          {dismiss ? <span className="-mr-2 -mt-1.5 flex">{dismiss}</span> : null}
+        </div>
+        <div className="mt-2">{content}</div>
+      </div>
+    );
+  }
+
   if (side) {
     return (
       <div
         role={tone === "error" ? "alert" : "status"}
         data-placement="side"
         className={
-          "status-in grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-2.5 rounded-2xl bg-raised pb-1 pl-3.5 pt-3 text-[15px] leading-[22px] text-text " +
+          "status-in grid grid-cols-[auto_minmax(0,1fr)_auto] gap-x-2.5 rounded-lg bg-raised pb-1 pl-3.5 pt-3 text-body text-text " +
           "[grid-template-areas:'ic_msg_x'_'._act_x'] " +
           (onDismiss ? "pr-0.5" : "pr-3")
         }
@@ -63,7 +85,7 @@ export function StatusCard({
     <div
       role={tone === "error" ? "alert" : "status"}
       data-placement="floating"
-      className="status-in fixed inset-x-3 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 mx-auto flex min-h-14 max-w-md items-center gap-2 rounded-2xl bg-raised py-1.5 pl-4 pr-1.5 text-[15px] leading-[22px] text-text shadow-raised"
+      className="status-in fixed inset-x-3 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 mx-auto flex min-h-14 max-w-md items-center gap-2 rounded-lg bg-raised py-1.5 pl-4 pr-1.5 text-body text-text shadow-raised"
     >
       {indicator}
       <span className="min-w-0 flex-1 py-2 pl-1">{message}</span>

@@ -65,7 +65,7 @@ export function SortHeader({
           onSort(sortKey);
         }}
         className={
-          "group flex min-h-11 w-full flex-col justify-end rounded-[8px] px-2 py-1 text-[13px] leading-[18px] transition-colors duration-(--dur-fast) hover:bg-fill " +
+          "group flex min-h-11 w-full flex-col justify-end rounded-sm px-2 py-1 text-caption transition-colors duration-(--dur-fast) hover:bg-fill " +
           (numeric ? "items-end text-right " : "items-start text-left ") +
           (sorted ? "font-semibold text-text" : "font-semibold text-muted")
         }

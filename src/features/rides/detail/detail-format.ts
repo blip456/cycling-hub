@@ -1,5 +1,12 @@
 import type { Ride } from "../api";
-import { averageSpeedKmh, formatDuration, formatSpeed, formatWhole, rideTags } from "../format";
+import {
+  averageSpeedKmh,
+  formatDuration,
+  formatSpeed,
+  formatWhole,
+  rideTags,
+  shortMonth,
+} from "../format";
 
 const MISSING = "—";
 
@@ -17,7 +24,9 @@ export function detailDateLine(
 ): string {
   const date = new Date(`${ride.start_local.slice(0, 10)}T00:00:00Z`);
   const time = ride.start_local.slice(11, 16);
-  return [longDateFmt.format(date).replace(",", ""), time, ...rideTags(ride)].join(" · ");
+  return [shortMonth(longDateFmt.format(date)).replace(",", ""), time, ...rideTags(ride)].join(
+    " · ",
+  );
 }
 
 const thousands = new Intl.NumberFormat("en-GB", { maximumFractionDigits: 0 });

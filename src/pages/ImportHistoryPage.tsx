@@ -40,7 +40,7 @@ export function ImportHistoryPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[13px] text-muted tabular-nums">
+        <p className="text-caption text-muted tabular-nums">
           {history.data ? formatImportCount(history.data.length) : " "}
         </p>
         <Link to="/import" className={buttonClass("primary")}>

@@ -11,7 +11,7 @@ export function ChangeLabel({ type }: { type: ChangeType }) {
   const { text, className } = LABELS[type];
   return (
     <span
-      className={`inline-flex h-6 items-center justify-self-start whitespace-nowrap rounded-full px-2.5 text-[13px] font-medium leading-none ${className}`}
+      className={`inline-flex h-6 items-center justify-self-start whitespace-nowrap rounded-full px-2.5 text-caption font-medium ${className}`}
     >
       {text}
     </span>

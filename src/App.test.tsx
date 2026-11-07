@@ -132,14 +132,14 @@ describe("app shell", () => {
     expect(open).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("lists Rides, Import and Settings in the menu", () => {
+  it("lists the menu items in order (P48)", () => {
     renderWithProviders(<App />, {
       path: "/rides",
       auth: fakeAuth({ status: "signedIn", session: fakeSession() }),
     });
     const navs = screen.getAllByRole("navigation", { name: "Main", hidden: true });
     expect(navs.length).toBeGreaterThan(0);
-    for (const name of ["Rides", "Import", "Settings"]) {
+    for (const name of ["Rides", "Import", "Weight", "Profile", "Baseline", "Settings"]) {
       expect(screen.getAllByRole("link", { name, hidden: true }).length).toBeGreaterThan(0);
     }
   });
