@@ -1,4 +1,6 @@
+import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { AlertIcon } from "@/components/icons";
 import type { Intake } from "../engine";
 import {
   formatDay,
@@ -9,21 +11,22 @@ import {
   type PlanSession,
 } from "../data";
 import { useChangedDates } from "../adaptation/hooks";
+import { CheckIcon, MinusIcon, PencilIcon } from "./icons";
 import { ActionsMenu } from "./SessionActions";
 import { sessionAriaLabel } from "./session-label";
 
-const STATUS_MARK: Record<PlanSession["status"], string> = {
-  planned: "",
-  done: "✓ ",
-  missed: "! ",
-  skipped: "– ",
+const STATUS_ICON: Record<PlanSession["status"], ReactNode> = {
+  planned: null,
+  done: <CheckIcon className="size-4 shrink-0" />,
+  missed: <AlertIcon className="size-4 shrink-0" />,
+  skipped: <MinusIcon className="size-4 shrink-0" />,
 };
 
-/** The status as text (never colour alone): "✓ Done", "– Skipped", "Planned". */
+/** The status as text with a line icon (never colour alone): "Done", "Skipped", "Planned". */
 export function StatusText({ status }: { status: PlanSession["status"] }) {
   return (
-    <span className="text-[13px] font-medium text-muted">
-      <span aria-hidden="true">{STATUS_MARK[status]}</span>
+    <span className="inline-flex items-center gap-1 text-caption font-medium text-muted">
+      {STATUS_ICON[status]}
       {STATUS_TEXT[status]}
     </span>
   );
@@ -46,31 +49,29 @@ export function SessionItem({
   return (
     <div
       className={
-        "rounded-xl bg-surface hover:bg-surface-hover " +
+        "rounded-lg bg-surface hover:bg-surface-hover " +
         (card ? "flex flex-col" : "flex items-start")
       }
     >
       <Link
         to={`/plan/session/${session.id}`}
         aria-label={sessionAriaLabel(session, environment, isToday, changed)}
-        className="flex min-h-14 min-w-0 flex-1 flex-col gap-0.5 rounded-xl px-3.5 py-2.5"
+        className="flex min-h-14 min-w-0 flex-1 flex-col gap-0.5 rounded-lg px-3 py-3"
       >
-        <span className="text-[15px] leading-5 font-semibold [overflow-wrap:anywhere]">
-          {session.title}
-        </span>
+        <span className="text-body font-semibold [overflow-wrap:anywhere]">{session.title}</span>
         {card ? (
           sessionFactParts(session, environment).map((part) => (
-            <span key={part} className="text-[13px] text-muted">
+            <span key={part} className="text-caption text-muted">
               {part}
             </span>
           ))
         ) : (
-          <span className="text-[13px] text-muted">{sessionFacts(session, environment)}</span>
+          <span className="text-caption text-muted">{sessionFacts(session, environment)}</span>
         )}
         <StatusText status={session.status} />
         {changed ? (
-          <span className="text-[13px] font-medium text-muted">
-            <span aria-hidden="true">✎ </span>
+          <span className="inline-flex items-center gap-1 text-caption font-medium text-muted">
+            <PencilIcon className="size-4 shrink-0" />
             Changed
           </span>
         ) : null}
@@ -94,18 +95,18 @@ export function DayRow({
   return (
     <li
       className={
-        "grid grid-cols-[4.25rem_minmax(0,1fr)] gap-3 rounded-2xl p-2 " +
-        (cell.isToday ? "border-2 border-accent bg-accent-soft" : "border-2 border-transparent")
+        "grid grid-cols-[4.25rem_minmax(0,1fr)] gap-3 rounded-lg p-2 " +
+        (cell.isToday ? "bg-accent-soft" : "")
       }
     >
-      <div className="pt-2.5 pl-1.5 text-[15px]">
+      <div className="pt-2.5 pl-1.5 text-body">
         <p className="font-semibold">{weekday}</p>
-        <p className="text-[13px] text-muted">{date.join(" ")}</p>
-        {cell.isToday ? <p className="text-[13px] font-semibold">Today</p> : null}
+        <p className="text-caption text-muted">{date.join(" ")}</p>
+        {cell.isToday ? <p className="text-caption font-semibold">Today</p> : null}
       </div>
       <div className="flex min-w-0 flex-col gap-2">
         {cell.sessions.length === 0 ? (
-          <p className="pt-2.5 text-[15px] text-muted">
+          <p className="pt-2.5 text-body text-muted">
             {cell.trainingDay ? "Rest day" : "Rest day (not one of your training days)"}
           </p>
         ) : (
@@ -130,18 +131,17 @@ export function DayColumn({
   return (
     <li
       className={
-        "flex min-w-0 flex-col gap-2 rounded-2xl p-2 " +
-        (cell.isToday ? "border-2 border-accent bg-accent-soft" : "border-2 border-transparent")
+        "flex min-w-0 flex-col gap-2 rounded-lg p-2 " + (cell.isToday ? "bg-accent-soft" : "")
       }
     >
       <div className="px-1.5 pt-1">
-        <p className="text-[15px] font-semibold">
+        <p className="text-body font-semibold">
           {weekday} <span className="font-normal text-muted">{date.join(" ")}</span>
         </p>
-        {cell.isToday ? <p className="text-[13px] font-semibold">Today</p> : null}
+        {cell.isToday ? <p className="text-caption font-semibold">Today</p> : null}
       </div>
       {cell.sessions.length === 0 ? (
-        <p className="px-1.5 text-[14px] text-muted">Rest day</p>
+        <p className="px-1.5 text-caption text-muted">Rest day</p>
       ) : (
         cell.sessions.map((s) => (
           <SessionItem

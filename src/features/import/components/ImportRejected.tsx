@@ -25,14 +25,10 @@ export function ImportRejected({
       <div className="flex items-start gap-2.5">
         <AlertIcon className="mt-1.5 shrink-0 text-danger" />
         <div className="min-w-0">
-          <h2
-            ref={headingRef}
-            tabIndex={-1}
-            className="text-2xl font-semibold tracking-[-0.015em] outline-none"
-          >
+          <h2 ref={headingRef} tabIndex={-1} className="text-heading outline-none">
             This file can&rsquo;t be imported
           </h2>
-          <p className="text-[13px] text-muted">
+          <p className="text-caption text-muted">
             Nothing was changed.{caption ? ` ${caption}` : ""}
           </p>
         </div>

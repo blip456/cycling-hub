@@ -74,7 +74,7 @@ function Picker({
       }
     >
       <fieldset aria-describedby={helperId}>
-        <legend className="mb-1 text-[13px] font-semibold text-text">
+        <legend className="mb-1 text-caption font-semibold text-text">
           Which session does this ride count for?
         </legend>
         {options.map((o, i) => (
@@ -104,7 +104,7 @@ function Picker({
         >
           No session, this is an extra ride
         </ChoiceRow>
-        <p id={helperId} className="mt-1 text-[13px]">
+        <p id={helperId} className="mt-1 text-caption">
           Only sessions within {PICK_WINDOW_DAYS} days of the ride are listed. Choosing another
           session removes the old match.
         </p>
@@ -190,9 +190,9 @@ export function RideMatchCard({ ride }: { ride: Ride }) {
   const session = sessionOfRide(ride.id, data.sessions);
 
   return (
-    <section aria-labelledby="ride-counts-as" className="rounded-2xl bg-surface px-4 py-3.5">
+    <section aria-labelledby="ride-counts-as" className="rounded-lg bg-surface p-4 tabular-nums">
       <div className="flex items-start justify-between gap-3">
-        <h3 id="ride-counts-as" className="text-[13px] leading-[18px] text-muted">
+        <h3 id="ride-counts-as" className="text-caption text-muted">
           Counts as
         </h3>
         <Button
@@ -208,16 +208,16 @@ export function RideMatchCard({ ride }: { ride: Ride }) {
       </div>
       {session ? (
         <>
-          <p className="mt-0.5 text-[17px] font-semibold">
+          <p className="mt-0.5 text-body-lg font-semibold">
             {session.title}, {formatDay(session.date)}
           </p>
-          <p className="mt-0.5 text-[15px]">{matchFacts(pick, session)}</p>
-          <p className="mt-0.5 text-[13px] text-muted">{matchReason(pick, session)}</p>
+          <p className="mt-0.5 text-body">{matchFacts(pick, session)}</p>
+          <p className="mt-0.5 text-caption text-muted">{matchReason(pick, session)}</p>
         </>
       ) : (
         <>
-          <p className="mt-0.5 text-[17px] font-semibold">No session</p>
-          <p className="mt-0.5 text-[13px] text-muted">
+          <p className="mt-0.5 text-body-lg font-semibold">No session</p>
+          <p className="mt-0.5 text-caption text-muted">
             {isLeftOut(pick)
               ? "Commutes and rides under 20 minutes do not count for a session unless you pick one."
               : "This ride fits no planned session. It counts as an extra ride."}

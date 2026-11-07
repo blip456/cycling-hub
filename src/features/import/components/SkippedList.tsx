@@ -8,7 +8,7 @@ export function SkippedList({ skipped }: { skipped: SkippedActivity[] }) {
   if (skipped.length === 0) return null;
   return (
     <section aria-labelledby={headingId} className="flex flex-col gap-2">
-      <h3 id={headingId} className="mt-2 text-[15px] font-semibold">
+      <h3 id={headingId} className="mt-2 text-body font-semibold">
         Skipped (errors)
       </h3>
       <ul className="overflow-hidden rounded-2xl bg-surface">
@@ -26,7 +26,7 @@ export function SkippedList({ skipped }: { skipped: SkippedActivity[] }) {
                 {what ? ` · ${what}` : ""}
               </span>
               {s.issues.map((issue) => (
-                <span key={issue.path} className="text-[13px] break-words text-muted">
+                <span key={issue.path} className="text-caption break-words text-muted">
                   <code className="font-sans">{issue.path}</code> {issue.message}
                 </span>
               ))}

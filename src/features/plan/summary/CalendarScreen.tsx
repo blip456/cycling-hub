@@ -202,12 +202,12 @@ function CalendarForm({
       aria-labelledby={headingId}
       className="flex max-w-[560px] flex-col gap-4 lg:grid lg:max-w-[1000px] lg:grid-cols-2 lg:items-start"
     >
-      <div className="flex flex-col gap-5 rounded-2xl bg-surface p-4">
+      <div className="flex flex-col gap-5 rounded-lg bg-surface p-4">
         <div>
-          <h2 id={headingId} className="text-[17px] font-semibold">
+          <h2 id={headingId} className="text-body-lg font-semibold">
             Add the plan to your calendar
           </h2>
-          <p className="mt-1 text-[15px] text-muted">
+          <p className="mt-1 text-body text-muted">
             Download a calendar file and open it in your calendar app.
           </p>
         </div>
@@ -255,7 +255,7 @@ function CalendarForm({
           >
             Download calendar file
           </Button>
-          <p id={downloadHelperId} className="mt-1.5 text-[13px] text-muted">
+          <p id={downloadHelperId} className="mt-1.5 text-caption text-muted">
             {nothing
               ? "There is nothing to export for this choice."
               : `${icsFilename()}, ${countLabel}`}
@@ -264,9 +264,9 @@ function CalendarForm({
       </div>
 
       {outOfDate ? (
-        <div role="status" className="rounded-2xl bg-subtle p-4">
-          <h3 className="text-[15px] font-semibold">Your calendar file is out of date</h3>
-          <p className="mt-1 text-[15px]">
+        <div role="status" className="rounded-lg bg-fill p-4">
+          <h3 className="text-body font-semibold">Your calendar file is out of date</h3>
+          <p className="mt-1 text-body">
             {lastChangeDate
               ? `The plan changed on ${dayLabel(lastChangeDate)}.`
               : "The plan changed."}{" "}

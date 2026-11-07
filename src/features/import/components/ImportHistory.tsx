@@ -24,13 +24,13 @@ export function ImportHistory({ records }: { records: ImportRecord[] }) {
                 <span className="font-semibold tabular-nums">
                   {formatDateTime(record.imported_at)}
                 </span>
-                <span className="truncate text-[13px] text-muted">{record.file_name}</span>
+                <span className="truncate text-caption text-muted">{record.file_name}</span>
                 {record.status === "imported" ? (
-                  <span className="text-[13px] text-muted tabular-nums">
+                  <span className="text-caption text-muted tabular-nums">
                     {formatCounts(record)}
                   </span>
                 ) : (
-                  <span className="text-[13px] text-danger">{notImportedText(record)}</span>
+                  <span className="text-caption text-danger">{notImportedText(record)}</span>
                 )}
               </span>
               <ChevronRightIcon className="shrink-0 text-muted" />
@@ -40,10 +40,10 @@ export function ImportHistory({ records }: { records: ImportRecord[] }) {
       </ul>
 
       <div className="hidden overflow-x-auto rounded-2xl bg-surface lg:block">
-        <table className="w-full border-collapse text-[15px] tabular-nums">
+        <table className="w-full border-collapse text-body tabular-nums">
           <caption className="sr-only">Import history, newest first</caption>
           <thead>
-            <tr className="text-[13px] text-muted">
+            <tr className="text-caption text-muted">
               <Th left>Date</Th>
               <Th left>File</Th>
               <Th>Activities</Th>
@@ -59,7 +59,10 @@ export function ImportHistory({ records }: { records: ImportRecord[] }) {
             {records.map((record) => (
               <tr
                 key={record.id}
-                className="border-border not-last:border-b hover:bg-(--surface-hover)"
+                className={
+                  "relative border-border not-last:border-b hover:bg-(--surface-hover) " +
+                  "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:-outline-offset-2 has-[a:focus-visible]:outline-accent"
+                }
               >
                 <td className="h-11 py-2 pr-2 pl-4 whitespace-nowrap text-muted">
                   {formatDateTime(record.imported_at)}
@@ -67,7 +70,7 @@ export function ImportHistory({ records }: { records: ImportRecord[] }) {
                 <td className="max-w-[240px] px-2 py-2">
                   <Link
                     to={detailPath(record)}
-                    className="block truncate font-semibold underline-offset-2 hover:underline"
+                    className="block truncate font-semibold outline-none after:absolute after:inset-0 after:content-['']"
                   >
                     {record.file_name}
                   </Link>
@@ -137,7 +140,7 @@ export function LastImportLink({ record }: { record: ImportRecord }) {
         >
           <span className="flex min-w-0 flex-1 flex-col">
             <span>Last import</span>
-            <span className="text-[13px] text-muted tabular-nums">
+            <span className="text-caption text-muted tabular-nums">
               {formatDateTime(record.imported_at)} ·{" "}
               {record.status === "imported" ? formatCounts(record) : "Not imported"}
             </span>

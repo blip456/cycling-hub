@@ -17,7 +17,12 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-on-accent: var(--on-accent);
+  --color-focus: var(--focus);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-pressed: var(--accent-pressed);
   --color-accent-soft: var(--accent-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-overlay: var(--overlay);
   --color-positive: var(--positive);
   --color-positive-soft: var(--positive-soft);
   /* Tone-step fill from the design system (secondary buttons, hovers, tracks). */
@@ -48,7 +53,71 @@
 
   /* Inter ships with the app (P36): self-hosted variable font, imported in main.tsx. */
   --font-sans:
-    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  /* One family (P20): there is no monospace in the design, so `font-mono` resolves to Inter too. */
+  --font-mono:
+    "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --default-mono-font-family: var(--font-sans);
+  /* Motion tokens (DESIGN.md section 8): colour and hover transitions are --dur-fast. */
+  --default-transition-duration: var(--dur-fast);
+  --default-transition-timing-function: var(--ease-out);
+}
+
+/*
+ * Type scale (DESIGN.md section 3). One utility per token: size, line height, tracking and weight together.
+ * Use these, never an arbitrary pixel size, a Tailwind size such as `text-xl` or `tracking-tight`. Weight can still be changed on the element
+ * (`font-medium`, `font-semibold`) because the default is read from Tailwind's weight variable.
+ *   text-display   44 / 46  600  -0.025em  the one hero number of a screen
+ *   text-stat      32 / 36  600  -0.025em  outcome numbers
+ *   text-heading   24 / 30  600  -0.015em  page title, screen headline, stat tile value
+ *   text-title     20 / 26  600  -0.01em   top bar title, card titles
+ *   text-body-lg   17 / 24  600  -0.01em   metric values on cards, ride name
+ *   text-body      15 / 22  400  0         text, rows, inputs, buttons (add font-semibold)
+ *   text-caption   13 / 18  400  0         meta, units, helper text, labels, table header
+ */
+@utility text-display {
+  font-size: var(--fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--tw-font-weight, var(--fw-semibold));
+}
+@utility text-stat {
+  font-size: var(--fs-stat);
+  line-height: var(--lh-stat);
+  letter-spacing: var(--tracking-display);
+  font-weight: var(--tw-font-weight, var(--fw-semibold));
+}
+@utility text-heading {
+  font-size: var(--fs-heading);
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  font-weight: var(--tw-font-weight, var(--fw-semibold));
+}
+@utility text-title {
+  font-size: var(--fs-title);
+  line-height: var(--lh-title);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--tw-font-weight, var(--fw-semibold));
+}
+@utility text-body-lg {
+  font-size: var(--fs-body-lg);
+  line-height: var(--lh-body-lg);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--tw-font-weight, var(--fw-semibold));
+}
+@utility text-body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  letter-spacing: 0;
+  font-weight: var(--tw-font-weight, var(--fw-regular));
+}
+@utility text-caption {
+  font-size: var(--fs-caption);
+  line-height: var(--lh-caption);
+  letter-spacing: 0;
+  font-weight: var(--tw-font-weight, var(--fw-regular));
 }
 
 /* Radius: Tailwind's rounded-sm/md/lg/xl read the design tokens (--radius-sm 8, md 12, lg 16, xl 20 px;
@@ -58,6 +127,29 @@
   html {
     color-scheme: dark;
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Inter Variable everywhere (P20, P36): no synthesised bold or italic, tabular figures on every number. */
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    font-optical-sizing: auto;
+    font-variant-numeric: var(--font-numeric);
+    font-kerning: normal;
+    text-rendering: optimizeLegibility;
+  }
+  /* Form controls and code do not inherit the font by default; the design has one family and no monospace. */
+  button,
+  input,
+  select,
+  textarea,
+  optgroup,
+  pre,
+  code,
+  kbd,
+  samp {
+    font-family: inherit;
+    font-size: inherit;
+    font-variant-numeric: inherit;
+    font-synthesis: none;
   }
   [data-theme="light"] {
     color-scheme: light;
@@ -68,8 +160,7 @@
     }
   }
   body {
-    @apply bg-bg font-sans text-text antialiased;
-    line-height: 1.45;
+    @apply bg-bg font-sans text-body text-text antialiased;
     min-height: 100dvh;
   }
   /*
@@ -87,8 +178,8 @@
   }
   /* P21/P23: solid 2 px accent focus ring, no glow. */
   :focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+    outline: var(--focus-ring);
+    outline-offset: var(--focus-offset);
   }
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -130,7 +221,7 @@
   background: var(--overlay);
 }
 .drawer[open] {
-  animation: drawer-in 180ms ease-out;
+  animation: drawer-in var(--dur-slow) var(--ease-out);
 }
 @keyframes drawer-in {
   from {

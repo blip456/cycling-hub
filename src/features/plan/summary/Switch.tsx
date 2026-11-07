@@ -28,7 +28,7 @@ export function Switch({
         onClick={() => {
           onChange(!checked);
         }}
-        className="flex min-h-12 w-full items-center gap-3 rounded-md text-left text-[15px] hover:bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="flex min-h-12 w-full items-center gap-3 rounded-md text-left text-body hover:bg-fill focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         <span id={labelId} className="grow">
           {label}
@@ -49,7 +49,7 @@ export function Switch({
         </span>
       </button>
       {helper ? (
-        <p id={helperId} className="pb-1 text-[13px] text-muted">
+        <p id={helperId} className="pb-1 text-caption text-muted">
           {helper}
         </p>
       ) : null}

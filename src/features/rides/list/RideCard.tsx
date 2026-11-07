@@ -22,11 +22,11 @@ export const RideCard = memo(function RideCard({ ride }: { ride: Ride }) {
       }
     >
       <div className="flex items-center gap-3">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-[12px] bg-fill">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-md bg-fill">
           <RouteShape polyline={ride.polyline} width={44} height={44} padding={9} />
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-[17px] leading-6 font-semibold tracking-tight">
+          <h3 className="truncate text-body-lg">
             <Link
               to={`/rides/${ride.id}`}
               className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-['']"
@@ -34,7 +34,7 @@ export const RideCard = memo(function RideCard({ ride }: { ride: Ride }) {
               {ride.name}
             </Link>
           </h3>
-          <p className="truncate text-[13px] leading-[18px] text-muted tabular-nums">{dateLine}</p>
+          <p className="truncate text-caption text-muted tabular-nums">{dateLine}</p>
         </div>
       </div>
       <dl className="mt-3 grid grid-cols-3 gap-x-2 gap-y-2.5 tabular-nums">
@@ -42,18 +42,16 @@ export const RideCard = memo(function RideCard({ ride }: { ride: Ride }) {
           const value = metric.format(ride);
           return (
             <div key={metric.key} className="flex min-w-0 flex-col-reverse">
-              <dt className="truncate text-[13px] leading-[18px] text-muted">{metric.label}</dt>
-              <dd className="truncate leading-6">
+              <dt className="truncate text-caption text-muted">{metric.label}</dt>
+              <dd className="truncate text-body-lg">
                 <span
                   className={
-                    value === MISSING
-                      ? "text-[17px] text-muted"
-                      : `text-[17px] font-semibold ${metric.color}`
+                    value === MISSING ? "text-body-lg text-muted" : `text-body-lg ${metric.color}`
                   }
                 >
                   {value}
                 </span>
-                <span className="ml-0.5 text-[13px] text-muted">{metric.unit}</span>
+                <span className="ml-0.5 text-caption text-muted">{metric.unit}</span>
               </dd>
             </div>
           );

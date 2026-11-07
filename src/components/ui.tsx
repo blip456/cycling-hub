@@ -1,3 +1,4 @@
+import { AlertIcon } from "./icons";
 import { buttonClass, type ButtonVariant } from "./button-class";
 import {
   forwardRef,
@@ -49,14 +50,16 @@ export const TextField = forwardRef<HTMLInputElement, FieldProps>(function TextF
     [error ? errorId : null, helper ? helperId : null].filter(Boolean).join(" ") || undefined;
   return (
     <div className={className}>
-      <label htmlFor={id} className="mb-1.5 block text-[13px] font-semibold text-text">
+      <label htmlFor={id} className="mb-1.5 block text-caption font-semibold text-text">
         {label}
       </label>
       <div
         className={
-          "flex min-h-11 items-center rounded-md border bg-surface focus-within:border-accent " +
-          "focus-within:outline-2 focus-within:outline-accent " +
-          (error ? "border-accent" : "border-input-border")
+          "flex min-h-11 items-center rounded-md border bg-surface " +
+          "focus-within:outline-2 focus-within:outline-(--focus) " +
+          (error
+            ? "border-danger focus-within:border-danger"
+            : "border-input-border hover:border-muted focus-within:border-focus")
         }
       >
         <input
@@ -64,21 +67,22 @@ export const TextField = forwardRef<HTMLInputElement, FieldProps>(function TextF
           id={id}
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
-          className="min-h-11 w-full min-w-0 flex-1 rounded-md bg-transparent px-3.5 text-base text-text outline-none"
+          className="min-h-11 w-full min-w-0 flex-1 rounded-md bg-transparent px-3.5 text-body text-text outline-none"
           {...rest}
         />
         {trailing}
       </div>
       {error ? (
-        <p id={errorId} className="mt-1.5 text-[13px] font-medium text-text">
-          <span aria-hidden="true" className="mr-1 text-accent">
-            !
-          </span>
-          {error}
+        <p
+          id={errorId}
+          className="mt-1.5 flex items-start gap-1.5 text-caption font-medium text-danger"
+        >
+          <AlertIcon width={16} height={16} className="mt-px shrink-0" />
+          <span>{error}</span>
         </p>
       ) : null}
       {helper ? (
-        <p id={helperId} className="mt-1.5 text-[13px] text-muted">
+        <p id={helperId} className="mt-1.5 text-caption text-muted">
           {helper}
         </p>
       ) : null}
@@ -107,7 +111,7 @@ export const PasswordField = forwardRef<HTMLInputElement, PasswordFieldProps>(
             }}
             aria-pressed={visible}
             aria-label={visible ? "Hide password" : "Show password"}
-            className="mr-1 min-h-11 min-w-11 shrink-0 rounded-sm px-2.5 text-[14px] font-semibold text-accent hover:bg-subtle"
+            className="mr-1 min-h-11 min-w-11 shrink-0 rounded-sm px-2.5 text-body font-semibold text-accent hover:bg-fill"
           >
             {visible ? "Hide" : "Show"}
           </button>
@@ -129,19 +133,18 @@ export function FormAlert({
     <div
       role={tone === "error" ? "alert" : "status"}
       className={
-        "mb-5 rounded-md px-4 py-3 text-[15px] text-text " +
-        (tone === "error" ? "bg-subtle" : "bg-accent-soft")
+        "mb-5 flex items-start gap-2 rounded-md px-4 py-3 text-body text-text " +
+        (tone === "error" ? "bg-danger-soft" : "bg-accent-soft")
       }
     >
-      {children}
+      {tone === "error" ? (
+        <AlertIcon width={18} height={18} className="mt-0.5 shrink-0 text-danger" />
+      ) : null}
+      <div className="min-w-0">{children}</div>
     </div>
   );
 }
 
 export function EmptyState({ children }: { children: ReactNode }) {
-  return (
-    <p className="rounded-2xl bg-surface px-5 py-8 text-center text-[15px] text-muted">
-      {children}
-    </p>
-  );
+  return <p className="rounded-lg bg-surface px-5 py-8 text-body text-muted">{children}</p>;
 }

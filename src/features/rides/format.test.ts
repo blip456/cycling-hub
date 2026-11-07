@@ -44,6 +44,7 @@ describe("formatting", () => {
 
   it("formats distance, duration, speed and missing values", () => {
     expect(formatDistanceKm(111_100)).toBe("111.1");
+    expect(formatDistanceKm(1_020_540)).toBe("1,020.5");
     expect(formatDuration(3 * 3600 + 58 * 60 + 20)).toBe("3:58");
     expect(formatDuration(59 * 60 + 40)).toBe("1:00");
     expect(formatSpeed(averageSpeedKmh(ride({ distance_m: 28_000, moving_time_s: 3600 })))).toBe(
@@ -78,7 +79,7 @@ describe("grouping", () => {
     expect(groups.map((g) => g.key)).toEqual(["2026-W41", "2026-W40"]);
     expect(groups[0]?.label).toBe("Week 41 · 5–11 Oct");
     // Week across two months shows both; ICU writes September as "Sep" or "Sept".
-    expect(groups[1]?.label).toMatch(/^Week 40 · 28 Sept?–4 Oct$/);
+    expect(groups[1]?.label).toMatch(/^Week 40 · 28 Sep–4 Oct$/);
     expect(groups[0]?.rides.map((r) => r.id)).toEqual(["a", "b"]);
     expect(groups[0]?.totals.distanceM).toBe(120_000);
     expect(groups[1]?.totals.rides).toBe(2);

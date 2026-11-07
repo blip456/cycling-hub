@@ -48,7 +48,7 @@ export function ResetPasswordPage() {
   if (linkInvalid || recoveryError || status !== "signedIn") {
     return (
       <AuthLayout title="Link expired">
-        <p className="mb-8 text-[15px] text-text">This link has expired or was already used.</p>
+        <p className="mb-8 text-body text-text">This link has expired or was already used.</p>
         <Link to="/forgot-password" className={buttonClass("primary", "w-full")}>
           Send a new link
         </Link>

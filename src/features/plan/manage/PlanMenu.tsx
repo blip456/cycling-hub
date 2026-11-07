@@ -8,7 +8,7 @@ import type { StoredPlan } from "../data";
 import { useRemovePlan } from "./use-remove-plan";
 
 const itemClass =
-  "flex min-h-11 w-full items-center rounded-lg px-3 text-left text-[15px] font-semibold hover:bg-subtle";
+  "flex min-h-11 w-full items-center rounded-md px-3 text-left text-body font-semibold hover:bg-fill";
 
 /** What is removed and what stays, in plain English (P82). */
 function RemoveDialog({
@@ -114,7 +114,7 @@ export function PlanMenu({ plan }: { plan: StoredPlan }) {
         type="button"
         aria-expanded={open}
         aria-controls={open ? listId : undefined}
-        className="-mb-px inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-[15px] font-semibold text-accent hover:bg-subtle"
+        className="-mb-px inline-flex min-h-11 items-center gap-1.5 rounded-md px-3 text-body font-semibold text-accent hover:bg-fill"
         onClick={() => {
           setOpen((v) => !v);
         }}
@@ -130,7 +130,7 @@ export function PlanMenu({ plan }: { plan: StoredPlan }) {
       {open ? (
         <ul
           id={listId}
-          className="absolute right-0 top-full z-30 mt-1 w-52 rounded-xl bg-raised p-1 shadow-raised"
+          className="absolute right-0 top-full z-30 mt-1 w-52 rounded-lg bg-raised p-1 shadow-raised"
         >
           <li>
             <Link

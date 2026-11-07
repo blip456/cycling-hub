@@ -4,7 +4,7 @@ import { niceTicks } from "./chart-scale";
 import { formatDay, formatKg, formatShortDay } from "./format";
 
 const HEIGHT = 260;
-const MARGIN = { top: 14, right: 14, bottom: 30, left: 46 };
+const MARGIN = { top: 28, right: 14, bottom: 30, left: 46 };
 const MIN_WIDTH = 280;
 const DEFAULT_WIDTH = 600;
 
@@ -125,7 +125,7 @@ export function WeightChart({
             </text>
           </g>
         ))}
-        <text x={4} y={MARGIN.top - 2} fontSize={13} className="fill-muted">
+        <text x={4} y={MARGIN.top - 16} fontSize={13} className="fill-muted">
           kg
         </text>
         {xLabels.map(({ offset, date, anchor }) => (
@@ -189,7 +189,7 @@ export function WeightChart({
           </g>
         ) : null}
       </svg>
-      <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-muted">
+      <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-caption text-muted">
         <li className="flex items-center gap-2">
           <svg width={22} height={10} aria-hidden="true">
             <line x1={0} x2={22} y1={5} y2={5} strokeWidth={2.5} className="stroke-accent" />

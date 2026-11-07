@@ -536,7 +536,7 @@ describe("Session page", () => {
     const user = setup();
     renderPage(`/plan/session/${quality.id}`);
     await screen.findByRole("heading", { name: quality.title });
-    const group = screen.getByRole("group", { name: "Where do you ride it?" });
+    const group = screen.getByRole("radiogroup", { name: "Where do you ride it?" });
     expect(within(group).getByRole("radio", { name: "Indoor" })).toBeChecked();
     await user.click(within(group).getByRole("radio", { name: "Outdoor" }));
     await waitFor(() => {
@@ -557,7 +557,9 @@ describe("Session page", () => {
       outdoor.sessions.find((s) => s.kind === "sweet-spot" || s.kind === "threshold")?.id ?? "";
     renderPage(`/plan/session/${id}`);
     await screen.findByText("Why this session");
-    expect(screen.queryByRole("group", { name: "Where do you ride it?" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radiogroup", { name: "Where do you ride it?" }),
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Outdoor")).toBeInTheDocument();
   });
 

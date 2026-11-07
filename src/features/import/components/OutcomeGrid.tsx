@@ -49,10 +49,10 @@ function Outcome({
         (highlight ? "bg-[color-mix(in_srgb,var(--accent)_12%,var(--surface))]" : "bg-surface")
       }
     >
-      <dt className={"text-[13px] " + (highlight ? "font-semibold text-text" : "text-muted")}>
+      <dt className={"text-caption " + (highlight ? "font-semibold text-text" : "text-muted")}>
         {label}
       </dt>
-      <dd className="text-[32px] leading-9 font-semibold tracking-[-0.025em] tabular-nums">
+      <dd className="text-stat tabular-nums">
         <span aria-hidden="true">{shown}</span>
         <span className="sr-only">{value}</span>
       </dd>

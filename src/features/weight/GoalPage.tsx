@@ -182,8 +182,8 @@ function GoalForm({
 
   return (
     <div className="flex max-w-[560px] flex-col gap-4 lg:max-w-[1000px] lg:grid lg:grid-cols-2 lg:items-start">
-      <form onSubmit={submit} noValidate className="flex flex-col gap-4 rounded-2xl bg-surface p-4">
-        <h2 className="text-[17px] font-semibold">Set your goal</h2>
+      <form onSubmit={submit} noValidate className="flex flex-col gap-4 rounded-lg bg-surface p-4">
+        <h2 className="text-title">Set your goal</h2>
         <TextField
           ref={targetRef}
           label="Target weight"
@@ -196,7 +196,7 @@ function GoalForm({
           inputMode="decimal"
           autoComplete="off"
           trailing={
-            <span aria-hidden="true" className="pr-3.5 text-[15px] text-muted">
+            <span aria-hidden="true" className="pr-3.5 text-body text-muted">
               kg
             </span>
           }
@@ -260,8 +260,8 @@ function GoalForm({
           ) : null}
         </div>
       </form>
-      <section aria-labelledby="cap-heading" className="rounded-2xl bg-surface p-4">
-        <h2 id="cap-heading" className="mb-2 text-[17px] font-semibold">
+      <section aria-labelledby="cap-heading" className="rounded-lg bg-surface p-4">
+        <h2 id="cap-heading" className="mb-2 text-title">
           How the cap works
         </h2>
         <CapExplanation weightKg={average} />
