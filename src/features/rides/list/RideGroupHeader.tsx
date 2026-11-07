@@ -16,10 +16,10 @@ export function RideGroupHeader({
   const { title, detail } = groupTitle(group, by, currentYear);
   return (
     <div className="mb-2.5 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 px-0.5">
-      <h2 id={id} className="text-[15px] font-semibold">
+      <h2 id={id} className="text-body font-semibold">
         {detail ? `${title} · ${detail}` : title}
       </h2>
-      <p className="text-[13px] text-muted tabular-nums">{formatTotalsLine(group.totals)}</p>
+      <p className="text-caption text-muted tabular-nums">{formatTotalsLine(group.totals)}</p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { buttonClass } from "@/components/button-class";
 import { Checkbox, FieldLabel, SelectField } from "./controls";
 import { fieldClass } from "./field-class";
 import type { ListState, RideType } from "./list-state";
@@ -23,12 +24,12 @@ function SearchIcon() {
       focusable={false}
       className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-muted"
     >
-      <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.75" />
       <path
         d="m16 16 4 4"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.75"
         strokeLinecap="round"
       />
     </svg>
@@ -157,11 +158,7 @@ export function FilterBar({
         Hide commutes
       </Checkbox>
       {filtered ? (
-        <button
-          type="button"
-          onClick={onClear}
-          className="ml-auto inline-flex min-h-11 items-center rounded-[12px] px-3 text-[15px] font-semibold text-accent transition-colors duration-(--dur-fast) hover:bg-accent-soft"
-        >
+        <button type="button" onClick={onClear} className={buttonClass("ghost", "ml-auto")}>
           Clear filters
         </button>
       ) : null}

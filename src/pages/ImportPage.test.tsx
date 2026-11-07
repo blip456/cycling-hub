@@ -94,7 +94,7 @@ describe("ImportPage", () => {
     const link = await screen.findByRole("link", { name: /Last import/ });
     expect(link).toHaveAttribute("href", "/import/history");
     expect(link).toHaveTextContent(
-      "14 Oct 2026, 21:05 · 7 new · 0 updated · 0 unchanged · 3 not a ride",
+      /Wed 14 Oct( 2026)? · 21:05 · 7 new · 0 updated · 0 unchanged · 3 not a ride/,
     );
   });
 

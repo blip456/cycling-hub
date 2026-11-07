@@ -94,7 +94,7 @@ describe("RidesPage on the phone", () => {
     expect(within(week41).getByText("2 rides · 114.6 km · 3:52 h")).toBeInTheDocument();
     const names = screen.getAllByRole("heading", { level: 3 }).map((h) => h.textContent);
     expect(names).toEqual(["Sunday Long Ride", "Evening Ride", "Kluisbos loop", "Old road ride"]);
-    expect(screen.getByRole("heading", { name: "Week 39 · 22–28 Sept 2025" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Week 39 · 22–28 Sep 2025" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Sunday Long Ride" })).toHaveAttribute(
       "href",
       "/rides/r1",
