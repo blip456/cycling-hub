@@ -1,14 +1,35 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, type Plugin } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { appVersion, releaseVersions } from "./src/features/release/app-version";
 
 const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8")) as {
   version: string;
 };
+
+/**
+ * The version shown in the app (side menu, What's new card, update message). Releases are git tags and
+ * GitHub releases since D10 and package.json is not bumped, so the newest release in the generated What's
+ * new data wins (it is written before every build by scripts/build-release-data.mjs).
+ */
+function buildVersion(): string {
+  const file = fileURLToPath(
+    new URL("./src/features/release/generated/changelog.json", import.meta.url),
+  );
+  let releases: string[] = [];
+  if (existsSync(file)) {
+    try {
+      releases = releaseVersions(JSON.parse(readFileSync(file, "utf8")));
+    } catch {
+      releases = [];
+    }
+  }
+  return appVersion(pkg.version, releases);
+}
 
 /**
  * The short commit id of this build, shown in the side menu so it is clear which build is running (a
@@ -121,7 +142,7 @@ function preloadInter(): Plugin {
 
 export default defineConfig(({ mode }) => ({
   define: {
-    __APP_VERSION__: JSON.stringify(pkg.version),
+    __APP_VERSION__: JSON.stringify(buildVersion()),
     __BUILD_ID__: JSON.stringify(buildId()),
     ...supabaseEnvDefines(loadEnv(mode, process.cwd(), "")),
   },

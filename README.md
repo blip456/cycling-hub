@@ -138,6 +138,10 @@ releases yet") and the sprint sections of `docs/backlog.md`, and writes
 current changelog and backlog, and `pnpm dev` regenerates them when either file changes. A broken sprint
 entry in the backlog fails the build with a list of what is wrong (see "Sprint format" in the backlog).
 
+The version the app shows (side menu, What's new card, "Updated to" message) is the newest release in that
+generated data, or the `package.json` version when it is newer (`src/features/release/app-version.ts`).
+Releases do not bump `package.json` any more (D10), so it stays at 1.0.0.
+
 Hotfixes between sprints use `fix:` titles: before 1.0 a `feat:` bumps the minor version, which belongs
 to the next sprint.
 
