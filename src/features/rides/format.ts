@@ -32,17 +32,26 @@ const monthYearFmt = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
 });
 
+/** ICU writes September as "Sept" in en-GB; the design uses three letters ("Sep"). */
+export const shortMonth = (text: string): string => text.replace(/\bSept\b/g, "Sep");
+
 /** "Sun 12 Oct · 08:14" (the year is added when it is not the current one). */
 export function formatRideDate(local: string, now: Date = new Date()): string {
   const { date, hour, minute } = localParts(local);
   const sameYear = date.getUTCFullYear() === now.getFullYear();
-  const day = (sameYear ? dayMonthFmt : dayMonthYearFmt).format(date);
+  const day = shortMonth((sameYear ? dayMonthFmt : dayMonthYearFmt).format(date));
   return `${weekdayFmt.format(date)} ${day} · ${hour}:${minute}`;
 }
 
+/** One decimal, thousands with a comma, decimals with a point (DESIGN.md typography): "1,020.5". */
+const oneDecimal = new Intl.NumberFormat("en-GB", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
 /** "111.1" (km, one decimal). */
 export function formatDistanceKm(meters: number): string {
-  return (meters / 1000).toFixed(1);
+  return oneDecimal.format(meters / 1000);
 }
 
 /** "3:58" (h:mm). */
@@ -60,7 +69,7 @@ export function averageSpeedKmh(ride: Pick<Ride, "distance_m" | "moving_time_s">
 }
 
 export function formatSpeed(kmh: number | null): string {
-  return kmh === null ? MISSING : kmh.toFixed(1);
+  return kmh === null ? MISSING : oneDecimal.format(kmh);
 }
 
 /** Watts, bpm, metres: whole numbers, "—" when missing. */
@@ -134,8 +143,8 @@ function weekLabel(week: number, monday: Date): string {
   const sunday = new Date(monday);
   sunday.setUTCDate(monday.getUTCDate() + 6);
   const sameMonth = monday.getUTCMonth() === sunday.getUTCMonth();
-  const start = sameMonth ? String(monday.getUTCDate()) : dayMonthFmt.format(monday);
-  return `Week ${week} · ${start}–${dayMonthFmt.format(sunday)}`;
+  const start = sameMonth ? String(monday.getUTCDate()) : shortMonth(dayMonthFmt.format(monday));
+  return `Week ${week} · ${start}–${shortMonth(dayMonthFmt.format(sunday))}`;
 }
 
 /**

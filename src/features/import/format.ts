@@ -2,19 +2,30 @@ import type { ImportRecord } from "./api";
 
 const TIME_ZONE = "Europe/Brussels"; // P6
 
-const dateTimeFormat = new Intl.DateTimeFormat("en-GB", {
+const weekdayFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, weekday: "short" });
+const dayMonthFormat = new Intl.DateTimeFormat("en-GB", {
   timeZone: TIME_ZONE,
   day: "numeric",
   month: "short",
-  year: "numeric",
+});
+const yearFormat = new Intl.DateTimeFormat("en-GB", { timeZone: TIME_ZONE, year: "numeric" });
+const timeFormat = new Intl.DateTimeFormat("en-GB", {
+  timeZone: TIME_ZONE,
   hour: "2-digit",
   minute: "2-digit",
   hourCycle: "h23",
 });
 
-/** "14 Oct 2026, 21:05" in Brussels time. */
-export function formatDateTime(iso: string): string {
-  return dateTimeFormat.format(new Date(iso));
+/** ICU writes September as "Sept" in en-GB; the design uses three letters. */
+const shortMonth = (text: string) => text.replace(/\bSept\b/g, "Sep");
+
+/** "Wed 14 Oct · 21:05" in Brussels time (DESIGN.md dates); the year is added when it is not this year. */
+export function formatDateTime(iso: string, now: Date = new Date()): string {
+  const date = new Date(iso);
+  const year = yearFormat.format(date);
+  const day = shortMonth(dayMonthFormat.format(date));
+  const dayYear = year === yearFormat.format(now) ? day : `${day} ${year}`;
+  return `${weekdayFormat.format(date)} ${dayYear} · ${timeFormat.format(date)}`;
 }
 
 const localDateFormat = new Intl.DateTimeFormat("en-GB", {
@@ -26,7 +37,7 @@ const localDateFormat = new Intl.DateTimeFormat("en-GB", {
 
 /** "3 May 2019" for a wall-clock `YYYY-MM-DDTHH:MM:SS` (already Brussels time, T11). */
 export function formatLocalDate(local: string): string {
-  return localDateFormat.format(new Date(`${local.slice(0, 19)}Z`));
+  return shortMonth(localDateFormat.format(new Date(`${local.slice(0, 19)}Z`)));
 }
 
 /** "850 B", "251 kB", "1.4 MB". */
