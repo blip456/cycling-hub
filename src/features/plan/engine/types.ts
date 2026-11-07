@@ -63,7 +63,10 @@ export type Intake = {
   availableDays: readonly Weekday[];
   environment: Environment;
   event?: PlanEvent;
-  /** Plan start. Default: the next Monday (today when it is a Monday). Rolled forward to a Monday. */
+  /**
+   * The first day of the plan. Default: today. Week 1 is the week of this date and sessions are planned from
+   * it on; when no training day is left in that week, the plan starts on the next Monday.
+   */
   startDate?: IsoDate;
   /** Weight on the start date (trend value). Needed for the weight loss rules. */
   weightKg?: number;
@@ -336,6 +339,8 @@ export type Plan = {
   purposes: { main: Purpose; secondary: Purpose | null };
   /** Monday of week 1. */
   startDate: IsoDate;
+  /** The first day sessions are planned on; after `startDate` when week 1 is a partial week. */
+  firstDay: IsoDate;
   /** Last day of the plan: the event date, else the Sunday of the last week. */
   endDate: IsoDate;
   environment: Environment;

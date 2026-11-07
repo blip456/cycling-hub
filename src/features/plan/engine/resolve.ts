@@ -30,13 +30,14 @@ export function resolveInput(input: PlanInput): ResolvedInput {
   const levelResult = scoreLevel(intake.levelAnswers, intake.hoursPerWeek, intake.levelOverride);
   const hoursPerWeek = clampHours(levelResult.level, intake.hoursPerWeek);
   const today: IsoDate = isIsoDate(input.today) ? input.today : "1970-01-05";
+  const days = dayIndices(intake.availableDays);
   const structure = planStructure({
     today,
     startDate: intake.startDate,
     event: intake.event,
     recoveryEvery: intake.recoveryEvery,
+    availableDays: days,
   });
-  const days = dayIndices(intake.availableDays);
 
   const blocked: Warning[] = [];
   if (!isIsoDate(input.today)) {

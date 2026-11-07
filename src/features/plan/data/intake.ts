@@ -11,7 +11,8 @@ import {
   type Weekday,
 } from "@/features/athlete";
 import {
-  mondayOnOrAfter,
+  dayIndices,
+  firstPlanDay,
   mondayOnOrBefore,
   PLAN_WEEKS,
   type Intake,
@@ -117,7 +118,7 @@ export type IntakeDraft = {
   hours: string;
   /** Only asked when the profile has none. */
   environment: RidingEnvironment | null;
-  startChoice: "next-monday" | "other";
+  startChoice: "today" | "other";
   startDate: string;
   hasEvent: boolean;
   eventName: string;
@@ -134,7 +135,7 @@ export const EMPTY_DRAFT: IntakeDraft = {
   answers: [null, null, null, null, null],
   hours: "",
   environment: null,
-  startChoice: "next-monday",
+  startChoice: "today",
   startDate: "",
   hasEvent: false,
   eventName: "",
@@ -249,8 +250,8 @@ export type IntakeContext = {
   /** Environment of the profile; null when it is not set (the intake asks). */
   profileEnvironment: RidingEnvironment | null;
   /**
-   * Set when an existing plan is edited: the plan keeps this start date (a Monday), so the start question is
-   * not asked and an event has to fit between this date and the end of the plan's twelfth week.
+   * Set when an existing plan is edited: the plan keeps this start date (its first day), so the start
+   * question is not asked and an event has to fit between this date and the end of the plan's twelfth week.
    */
   fixedStart?: IsoDate;
 };
@@ -261,16 +262,23 @@ export function parseNumber(text: string): number {
   return clean === "" ? Number.NaN : Number(clean);
 }
 
-/** The Monday the plan starts on: the plan's own when it is edited, else the draft's start choice. */
+/** The first day of the plan: the plan's own when it is edited, else the draft's start choice. */
 export function startOf(draft: IntakeDraft, ctx: IntakeContext): IsoDate {
-  return ctx.fixedStart ?? effectiveStart(draft, ctx.today);
+  return ctx.fixedStart ?? effectiveStart(draft, ctx.today, ctx.availableDays);
 }
 
-/** The Monday the plan starts on for the draft's start choice (the engine rolls a date forward to a Monday). */
-export function effectiveStart(draft: IntakeDraft, today: IsoDate): IsoDate {
-  if (draft.startChoice === "other" && isIsoDate(draft.startDate))
-    return mondayOnOrAfter(draft.startDate);
-  return mondayOnOrAfter(today);
+/**
+ * The first day of the plan for the draft's start choice: today or the chosen date, or the next Monday when
+ * no training day is left in that week (the engine's `firstPlanDay`).
+ */
+export function effectiveStart(
+  draft: IntakeDraft,
+  today: IsoDate,
+  availableDays: readonly Weekday[],
+): IsoDate {
+  const requested =
+    draft.startChoice === "other" && isIsoDate(draft.startDate) ? draft.startDate : today;
+  return firstPlanDay(requested, dayIndices(availableDays));
 }
 
 export function hasWeightLoss(purposes: readonly Purpose[]): boolean {
@@ -328,11 +336,12 @@ function stepThree(draft: IntakeDraft, ctx: IntakeContext): IntakeErrors {
 }
 
 /** The event rules of an edit: the start is fixed, so the event has to fall inside weeks 4 to 12 of the plan. */
-function fixedStartEventError(date: IsoDate, start: IsoDate): string | null {
+function fixedStartEventError(date: IsoDate, firstDay: IsoDate): string | null {
+  const start = mondayOnOrBefore(firstDay);
   const weeksToEvent = (diffDays(start, mondayOnOrBefore(date)) ?? 0) / 7 + 1;
   if (weeksToEvent < 4) {
     const earliest = addDays(start, 21);
-    return `The event is too close to the start of your plan (${formatLongDate(start)}). A plan needs at least 4 weeks up to the event${earliest ? `: choose ${formatLongDate(earliest)} or later` : ""}.`;
+    return `The event is too close to the start of your plan (${formatLongDate(firstDay)}). A plan needs at least 4 weeks up to the event${earliest ? `: choose ${formatLongDate(earliest)} or later` : ""}.`;
   }
   if (weeksToEvent > PLAN_WEEKS) {
     const last = addDays(start, PLAN_WEEKS * 7 - 1);
@@ -362,7 +371,10 @@ function stepFour(draft: IntakeDraft, ctx: IntakeContext): IntakeErrors {
         const problem = fixedStartEventError(draft.eventDate, ctx.fixedStart);
         if (problem) errors.eventDate = problem;
       }
-    } else if (errors.startDate === undefined && draft.eventDate < effectiveStart(draft, ctx.today))
+    } else if (
+      errors.startDate === undefined &&
+      draft.eventDate < effectiveStart(draft, ctx.today, ctx.availableDays)
+    )
       errors.eventDate =
         "The event is before the plan starts. Move the start date or choose a later event date.";
   }
@@ -438,11 +450,11 @@ export function engineInput(
           },
         }
       : {}),
-    ...(ctx.fixedStart !== undefined
-      ? { startDate: ctx.fixedStart }
-      : draft.startChoice === "other" && isIsoDate(draft.startDate)
-        ? { startDate: draft.startDate }
-        : {}),
+    // The date as asked: the engine moves it to the next Monday when no training day is left in its week,
+    // and says so in a notice.
+    startDate:
+      ctx.fixedStart ??
+      (draft.startChoice === "other" && isIsoDate(draft.startDate) ? draft.startDate : ctx.today),
     ...(hasWeightLoss(draft.purposes) && ctx.weightKg !== null ? { weightKg: ctx.weightKg } : {}),
     ...(goal ? { weightGoal: { targetKg: goal.targetKg, targetDate: goal.targetDate } } : {}),
   };
