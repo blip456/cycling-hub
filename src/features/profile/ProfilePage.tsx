@@ -71,9 +71,9 @@ export function ProfilePage() {
   return (
     <div className="flex max-w-[560px] flex-col gap-4 lg:max-w-[1000px]">
       {isProfileEmpty(data) ? (
-        <div className="rounded-2xl bg-subtle px-4 py-3">
-          <h2 className="text-[15px] font-semibold">Your profile is empty</h2>
-          <p className="mt-1 text-[15px] text-muted">
+        <div className="rounded-lg bg-subtle px-4 py-3">
+          <h2 className="text-title">Your profile is empty</h2>
+          <p className="mt-1 text-body text-muted">
             Everything here is optional. The app works without it. Add what helps.
           </p>
         </div>

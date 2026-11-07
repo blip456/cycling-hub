@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AlertIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 
 export type SectionId = "about" | "week" | "purposes" | "level" | "event" | "goal";
@@ -24,7 +25,7 @@ export function FormButtons({ saving, onCancel }: { saving: boolean; onCancel: (
 
 export function ViewRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-11 items-center justify-between gap-4 text-[15px]">
+    <div className="flex min-h-11 items-center justify-between gap-4 text-body">
       <span className="text-muted">{label}</span>
       <span className="min-w-0 break-words text-right">{children}</span>
     </div>
@@ -33,4 +34,28 @@ export function ViewRow({ label, children }: { label: string; children: ReactNod
 
 export function NotSet() {
   return <span className="text-muted">Not set</span>;
+}
+
+/** A field error under the field: alert icon and text in the danger colour (never colour alone). */
+export function FieldError({
+  id,
+  role,
+  className = "mt-1.5",
+  children,
+}: {
+  id?: string;
+  role?: "alert";
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <p
+      id={id}
+      role={role}
+      className={`flex items-start gap-1.5 text-caption font-medium text-danger ${className}`}
+    >
+      <AlertIcon width={16} height={16} className="mt-px shrink-0" />
+      <span>{children}</span>
+    </p>
+  );
 }

@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { FieldError } from "./form-parts";
 
 export interface RadioOption<T extends string> {
   value: T;
@@ -38,12 +39,12 @@ export function RadioGroup<T extends string>({
     [error ? errorId : null, helper ? helperId : null].filter(Boolean).join(" ") || undefined;
   return (
     <fieldset aria-describedby={describedBy}>
-      <legend className="mb-1 text-[13px] font-semibold text-text">{legend}</legend>
+      <legend className="mb-1 text-caption font-semibold text-text">{legend}</legend>
       <div className={inline ? "flex flex-col sm:flex-row sm:gap-5" : "flex flex-col"}>
         {options.map((option) => (
           <label
             key={option.value}
-            className="flex min-h-11 cursor-pointer items-center gap-3 py-1 text-[15px]"
+            className="flex min-h-11 cursor-pointer items-center gap-3 py-1 text-body"
           >
             <input
               type="radio"
@@ -58,22 +59,15 @@ export function RadioGroup<T extends string>({
             <span className="min-w-0">
               {option.label}
               {option.detail ? (
-                <span className="block text-[13px] text-muted">{option.detail}</span>
+                <span className="block text-caption text-muted">{option.detail}</span>
               ) : null}
             </span>
           </label>
         ))}
       </div>
-      {error ? (
-        <p id={errorId} className="mt-1.5 text-[13px] font-medium text-text">
-          <span aria-hidden="true" className="mr-1 text-accent">
-            !
-          </span>
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError id={errorId}>{error}</FieldError> : null}
       {helper ? (
-        <p id={helperId} className="mt-1.5 text-[13px] text-muted">
+        <p id={helperId} className="mt-1.5 text-caption text-muted">
           {helper}
         </p>
       ) : null}

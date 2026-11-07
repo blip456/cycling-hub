@@ -7,12 +7,12 @@ import { formatDay, formatKg } from "./format";
 function PencilIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
-      width={18}
-      height={18}
+      width={20}
+      height={20}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={1.8}
+      strokeWidth={1.75}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -35,7 +35,7 @@ interface Props {
 const iconButton =
   "flex size-11 items-center justify-center rounded-md text-muted hover:bg-fill hover:text-text";
 const textButton =
-  "inline-flex min-h-11 items-center rounded-md px-2.5 text-[15px] font-semibold text-accent hover:bg-accent-soft";
+  "inline-flex min-h-11 items-center rounded-md px-2.5 text-body font-semibold text-accent hover:bg-accent-soft";
 
 /** The history, newest first: a list of rows on the phone, a table on desktop (W1a, W1ad). */
 export function HistoryList(props: Props) {
@@ -45,25 +45,21 @@ export function HistoryList(props: Props) {
 
 function HistoryRows({ entries, editingDate, onEdit, onDelete }: Props) {
   return (
-    <ul
-      aria-label="Weights, newest first"
-      className="divide-y divide-border rounded-2xl bg-surface"
-    >
+    <ul aria-label="Weights, newest first" className="divide-y divide-border rounded-lg bg-surface">
       {entries.map((entry) => {
         const day = formatDay(entry.date);
         return (
           <li
             key={entry.date}
+            aria-current={editingDate === entry.date ? "true" : undefined}
             className={
               "flex items-center gap-1 py-2 pl-4 pr-2 " +
-              (editingDate === entry.date ? "border-l-4 border-accent bg-accent-soft pl-3" : "")
+              (editingDate === entry.date ? "bg-accent-soft" : "")
             }
           >
             <div className="min-w-0 flex-1">
-              <p className="text-[17px] font-semibold [font-variant-numeric:tabular-nums]">
-                {formatKg(entry.kg)} kg
-              </p>
-              <p className="truncate text-[13px] text-muted">
+              <p className="text-body-lg">{formatKg(entry.kg)} kg</p>
+              <p className="truncate text-caption text-muted">
                 {day}
                 {entry.note ? ` · ${entry.note}` : ""}
               </p>
@@ -86,7 +82,7 @@ function HistoryRows({ entries, editingDate, onEdit, onDelete }: Props) {
                 onDelete(entry);
               }}
             >
-              <CloseIcon width={18} height={18} />
+              <CloseIcon width={20} height={20} />
             </button>
           </li>
         );
@@ -97,21 +93,21 @@ function HistoryRows({ entries, editingDate, onEdit, onDelete }: Props) {
 
 function HistoryTable({ entries, editingDate, onEdit, onDelete }: Props) {
   return (
-    <div className="overflow-x-auto rounded-2xl bg-surface">
-      <table className="w-full text-[15px]">
+    <div className="overflow-x-auto rounded-lg bg-surface">
+      <table className="w-full text-body">
         <caption className="sr-only">Weights, newest first</caption>
-        <thead className="text-left text-[13px] text-muted">
+        <thead className="text-left text-caption text-muted">
           <tr>
-            <th scope="col" className="py-3 pl-4 pr-2 font-medium">
+            <th scope="col" className="py-3 pl-4 pr-2 font-semibold">
               Date
             </th>
-            <th scope="col" className="px-2 py-3 text-right font-medium">
+            <th scope="col" className="px-2 py-3 text-right font-semibold">
               Weight (kg)
             </th>
-            <th scope="col" className="px-2 py-3 font-medium">
+            <th scope="col" className="px-2 py-3 font-semibold">
               Note
             </th>
-            <th scope="col" className="py-3 pl-2 pr-4 text-right font-medium">
+            <th scope="col" className="py-3 pl-2 pr-4 text-right font-semibold">
               Actions
             </th>
           </tr>
@@ -122,17 +118,13 @@ function HistoryTable({ entries, editingDate, onEdit, onDelete }: Props) {
             return (
               <tr
                 key={entry.date}
+                aria-current={editingDate === entry.date ? "true" : undefined}
                 className={
-                  "border-t border-border " +
-                  (editingDate === entry.date
-                    ? "bg-accent-soft shadow-[inset_4px_0_0_var(--accent)]"
-                    : "")
+                  "border-t border-border " + (editingDate === entry.date ? "bg-accent-soft" : "")
                 }
               >
                 <td className="h-11 whitespace-nowrap py-1 pl-4 pr-2">{day}</td>
-                <td className="px-2 py-1 text-right [font-variant-numeric:tabular-nums]">
-                  {formatKg(entry.kg)}
-                </td>
+                <td className="px-2 py-1 text-right">{formatKg(entry.kg)}</td>
                 <td className="px-2 py-1 text-muted">{entry.note ?? "—"}</td>
                 <td className="whitespace-nowrap py-1 pl-2 pr-2 text-right">
                   <button
