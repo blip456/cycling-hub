@@ -21,7 +21,13 @@ export type WeekSkeleton = {
 };
 
 export type PlanStructure = {
+  /** Monday of week 1. */
   startDate: IsoDate;
+  /**
+   * The first day sessions are planned on: the requested start date when week 1 is the week of that date
+   * (a partial week 1), else the Monday of week 1.
+   */
+  firstDay: IsoDate;
   endDate: IsoDate;
   weeks: WeekSkeleton[];
   /** Weeks before the taper. */
@@ -48,6 +54,17 @@ export function mondayOnOrBefore(date: IsoDate): IsoDate {
   return plusDays(date, -(weekdayIndex(date) ?? 0));
 }
 
+/**
+ * The day a plan starts for a requested start date. Week 1 is the week of that date and sessions are planned
+ * from that date on, as long as a training day is left in that week (`days`: 0 = Monday to 6 = Sunday).
+ * Otherwise the plan starts on the next Monday. Without days the date itself is used.
+ */
+export function firstPlanDay(requested: IsoDate, days: readonly number[]): IsoDate {
+  const index = weekdayIndex(requested) ?? 0;
+  if (days.length === 0 || days.some((day) => day >= index)) return requested;
+  return mondayOnOrAfter(requested);
+}
+
 /** Whole weeks between two Mondays. */
 function weeksBetween(from: IsoDate, to: IsoDate): number {
   return Math.round((diffDays(from, to) ?? 0) / 7);
@@ -63,7 +80,8 @@ export function phaseOf(week: number, trainingWeeks: number, totalWeeks: number)
 }
 
 /**
- * Calendar skeleton of the plan: start Monday, weeks, phases, recovery weeks, taper and the event.
+ * Calendar skeleton of the plan: start Monday, weeks, phases, recovery weeks, taper and the event. Week 1 is
+ * the week of the start date, so it can be a partial week (`firstDay` after its Monday, see `firstPlanDay`).
  * Without an event it is 12 weeks with the test in week 12. With an event it is built backwards: the last
  * week holds the event, the taper is the last 1 or 2 weeks, and the plan starts 12 weeks before the event
  * week when the event is further away (open question: the PO can start now without the event instead).
@@ -73,16 +91,19 @@ export function planStructure(input: {
   startDate?: IsoDate | undefined;
   event?: PlanEvent | undefined;
   recoveryEvery?: number | undefined;
+  /** Training days, 0 = Monday to 6 = Sunday; decide whether the week of the start date can hold rides. */
+  availableDays?: readonly number[] | undefined;
 }): PlanStructure {
   const notices: Notice[] = [];
   const warnings: Warning[] = [];
   const requested =
     input.startDate !== undefined && isIsoDate(input.startDate) ? input.startDate : input.today;
-  let startDate = mondayOnOrAfter(requested);
-  if (input.startDate !== undefined && startDate !== input.startDate) {
+  let firstDay = firstPlanDay(requested, input.availableDays ?? []);
+  let startDate = mondayOnOrBefore(firstDay);
+  if (firstDay !== requested) {
     notices.push({
       code: "start-moved",
-      message: `Weeks start on Monday, so the plan starts on ${startDate}.`,
+      message: `No training day is left in the week of ${requested}, so the plan starts on ${firstDay}.`,
     });
   }
 
@@ -93,7 +114,7 @@ export function planStructure(input: {
 
   if (input.event) {
     const duration = input.event.duration ?? DEFAULT_EVENT_DURATION;
-    if (!isIsoDate(input.event.date) || input.event.date < startDate) {
+    if (!isIsoDate(input.event.date) || input.event.date < firstDay) {
       warnings.push({
         code: "event-past",
         message: "The event date is before the plan starts, so the plan is built without an event.",
@@ -104,6 +125,7 @@ export function planStructure(input: {
       const weeksToEvent = weeksBetween(startDate, eventMonday) + 1;
       if (weeksToEvent > PLAN_WEEKS) {
         startDate = plusDays(eventMonday, -7 * (PLAN_WEEKS - 1));
+        firstDay = startDate;
         totalWeeks = PLAN_WEEKS;
         warnings.push({
           code: "event-far",
@@ -154,6 +176,7 @@ export function planStructure(input: {
 
   return {
     startDate,
+    firstDay,
     endDate: event ? event.date : plusDays(startDate, 7 * totalWeeks - 1),
     weeks,
     trainingWeeks,

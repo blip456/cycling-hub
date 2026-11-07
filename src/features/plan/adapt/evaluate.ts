@@ -68,8 +68,11 @@ export type PreviousInputs = {
 };
 
 export type EvaluateInput = {
-  /** The stored plan: its start date (the calendar skeleton stays) and what it was built from. */
-  plan: { startDate: IsoDate; previous?: PreviousInputs };
+  /**
+   * The stored plan: its start date (the Monday of week 1; the calendar skeleton stays), its first day when
+   * that is later (a partial week 1) and what it was built from.
+   */
+  plan: { startDate: IsoDate; firstDay?: IsoDate; previous?: PreviousInputs };
   /** All stored sessions of the plan (past and future), with their statuses and matches. */
   sessions: readonly StoredSession[];
   rides: readonly AdaptRide[];
@@ -279,7 +282,10 @@ type Pass = {
 
 function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass {
   const { today, profileInput } = input;
-  const intake: Intake = { ...profileInput.intake, startDate: input.plan.startDate };
+  const intake: Intake = {
+    ...profileInput.intake,
+    startDate: input.plan.firstDay ?? input.plan.startDate,
+  };
   const ftp = profileInput.ftp;
   const recent = profileInput.adjustments?.recentAverageHours;
   const base: PlanAdjustments = recent === undefined ? {} : { recentAverageHours: recent };
@@ -345,8 +351,8 @@ function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass
   const sinceRide =
     lastRide !== undefined
       ? between(lastRide, today)
-      : today >= input.plan.startDate
-        ? between(input.plan.startDate, today)
+      : today >= (input.plan.firstDay ?? input.plan.startDate)
+        ? between(input.plan.firstDay ?? input.plan.startDate, today)
         : 0;
   const inactive = sinceRide >= INACTIVE_DAYS;
   const inactivity = inactive
@@ -589,7 +595,10 @@ function withUpdate(
 ): EvaluateResult {
   const { today, profileInput } = input;
   const { plan, adjustments, make, weight } = state;
-  const intake: Intake = { ...profileInput.intake, startDate: input.plan.startDate };
+  const intake: Intake = {
+    ...profileInput.intake,
+    startDate: input.plan.firstDay ?? input.plan.startDate,
+  };
   const ftp = profileInput.ftp ?? 0;
   const diff = result.diff;
 

@@ -280,7 +280,7 @@ export function planInsert(input: {
     start_date: plan.startDate,
     weeks: plan.weeks.length,
     status: "active",
-    intake: toJson(intake),
+    intake: toJson({ ...intake, startDate: plan.firstDay }),
     ftp_w: Math.round(ftp),
     weight_kg: weightKg,
     engine_version: plan.engineVersion,

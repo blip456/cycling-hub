@@ -12,6 +12,7 @@ import type { EvaluateInput } from "../adapt";
 import type { Intake, PlanInput } from "../engine";
 import { purposesFromProfile } from "../data/intake";
 import type { PlanProfile, WeightGoalRecord } from "../data/api";
+import { firstDayOf } from "../data/model";
 import type { PlanSession, StoredPlan } from "../data/types";
 import { levelAnswersToStored } from "../schemas";
 import { toAdaptRide, toStoredSessions } from "./stored";
@@ -96,7 +97,7 @@ export function buildEvaluateInput(
   if (!stored) return null;
   const intake = edit ?? currentIntake(stored, profile, goal);
   const profileInput: PlanInput = {
-    intake: { ...intake, startDate: plan.startDate },
+    intake: { ...intake, startDate: firstDayOf(plan) },
     today,
     ftp: baseline.ftp ?? plan.ftp,
     lthr: baseline.lthr,
@@ -107,6 +108,7 @@ export function buildEvaluateInput(
     input: {
       plan: {
         startDate: plan.startDate,
+        firstDay: firstDayOf(plan),
         previous: { ftp: plan.ftp, ...(plan.intake ? { intake: plan.intake } : {}) },
       },
       sessions: toStoredSessions(inputs.sessions, stored),

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { mondayOnOrAfter, mondayOnOrBefore, phaseOf, planStructure } from "./calendar";
+import {
+  firstPlanDay,
+  mondayOnOrAfter,
+  mondayOnOrBefore,
+  phaseOf,
+  planStructure,
+} from "./calendar";
 
 describe("start date", () => {
   it("finds Mondays", () => {
@@ -8,15 +14,55 @@ describe("start date", () => {
     expect(mondayOnOrBefore("2026-11-01")).toBe("2026-10-26");
   });
 
-  it("starts on the next Monday by default, today when it is a Monday", () => {
-    expect(planStructure({ today: "2026-10-26" }).startDate).toBe("2026-10-26");
-    expect(planStructure({ today: "2026-10-29" }).startDate).toBe("2026-11-02");
+  it("starts today by default: week 1 is this week, from today on", () => {
+    const monday = planStructure({ today: "2026-10-26" });
+    expect(monday.startDate).toBe("2026-10-26");
+    expect(monday.firstDay).toBe("2026-10-26");
+    const thursday = planStructure({ today: "2026-10-29", availableDays: [2, 6] });
+    expect(thursday.startDate).toBe("2026-10-26");
+    expect(thursday.firstDay).toBe("2026-10-29");
+    expect(thursday.weeks).toHaveLength(12);
+    expect(thursday.endDate).toBe("2027-01-17");
+    expect(thursday.notices).toEqual([]);
   });
 
-  it("rolls a chosen start date forward to a Monday and says so", () => {
-    const structure = planStructure({ today: "2026-10-26", startDate: "2026-10-28" });
+  it("starts on a chosen date in its own week", () => {
+    const structure = planStructure({
+      today: "2026-10-26",
+      startDate: "2026-10-30",
+      availableDays: [2, 6],
+    });
+    expect(structure.startDate).toBe("2026-10-26");
+    expect(structure.firstDay).toBe("2026-10-30");
+    expect(structure.notices).toEqual([]);
+  });
+
+  it("starts on the next Monday when no training day is left in the week, and says so", () => {
+    const structure = planStructure({
+      today: "2026-10-26",
+      startDate: "2026-10-30",
+      availableDays: [1, 2],
+    });
     expect(structure.startDate).toBe("2026-11-02");
+    expect(structure.firstDay).toBe("2026-11-02");
     expect(structure.notices.map((n) => n.code)).toEqual(["start-moved"]);
+  });
+
+  it("finds the first plan day", () => {
+    expect(firstPlanDay("2026-11-06", [2, 6])).toBe("2026-11-06");
+    expect(firstPlanDay("2026-11-08", [2, 6])).toBe("2026-11-08");
+    expect(firstPlanDay("2026-11-06", [0, 2])).toBe("2026-11-09");
+    expect(firstPlanDay("2026-11-06", [])).toBe("2026-11-06");
+  });
+
+  it("an event before the first day is in the past", () => {
+    const structure = planStructure({
+      today: "2026-10-29",
+      availableDays: [2, 6],
+      event: { name: "Race", date: "2026-10-28" },
+    });
+    expect(structure.event).toBeNull();
+    expect(structure.warnings.map((w) => w.code)).toEqual(["event-past"]);
   });
 });
 
