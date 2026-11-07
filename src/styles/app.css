@@ -69,11 +69,21 @@
   }
   body {
     @apply bg-bg font-sans text-text antialiased;
-    /* Gradient splash (P25); data-background="flat" on <html> turns it off via the token. */
-    background: var(--page, var(--bg));
-    background-attachment: fixed;
     line-height: 1.45;
     min-height: 100dvh;
+  }
+  /*
+   * Gradient splash (P25); data-background="flat" on <html> turns it off via the token. It is a fixed layer
+   * behind the page, not `background-attachment: fixed` on the body: iOS Safari ignores that value, so there
+   * the splash scrolled with the content while the top bar stood still.
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--page, var(--bg));
   }
   /* P21/P23: solid 2 px accent focus ring, no glow. */
   :focus-visible {
@@ -90,6 +100,29 @@
       scroll-behavior: auto !important;
     }
   }
+}
+
+/*
+ * Phone top bar: it paints the same fixed splash as the page behind it (same size, same origin), so it blends
+ * in at every scroll position and still hides what scrolls under it. Not blurred glass, not a flat colour.
+ * 3.5rem is the bar height (h-14); the safe area is the notch in the installed app.
+ */
+.topbar {
+  isolation: isolate;
+}
+.topbar::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(env(safe-area-inset-top) + 3.5rem);
+  z-index: -1;
+  pointer-events: none;
+  background: var(--page, var(--bg));
+  background-size: 100% 100dvh;
+  background-position: 0 0;
+  background-repeat: no-repeat;
 }
 
 /* Phone drawer (native modal <dialog>) */

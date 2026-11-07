@@ -10,6 +10,25 @@ const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), 
   version: string;
 };
 
+/**
+ * The short commit id of this build, shown in the side menu so it is clear which build is running (a
+ * preview, the installed app or production all carry the same package version). Vercel and GitHub Actions
+ * give the full SHA in the environment; locally it comes from git, and "local" when git is unavailable.
+ */
+function buildId(): string {
+  const fromEnv = process.env.VERCEL_GIT_COMMIT_SHA ?? process.env.GITHUB_SHA;
+  if (fromEnv && /^[0-9a-f]{7,40}$/i.test(fromEnv)) return fromEnv.slice(0, 7);
+  try {
+    const id = execFileSync("git", ["rev-parse", "--short=7", "HEAD"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    return id !== "" ? id : "local";
+  } catch {
+    return "local";
+  }
+}
+
 // Dark tokens from src/styles/tokens.css (--bg). The manifest can't read CSS variables.
 const DARK_BG = "#111318";
 
@@ -69,6 +88,7 @@ function releaseData(): Plugin {
 export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
+    __BUILD_ID__: JSON.stringify(buildId()),
     ...supabaseEnvDefines(loadEnv(mode, process.cwd(), "")),
   },
   plugins: [
