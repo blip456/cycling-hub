@@ -67,7 +67,7 @@
 
 /*
  * Type scale (DESIGN.md section 3). One utility per token: size, line height, tracking and weight together.
- * Use these, never `text-[15px]`, `text-xl` or `tracking-tight`. Weight can still be changed on the element
+ * Use these, never an arbitrary pixel size, a Tailwind size such as `text-xl` or `tracking-tight`. Weight can still be changed on the element
  * (`font-medium`, `font-semibold`) because the default is read from Tailwind's weight variable.
  *   text-display   44 / 46  600  -0.025em  the one hero number of a screen
  *   text-stat      32 / 36  600  -0.025em  outcome numbers

@@ -4,7 +4,7 @@
 //  - the type scale in DESIGN.md = tokens.css = tokens.json = the text-* utilities in app.css,
 //  - tokens.css colours = tokens.json colours,
 //  - one font family stack everywhere, Inter shipped with the app (imported once, precached, CSP),
-//  - no off-scale type classes in the areas that are already clean (all of src with TYPE_SCALE_STRICT=1).
+//  - no off-scale type classes anywhere in src (the release gate).
 
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
@@ -197,19 +197,8 @@ describe("fonts (P20, P36)", () => {
 });
 
 describe("type classes in source", () => {
-  // Areas that are clean always; the whole of src when TYPE_SCALE_STRICT=1 (the release gate).
-  const CLEAN = [
-    "src/components",
-    "src/pages/auth",
-    "src/pages/SettingsPage.tsx",
-    "src/pages/WhatsNewPage.tsx",
-    "src/pages/WhatsNextPage.tsx",
-    "src/pages/NotFoundPage.tsx",
-    "src/pages/ConfigErrorPage.tsx",
-    "src/features/settings",
-    "src/features/release",
-  ];
-  const targets = process.env.TYPE_SCALE_STRICT === "1" ? ["src"] : CLEAN;
+  // The whole of src: every area follows the type scale (design audit, Nov 2026), so this stays a gate.
+  const targets = ["src"];
   const files = [];
   const walk = (path) => {
     const abs = join(root, path);

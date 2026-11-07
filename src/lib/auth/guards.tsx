@@ -4,10 +4,7 @@ import { useAuth } from "./auth-context";
 
 function Pending() {
   return (
-    <div
-      role="status"
-      className="flex min-h-dvh items-center justify-center text-[15px] text-muted"
-    >
+    <div role="status" className="flex min-h-dvh items-center justify-center text-body text-muted">
       Loading…
     </div>
   );
