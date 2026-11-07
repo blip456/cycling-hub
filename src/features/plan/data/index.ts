@@ -29,6 +29,7 @@ export {
   type PlanData,
 } from "./hooks";
 export { assumptionLines } from "./assumptions";
+export * from "./distance";
 export * from "./edit";
 export * from "./intake";
 export { kindFromDb, kindToDb } from "./mapping";
@@ -36,4 +37,5 @@ export * from "./model";
 export { applyPatch, inversePatch } from "./patch";
 export type { PlanSession, PlanStatus, SessionPatch, StoredPhase, StoredPlan } from "./types";
 export { usePlanActions, type PlanActions } from "./use-plan-actions";
+export { useDistances, type Distances } from "./use-distance";
 export { currentWeight, type CurrentWeight } from "./weight";

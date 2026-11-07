@@ -3,8 +3,12 @@ import { Button } from "@/components/ui";
 import { useMediaQuery } from "@/lib/use-media-query";
 import {
   formatDuration,
+  formatKm,
   formatLoad,
   PHASE_TEXT,
+  sessionDistance,
+  totalKm,
+  useDistances,
   usePlanData,
   weekDays,
   weekNumberOf,
@@ -24,6 +28,7 @@ export function WeekPage() {
   const today = useToday();
   const grid = useMediaQuery(GRID_QUERY);
   const [params, setParams] = useSearchParams();
+  const distances = useDistances(data.plan);
   usePlanLoadErrorCard(data.isError, data.refetch);
 
   if (data.isError) return <PlanLoadError retry={data.refetch} />;
@@ -41,6 +46,14 @@ export function WeekPage() {
   const environment = plan.intake?.environment ?? "both";
   const days = weekDays(week.startDate, week.sessions, plan.intake?.availableDays ?? [], today);
   const count = week.sessions.filter((s) => s.kind !== "event").length;
+  const km = totalKm(week.sessions, distances.model, distances.ridesById);
+  // Indoor sessions have no distance: the total then says it is the outdoor part.
+  const indoorLeftOut = week.sessions.some(
+    (s) =>
+      s.kind !== "event" &&
+      s.status !== "skipped" &&
+      sessionDistance(s, distances.model, distances.ridesById) === null,
+  );
 
   function go(next: number) {
     setParams(next === current ? {} : { week: String(next) });
@@ -55,7 +68,8 @@ export function WeekPage() {
           </h2>
           <p className="text-caption text-muted">{weekRange(week.startDate)}</p>
           <p className="text-caption text-muted">
-            {count} {count === 1 ? "session" : "sessions"} · {formatDuration(week.minutes)} · Load{" "}
+            {count} {count === 1 ? "session" : "sessions"} · {formatDuration(week.minutes)}
+            {km !== null ? ` · ${formatKm(km)}${indoorLeftOut ? " outdoor" : ""}` : ""} · Load{" "}
             {formatLoad(week.load)}
           </p>
         </div>

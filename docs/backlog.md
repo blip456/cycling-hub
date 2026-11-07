@@ -513,6 +513,10 @@ Product
 - Weather per ride: temperature, wind speed and direction (P19).
 - Extra Strava tags beyond commute and indoor, once export v2 has them (P11, Q1).
 - Per-second streams (power, HR, cadence) for E1 and E3, stored in Supabase Storage (T6, Q1).
+- Trend dashboard (E3): progress lines over time from the outdoor rides, such as the average speed per
+  100 W of average power, and the speed and power at a baseline heart rate (for example in zone 2). Shows
+  whether the PO rides faster at the same or a lower power or heart rate. Builds on the speed trendline of
+  P89; terrain (climbing) and wind still need a correction or a filter.
 
 Platform
 
