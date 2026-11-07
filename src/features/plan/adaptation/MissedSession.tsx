@@ -6,7 +6,7 @@ import { ConfirmDialog } from "@/features/rides/detail/ConfirmDialog";
 import { useRides } from "@/features/rides/hooks";
 import { useSessionActions } from "../components/session-actions-context";
 import { useToday } from "../components/page-hooks";
-import { ChoiceRow } from "../components/parts";
+import { ChoiceRow, ErrorNotice } from "../components/parts";
 import {
   formatDay,
   formatDuration,
@@ -31,10 +31,10 @@ function WhatTheAppDid({ session }: { session: PlanSession }) {
   );
   return (
     <section aria-labelledby="missed-did">
-      <h3 id="missed-did" className="mb-1.5 text-[17px] font-semibold">
+      <h3 id="missed-did" className="mb-1.5 text-body-lg font-semibold">
         What the app did
       </h3>
-      <ol className="flex list-decimal flex-col gap-1 pl-5 text-[15px]">
+      <ol className="flex list-decimal flex-col gap-1 pl-5 text-body">
         <li>
           Kept the session in the plan as <strong className="font-semibold">Missed</strong>.
         </li>
@@ -118,7 +118,7 @@ function RidePicker({ session, onClose }: { session: PlanSession; onClose: () =>
         </p>
       ) : (
         <fieldset>
-          <legend className="mb-1 text-[13px] font-semibold text-text">
+          <legend className="mb-1 text-caption font-semibold text-text">
             Which ride counts for {session.title}, {formatDay(session.date)}?
           </legend>
           {options.map((o, i) => (
@@ -137,15 +137,13 @@ function RidePicker({ session, onClose }: { session: PlanSession; onClose: () =>
               {o.name}
             </ChoiceRow>
           ))}
-          <p className="mt-1 text-[13px]">
+          <p className="mt-1 text-caption">
             If the ride counts for another session now, it moves here.
           </p>
         </fieldset>
       )}
       {failed ? (
-        <p role="alert" className="mt-2 text-[14px] text-danger">
-          Could not save the match. Nothing was changed.
-        </p>
+        <ErrorNotice className="mt-3">Could not save the match. Nothing was changed.</ErrorNotice>
       ) : null}
     </ConfirmDialog>
   );
@@ -161,10 +159,10 @@ export function MissedSession({ session }: { session: PlanSession }) {
   const [picking, setPicking] = useState(false);
   return (
     <div className="flex flex-col gap-5">
-      <p className="max-w-[65ch] text-[15px] text-muted">{RULE}</p>
+      <p className="max-w-[65ch] text-body text-muted">{RULE}</p>
       <WhatTheAppDid session={session} />
       <section aria-labelledby="missed-different">
-        <h3 id="missed-different" className="mb-2 text-[17px] font-semibold">
+        <h3 id="missed-different" className="mb-2 text-body-lg font-semibold">
           Did it go differently?
         </h3>
         <div className="flex flex-col gap-4">
@@ -177,7 +175,7 @@ export function MissedSession({ session }: { session: PlanSession }) {
             >
               Pick the ride that counts
             </Button>
-            <p className="mt-1 text-[13px] text-muted">
+            <p className="mt-1 text-caption text-muted">
               You rode, but the app matched it to another session or to none.
             </p>
           </div>
@@ -191,7 +189,7 @@ export function MissedSession({ session }: { session: PlanSession }) {
             >
               Mark as done
             </Button>
-            <p className="mt-1 text-[13px] text-muted">
+            <p className="mt-1 text-caption text-muted">
               You did it without a ride in the app, for example indoors without recording. It counts
               as done at the planned load.
             </p>
@@ -206,7 +204,7 @@ export function MissedSession({ session }: { session: PlanSession }) {
             >
               Mark as skipped
             </Button>
-            <p className="mt-1 text-[13px] text-muted">
+            <p className="mt-1 text-caption text-muted">
               You chose not to do it. It counts as not done and the plan adapts.
             </p>
           </div>

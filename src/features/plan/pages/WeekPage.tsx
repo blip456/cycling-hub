@@ -12,6 +12,7 @@ import {
   weekSummaries,
 } from "../data";
 import { WeekReasonCard } from "../adaptation/ReasonCards";
+import { ArrowLeftIcon, ArrowRightIcon } from "../components/icons";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
@@ -47,40 +48,42 @@ export function WeekPage() {
 
   return (
     <section aria-labelledby="plan-week">
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <Button
-          variant="secondary"
-          aria-label={`Go to week ${String(number - 1)}`}
-          aria-disabled={number <= 1}
-          onClick={() => {
-            if (number > 1) go(number - 1);
-          }}
-        >
-          <span aria-hidden="true">←</span>
-          <span className={grid ? "" : "sr-only"}>Week {number - 1}</span>
-        </Button>
-        <div className="min-w-0 flex-1 text-center">
-          <h2 id="plan-week" className="text-[17px] leading-6 font-semibold">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 id="plan-week" className="text-body-lg">
             Week {number} of {plan.weeks} · {PHASE_TEXT[week.phase]}
           </h2>
-          <p className="text-[14px] text-muted">{weekRange(week.startDate)}</p>
+          <p className="text-caption text-muted">{weekRange(week.startDate)}</p>
+          <p className="text-caption text-muted">
+            {count} {count === 1 ? "session" : "sessions"} · {formatDuration(week.minutes)} · Load{" "}
+            {formatLoad(week.load)}
+          </p>
         </div>
-        <Button
-          variant="secondary"
-          aria-label={`Go to week ${String(number + 1)}`}
-          aria-disabled={number >= plan.weeks}
-          onClick={() => {
-            if (number < plan.weeks) go(number + 1);
-          }}
-        >
-          <span className={grid ? "" : "sr-only"}>Week {number + 1}</span>
-          <span aria-hidden="true">→</span>
-        </Button>
+        <div className="flex shrink-0 gap-2">
+          <Button
+            variant="secondary"
+            aria-label={`Go to week ${String(number - 1)}`}
+            aria-disabled={number <= 1}
+            onClick={() => {
+              if (number > 1) go(number - 1);
+            }}
+          >
+            <ArrowLeftIcon />
+            <span className={grid ? "" : "sr-only"}>Week {number - 1}</span>
+          </Button>
+          <Button
+            variant="secondary"
+            aria-label={`Go to week ${String(number + 1)}`}
+            aria-disabled={number >= plan.weeks}
+            onClick={() => {
+              if (number < plan.weeks) go(number + 1);
+            }}
+          >
+            <span className={grid ? "" : "sr-only"}>Week {number + 1}</span>
+            <ArrowRightIcon />
+          </Button>
+        </div>
       </div>
-      <p className="mb-3 text-center text-[15px] text-muted">
-        {count} {count === 1 ? "session" : "sessions"} · {formatDuration(week.minutes)} · Load{" "}
-        {formatLoad(week.load)}
-      </p>
       <WeekReasonCard plan={plan} week={week} weeks={weeks} isCurrent={number === current} />
       <ol
         aria-label={`Days of week ${String(number)}`}
@@ -95,9 +98,9 @@ export function WeekPage() {
         )}
       </ol>
       {days.some((d) => d.sessions.some((s) => s.strengthNote !== null)) ? (
-        <div className="mt-4 rounded-2xl bg-surface px-4 py-3">
-          <h3 className="text-[15px] font-semibold">Strength notes</h3>
-          <ul className="mt-1 flex flex-col gap-1 text-[14px] text-muted">
+        <div className="mt-4 rounded-lg bg-surface px-4 py-3">
+          <h3 className="text-body font-semibold">Strength notes</h3>
+          <ul className="mt-1 flex flex-col gap-1 text-caption text-muted">
             {days.flatMap((d) =>
               d.sessions
                 .filter((s) => s.strengthNote !== null)

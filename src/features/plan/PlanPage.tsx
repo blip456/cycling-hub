@@ -55,8 +55,10 @@ function PlanRoutes() {
  */
 export function PlanPage() {
   return (
-    <SessionActionsProvider>
-      <PlanRoutes />
-    </SessionActionsProvider>
+    <div className="tabular-nums">
+      <SessionActionsProvider>
+        <PlanRoutes />
+      </SessionActionsProvider>
+    </div>
   );
 }

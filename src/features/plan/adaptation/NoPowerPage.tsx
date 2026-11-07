@@ -51,28 +51,26 @@ export function NoPowerPage() {
       </h2>
       <div className={desktop ? "grid grid-cols-2 items-start gap-8" : "flex flex-col gap-5"}>
         <section aria-labelledby="no-power-list">
-          <h3 id="no-power-list" className="text-[17px] font-semibold">
+          <h3 id="no-power-list" className="text-body-lg font-semibold">
             Sessions without power data
           </h3>
           {sessions.length === 0 ? (
-            <p className="mt-1 text-[15px] text-muted">
+            <p className="mt-1 text-body text-muted">
               {`Fewer than ${String(NO_POWER_MIN_SESSIONS)} sessions in the last 4 weeks are missing power data, so there is nothing to fix.`}
             </p>
           ) : (
             <>
-              <p className="mt-1 text-[15px] text-muted">
-                Last 4 weeks, {sessions.length} sessions.
-              </p>
+              <p className="mt-1 text-body text-muted">Last 4 weeks, {sessions.length} sessions.</p>
               <ul className="mt-2 flex flex-col gap-1.5">
                 {sessions.map((s) => (
                   <li
                     key={s.id}
-                    className="flex min-h-11 flex-wrap items-center justify-between gap-x-3 rounded-xl bg-surface px-3.5 py-2 text-[15px]"
+                    className="flex min-h-11 flex-wrap items-center justify-between gap-x-3 rounded-lg bg-surface px-3.5 py-2 text-body"
                   >
                     <span className="font-medium">
                       {formatDay(s.date)} · {s.title}
                     </span>
-                    <span className="text-[13px] text-muted">no power channel</span>
+                    <span className="text-caption text-muted">no power channel</span>
                   </li>
                 ))}
               </ul>
@@ -80,10 +78,10 @@ export function NoPowerPage() {
           )}
         </section>
         <section aria-labelledby="no-power-fix">
-          <h3 id="no-power-fix" className="text-[17px] font-semibold">
+          <h3 id="no-power-fix" className="text-body-lg font-semibold">
             How to get power data
           </h3>
-          <ol className="mt-2 flex list-decimal flex-col gap-2 pl-5 text-[15px]">
+          <ol className="mt-2 flex list-decimal flex-col gap-2 pl-5 text-body">
             {FIXES.map((fix) => (
               <li key={fix}>{fix}</li>
             ))}
