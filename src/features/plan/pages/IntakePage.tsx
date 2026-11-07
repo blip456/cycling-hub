@@ -368,7 +368,7 @@ function IntakeForm({
                 <p className="mt-1">
                   <Link
                     to={`${base}?step=${String(missing ?? 1)}`}
-                    className="font-semibold text-accent underline"
+                    className="font-semibold text-accent"
                   >
                     Go to step {String(missing ?? 1)}
                   </Link>{" "}

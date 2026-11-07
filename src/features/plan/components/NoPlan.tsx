@@ -87,7 +87,7 @@ function UseLine({
       ) : (
         <span>
           {children}{" "}
-          <Link to={fix.to} className="font-semibold text-accent underline">
+          <Link to={fix.to} className="font-semibold text-accent">
             {fix.label}
           </Link>
         </span>

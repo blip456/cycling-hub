@@ -42,7 +42,7 @@ export function ErrorNotice({
   return (
     <div
       role="alert"
-      className={`flex items-start gap-3 rounded-md bg-[var(--danger-soft)] px-4 py-3 text-body text-text ${className}`}
+      className={`flex items-start gap-3 rounded-md bg-danger-soft px-4 py-3 text-body text-text ${className}`}
     >
       <AlertIcon className="mt-0.5 shrink-0 text-danger" />
       <div className="min-w-0">{children}</div>

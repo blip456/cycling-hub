@@ -309,7 +309,7 @@ export function OverviewPage() {
         ) : null}
         <p className="text-body text-muted">
           Built from your answers.{" "}
-          <Link to="/plan/edit" className="font-semibold text-accent underline">
+          <Link to="/plan/edit" className="font-semibold text-accent">
             Edit plan
           </Link>
         </p>
