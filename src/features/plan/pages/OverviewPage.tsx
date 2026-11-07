@@ -24,6 +24,7 @@ import { EventCard } from "../adaptation/ReasonCards";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
+import { linkClass } from "@/components/button-class";
 
 function eventText(date: IsoDate, today: IsoDate): string {
   const days = diffDays(today, date);
@@ -309,7 +310,7 @@ export function OverviewPage() {
         ) : null}
         <p className="text-body text-muted">
           Built from your answers.{" "}
-          <Link to="/plan/edit" className="font-semibold text-accent">
+          <Link to="/plan/edit" className={linkClass}>
             Edit plan
           </Link>
         </p>

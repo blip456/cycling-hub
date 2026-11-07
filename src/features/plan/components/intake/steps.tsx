@@ -20,6 +20,7 @@ import { AlertIcon } from "@/components/icons";
 import { RIDING_ENVIRONMENTS } from "../../schemas";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import { ChoiceRow } from "../parts";
+import { linkClass } from "@/components/button-class";
 
 export type StepProps = {
   draft: IntakeDraft;
@@ -225,7 +226,7 @@ export function PurposesStep({
             />
             {ctx.weightKg === null ? (
               <p className="text-caption text-muted">
-                <Link to="/weight" className="font-semibold text-accent">
+                <Link to="/weight" className={linkClass}>
                   Log your weight
                 </Link>{" "}
                 to set a target.
@@ -333,7 +334,7 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
         {errors.days ? <FieldError id="days-error">{errors.days}</FieldError> : null}
         <p className="mt-1.5 text-caption text-muted">
           From your profile.{" "}
-          <Link to="/profile" className="font-semibold text-accent">
+          <Link to="/profile" className={linkClass}>
             Change days in your profile
           </Link>
         </p>
@@ -346,7 +347,7 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
           </div>
           <p className="mt-1.5 text-caption text-muted">
             Set in your profile. Sessions are planned for indoor, outdoor or both.{" "}
-            <Link to="/profile" className="font-semibold text-accent">
+            <Link to="/profile" className={linkClass}>
               Change in your profile
             </Link>
           </p>

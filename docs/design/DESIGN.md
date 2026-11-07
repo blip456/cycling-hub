@@ -218,11 +218,15 @@ Height 44, radius 12, padding 0 20, 15 px / 600. Full width on phone forms. Disa
 
 ### Segmented control
 
-`--track` container (radius 12, 3 px padding, 44 high); segments 15 px / 500 `--muted`; selected segment `--raised`, `--text` 600, with a 1 px inset `--input-border` edge (3 : 1). Used for Week / Month and System / Light / Dark. Arrow keys move the selection (radio-group semantics).
+`--track` container (radius 12, 3 px padding, 44 high); segments 15 px / 500 `--muted`; segment radius 9 (the container's 12 minus its 3 px padding, so the corners stay concentric); selected segment `--raised`, `--text` 600, with a 1 px inset `--input-border` edge (3 : 1). Used for Week / Month and System / Light / Dark. Arrow keys move the selection (radio-group semantics).
 
 ### Checkbox
 
 20 px box, radius 6, 2 px `--input-border`; checked: `--accent` fill with an `--on-accent` check. Whole row with label is the 44 px target. Used for "Hide commutes".
+
+### Links in text
+
+A link inside a sentence is `--accent`, 600 and always underlined (offset 2 px), so colour is never the only signal (WCAG 1.4.1); hover `--accent-hover`. Built as `linkClass` in `src/components/button-class.ts`. Links that are buttons (ghost, "Forgot password?") and nav items are not underlined.
 
 ### Toggle
 

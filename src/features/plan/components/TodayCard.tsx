@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import { buttonClass } from "@/components/button-class";
+import { buttonClass, linkClass } from "@/components/button-class";
 import { Button } from "@/components/ui";
 import { addDays } from "@/features/athlete";
 import {
@@ -51,7 +51,7 @@ function OpenCard({ session, more }: { session: PlanSession; more: number }) {
         {line ? <p className="mt-1 text-body">{line}</p> : null}
         {more > 0 ? (
           <p className="mt-1 text-body">
-            <Link to={`/plan?week=${String(session.week)}`} className="font-semibold text-accent">
+            <Link to={`/plan?week=${String(session.week)}`} className={linkClass}>
               and {more === 1 ? "one more" : `${String(more)} more`} today
             </Link>
           </p>

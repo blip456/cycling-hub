@@ -6,6 +6,7 @@ import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "./page-hooks";
 import { CheckIcon } from "./icons";
 import { EmptyTile, LinkButton, PlanLoadError, PlanSkeleton } from "./parts";
 import { useMediaQuery } from "@/lib/use-media-query";
+import { linkClass } from "@/components/button-class";
 
 const ROUTES = [
   {
@@ -87,7 +88,7 @@ function UseLine({
       ) : (
         <span>
           {children}{" "}
-          <Link to={fix.to} className="font-semibold text-accent">
+          <Link to={fix.to} className={linkClass}>
             {fix.label}
           </Link>
         </span>
