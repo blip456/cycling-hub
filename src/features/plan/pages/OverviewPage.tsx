@@ -200,7 +200,7 @@ function LoadTable({ weeks, id }: { weeks: WeekSummary[]; id: string }) {
               <th scope="row" className="h-11 py-1 pr-2 text-left font-semibold">
                 <Link
                   to={`/plan?week=${String(week.number)}`}
-                  className="font-semibold text-accent"
+                  className="inline-flex min-h-11 items-center font-semibold text-accent"
                 >
                   Week {week.number}
                 </Link>

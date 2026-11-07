@@ -22,10 +22,13 @@ export function ChangeList({
   changes,
   table,
   label,
+  level = 3,
 }: {
   changes: readonly AdaptChange[];
   table: boolean;
   label: string;
+  /** Heading level of each card on the phone: 3 under the page heading, 4 inside an h3 section. */
+  level?: 3 | 4;
 }) {
   if (changes.length === 0) {
     return <p className="text-body text-muted">No sessions changed.</p>;
@@ -70,6 +73,7 @@ export function ChangeList({
       </div>
     );
   }
+  const Heading = level === 3 ? "h3" : "h4";
   return (
     <ul aria-label={label} className="flex flex-col gap-2.5">
       {changes.map((change) => (
@@ -77,7 +81,7 @@ export function ChangeList({
           key={`${change.date}-${change.change}`}
           className="rounded-lg bg-surface px-4 py-3 text-body"
         >
-          <h4 className="font-semibold">{title(change)}</h4>
+          <Heading className="font-semibold">{title(change)}</Heading>
           <dl className="mt-1.5 flex flex-col gap-1">
             <div className="flex gap-2">
               <dt className="w-14 shrink-0 text-muted">Before</dt>

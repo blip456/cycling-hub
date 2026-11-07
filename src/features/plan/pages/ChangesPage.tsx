@@ -117,6 +117,7 @@ export function ChangesPage() {
                       <ChangeList
                         changes={change.payload.changes}
                         table={desktop}
+                        level={4}
                         label={`Sessions changed on ${formatUpdated(change.createdAt)}`}
                       />
                     </div>
