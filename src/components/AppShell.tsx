@@ -118,7 +118,7 @@ export function AppShell() {
       </a>
 
       {/* Desktop: permanent side menu on the page background (DESIGN.md) */}
-      <aside className="fixed inset-y-0 left-0 hidden w-56 px-3 py-6 lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-(--sidebar-w) px-3 py-6 lg:block">
         {isDesktop ? <DesktopSideMenu /> : <SideMenu />}
       </aside>
 
@@ -138,7 +138,7 @@ export function AppShell() {
           // A click on the backdrop lands on the <dialog> element itself.
           if (e.target === e.currentTarget) closeMenu();
         }}
-        className="drawer m-0 h-dvh max-h-none w-[min(18rem,85vw)] max-w-none bg-surface p-0 text-text lg:hidden"
+        className="drawer m-0 h-dvh max-h-none w-[min(var(--drawer-w),85vw)] max-w-none rounded-r-xl bg-raised p-0 text-text shadow-raised lg:hidden"
       >
         <div className="flex h-full flex-col px-3 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
           <div className="flex justify-end">
@@ -146,7 +146,7 @@ export function AppShell() {
               type="button"
               onClick={closeMenu}
               aria-label="Close menu"
-              className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+              className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
             >
               <CloseIcon />
             </button>
@@ -157,7 +157,7 @@ export function AppShell() {
         </div>
       </dialog>
 
-      <div className="lg:pl-56">
+      <div className="lg:pl-(--sidebar-w)">
         {/* Phone: top bar */}
         <header className="topbar sticky top-0 z-10 pt-[env(safe-area-inset-top)] lg:hidden">
           <div className="flex h-14 items-center gap-1.5 px-2">
@@ -165,7 +165,7 @@ export function AppShell() {
               <Link
                 to={subPage.parent}
                 aria-label="Back"
-                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
               >
                 <BackIcon />
               </Link>
@@ -178,26 +178,22 @@ export function AppShell() {
                 aria-haspopup="dialog"
                 aria-expanded={menuOpen}
                 aria-controls="side-menu"
-                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+                className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
               >
                 <MenuIcon />
               </button>
             )}
-            <h1 className="min-w-0 flex-1 truncate text-xl font-semibold tracking-tight">
-              {title}
-            </h1>
-            <span className="pr-2 text-[13px] font-semibold tracking-tight text-muted">
-              Cycling Hub
-            </span>
+            <h1 className="min-w-0 flex-1 truncate text-title">{title}</h1>
+            <span className="pr-2 text-caption font-semibold text-muted">Cycling Hub</span>
           </div>
         </header>
 
         <main
           id="main"
           tabIndex={-1}
-          className="mx-auto w-full max-w-5xl px-4 pb-28 pt-2 outline-none lg:px-8 lg:pt-8"
+          className="mx-auto w-full max-w-(--content-max) px-4 pb-28 pt-2 outline-none lg:px-8 lg:pt-8"
         >
-          <h1 className="mb-6 hidden text-2xl font-semibold tracking-tight lg:block">{title}</h1>
+          <h1 className="mb-6 hidden text-heading lg:block">{title}</h1>
           <Outlet />
         </main>
       </div>
