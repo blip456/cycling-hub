@@ -5,6 +5,7 @@ import { useReminderSettings, useSaveReminderSettings } from "@/features/profile
 import { DEFAULT_REMINDER, type ReminderSettings } from "@/features/profile/reminder-api";
 import { WEEKDAY_LONG } from "@/features/profile/weekday-labels";
 import { SelectField } from "@/features/rides/list/controls";
+import { Toggle } from "@/components/Toggle";
 import { Group, row } from "./SettingsGroup";
 
 /** How long the "saved" card stays (ms). */
@@ -20,8 +21,6 @@ function isWeekday(value: string): value is Weekday {
  * saves on its own; a short status card confirms it, or says "Not saved" and puts the old value back.
  */
 export function WeightReminderSettings() {
-  const labelId = useId();
-  const switchHelperId = useId();
   const dayHelperId = useId();
   const query = useReminderSettings();
   const { mutate } = useSaveReminderSettings();
@@ -107,39 +106,17 @@ export function WeightReminderSettings() {
 
   return (
     <Group title="Weight reminder">
-      <button
-        type="button"
-        role="switch"
-        aria-checked={settings.enabled}
-        aria-labelledby={labelId}
-        aria-describedby={switchHelperId}
+      <Toggle
+        label="Weight reminder"
+        helper="Shows a card in the app when you have not logged your weight in 7 days."
+        checked={settings.enabled}
         disabled={loading}
-        onClick={() => {
-          change({ ...settings, enabled: !settings.enabled });
+        onChange={(enabled) => {
+          change({ ...settings, enabled });
         }}
-        className={`${row} w-full text-left hover:bg-surface-hover focus-visible:-outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60`}
-      >
-        <span id={labelId} className="grow">
-          Weight reminder
-        </span>
-        <span
-          aria-hidden="true"
-          className={
-            "relative h-8 w-[52px] shrink-0 rounded-full border-2 transition-colors " +
-            (settings.enabled ? "border-accent bg-accent" : "border-input-border bg-track")
-          }
-        >
-          <span
-            className={
-              "absolute top-0.5 size-6 rounded-full motion-safe:transition-[left] " +
-              (settings.enabled ? "left-[22px] bg-on-accent" : "left-0.5 bg-muted")
-            }
-          />
-        </span>
-      </button>
-      <p id={switchHelperId} className="px-4 pb-3 text-caption text-muted">
-        Shows a card in the app when you have not logged your weight in 7 days.
-      </p>
+        rowClassName={`${row} hover:bg-surface-hover focus-visible:-outline-offset-2`}
+        helperClassName="px-4 pb-3"
+      />
       <div className="px-4 pb-3">
         <SelectField
           label="Reminder day"

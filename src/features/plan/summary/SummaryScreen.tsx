@@ -16,7 +16,7 @@ import { copyText } from "./copy";
 import { useRideMetrics, useSummarySource } from "./hooks";
 import { loadSummaryOptions, saveSummaryOptions, type StoredSummaryOptions } from "./storage";
 import { paramsFor, stepSubject, subjectFromParams, switchKind, type Subject } from "./subject";
-import { Switch } from "./Switch";
+import { Toggle } from "@/components/Toggle";
 import type { RideMetrics } from "./types";
 
 const KINDS: readonly { value: Subject["kind"]; label: string }[] = [
@@ -322,21 +322,21 @@ function SummaryPanel({
         <fieldset className="rounded-lg bg-surface p-4">
           <legend className="float-left mb-1 w-full text-caption font-semibold">Include</legend>
           <div className="clear-both" />
-          <Switch
+          <Toggle
             label="Weight trend"
             checked={options.includeWeight}
             onChange={(checked) => {
               update({ ...options, includeWeight: checked });
             }}
           />
-          <Switch
+          <Toggle
             label="Goals"
             checked={options.includeGoals}
             onChange={(checked) => {
               update({ ...options, includeGoals: checked });
             }}
           />
-          <Switch
+          <Toggle
             label="Prompt line at the top"
             checked={options.includePrompt}
             onChange={(checked) => {

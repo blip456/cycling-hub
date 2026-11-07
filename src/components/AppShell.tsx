@@ -184,7 +184,6 @@ export function AppShell() {
               </button>
             )}
             <h1 className="min-w-0 flex-1 truncate text-title">{title}</h1>
-            <span className="pr-2 text-caption font-semibold text-muted">Cycling Hub</span>
           </div>
         </header>
 

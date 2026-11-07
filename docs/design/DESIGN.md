@@ -224,6 +224,10 @@ Height 44, radius 12, padding 0 20, 15 px / 600. Full width on phone forms. Disa
 
 20 px box, radius 6, 2 px `--input-border`; checked: `--accent` fill with an `--on-accent` check. Whole row with label is the 44 px target. Used for "Hide commutes".
 
+### Toggle
+
+A real switch (`role="switch"`, `aria-checked`) for a setting that is on or off and applies at once. Row at least 48 px high, label (`text-body`) on the left, track on the right, helper text below wired with `aria-describedby`. Track 52 x 32, radius 16, 2 px border; off: `--track` fill, `--input-border` border, `--muted` thumb on the left; on: `--accent` fill and border, `--on-accent` thumb on the right. Thumb 24 px. No glow or shadow; the thumb moves only when motion is allowed. State is told by position and by the label, never by colour alone. Used for the weight reminder and the Summary and Calendar options. Built as `src/components/Toggle.tsx`.
+
 ### Card and group
 
 - Card: `--surface`, radius 16, padding 16, no outline, no shadow.
