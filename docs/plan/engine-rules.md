@@ -33,7 +33,7 @@ defaults Q-E2-9 to Q-E2-16 are assumptions until the PO corrects them.
 | Input                                | Comes from                                                       | Used for                                       | If missing                                                    |
 | ------------------------------------ | ---------------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------- |
 | Today                                | Brussels date (`brusselsDate`)                                   | What is past, today, future                    | Never missing                                                 |
-| Plan start date                      | Intake; default the next Monday (today if it is a Monday)        | Week 1                                         | Default                                                       |
+| Plan start date                      | Intake; default today (P88)                                      | Week 1                                         | Default                                                       |
 | Available days                      | Profile `availableDays` (Mon to Sun)                             | Which days get a session                       | Fewer than 2 days: no plan, the PO is asked to add days       |
 | Hours per week (H)                   | Profile (new, P60)                                               | The weekly ceiling                             | Intake asks; no plan without it                               |
 | Level answers (5)                    | Intake (section 3)                                               | Level                                          | Intake asks; no plan without them                             |
@@ -125,6 +125,11 @@ Every level has at least one day without a ride (6 rides is the maximum) (C).
 | 9 to 11 | Peak   | Peak        | At H                        | Most specific work, longest long rides                |
 | 12     | Peak     | Recovery    | 70 % of week 11             | Rest, then an FTP test instead of the first hard session (P39) |
 
+- **Start during the week (P88).** Week 1 is the Monday-to-Sunday week of the start date. Sessions are planned
+  only from the start date on, on the training days that are left; week 1's hours are the normal week 1 hours
+  times (training days left / training days), and a long ride that does not fit at its level minimum becomes an
+  easy ride. Week 2 grows from a full week 1, so weeks 2 to 12 are the same as for a plan that starts on that
+  Monday. When no training day is left in the week of the start date, the plan starts on the next Monday.
 - A recovery week comes **every 4th week** (3 loading weeks, then 1 easy week) (C, M for the choice of 3:1).
   A setting can change it to every 3rd week (2 loading weeks, 1 easy week) for riders who want more rest.
 - Week 12 holds the FTP test (20-minute or ramp test, the PO picks, P39) in place of the Wednesday session.

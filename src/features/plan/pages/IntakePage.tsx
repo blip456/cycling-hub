@@ -22,6 +22,7 @@ import {
   draftFromProfile,
   editSave,
   engineInput,
+  firstDayOf,
   firstInvalidStep,
   formatDay,
   goalOf,
@@ -171,7 +172,7 @@ function IntakeForm({
       ftp: baseline.ftp,
       lthr: baseline.lthr,
       maxHr: baseline.maxHr,
-      ...(edit ? { fixedStart: edit.plan.startDate } : {}),
+      ...(edit ? { fixedStart: firstDayOf(edit.plan) } : {}),
     }),
     [today, weight.weight?.kg, availableDays, profileEnvironment, baseline, edit],
   );
@@ -291,7 +292,7 @@ function IntakeForm({
           if (registry) {
             registry.set(READY_ID, STATUS_PRIORITY.flash, {
               tone: "success",
-              message: `Your plan is ready. ${String(saved.weeks)} weeks from ${formatDay(saved.startDate)}`,
+              message: `Your plan is ready. ${String(saved.weeks)} weeks from ${formatDay(firstDayOf(saved))}`,
               onDismiss: () => {
                 registry.set(READY_ID, STATUS_PRIORITY.flash, null);
               },

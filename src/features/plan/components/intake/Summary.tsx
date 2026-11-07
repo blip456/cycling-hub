@@ -145,7 +145,7 @@ export function Summary({
             {ENV_TEXT[input.intake.environment]}
           </Row>
           <Row label="Length">
-            {String(plan.weeks.length)} weeks, {formatDay(plan.startDate)} to{" "}
+            {String(plan.weeks.length)} weeks, {formatDay(plan.firstDay)} to{" "}
             {formatDay(plan.endDate)}
             {edit ? (
               <span className="block text-caption text-muted">

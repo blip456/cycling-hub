@@ -3,6 +3,7 @@
  * docs/plan/example-plans.md). Used by the tests; returns a list of violations, empty when the plan is fine.
  */
 import {
+  addDays,
   heartRateZones,
   powerZones,
   WEEKDAYS,
@@ -65,6 +66,7 @@ export function checkPlan(plan: Plan, input: PlanInput): string[] {
       if (dates.has(s.date)) out.push(`${tag}: two sessions on ${s.date}`);
       dates.add(s.date);
       if (s.week !== week.number) out.push(`${tag}: session in the wrong week`);
+      if (s.date < plan.firstDay) out.push(`${tag}: session before the first day ${s.date}`);
       const day = WEEKDAYS[weekdayIndex(s.date) ?? 0];
       if (s.kind !== "event" && s.kind !== "openers" && day && !available.has(day)) {
         out.push(`${tag}: session on an unavailable day ${s.date}`);
@@ -115,7 +117,16 @@ export function checkPlan(plan: Plan, input: PlanInput): string[] {
     if (hard !== week.structuredCount) out.push(`${tag}: structuredCount differs`);
 
     const long = rides.find((s) => s.kind === "long");
-    if (week.type === "loading") {
+    // A partial week 1 (training days before the first day) is not the base of the growth caps: the engine
+    // grows week 2 from the ceiling of a full week 1.
+    const partial =
+      week.number === 1 &&
+      Array.from({ length: 7 }, (_, i) => addDays(week.startDate, i) ?? week.startDate).some(
+        (date) => date < plan.firstDay && available.has(WEEKDAYS[weekdayIndex(date) ?? 0] ?? "mon"),
+      );
+    if (partial) {
+      // Checked against its own target above.
+    } else if (week.type === "loading") {
       if (previousLoading) {
         if (week.plannedMinutes > previousLoading.plannedMinutes * 1.1 + EPS)
           out.push(`${tag}: hours grew more than 10 %`);

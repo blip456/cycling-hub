@@ -533,6 +533,50 @@ describe("determinism and ordering", () => {
     const a = buildPlan({ ...EXAMPLE_A, today: EXAMPLE_TODAY });
     const b = buildPlan({ ...EXAMPLE_A, today: "2026-10-27" });
     expect(a.startDate).toBe("2026-10-26");
-    expect(b.startDate).toBe("2026-11-02");
+    expect(b.startDate).toBe("2026-10-26");
+    expect(b.firstDay).toBe("2026-10-27");
+  });
+});
+
+describe("a plan that starts during the week", () => {
+  // Friday 6 Nov 2026, riding on Wednesday and Sunday.
+  const input: PlanInput = {
+    ...EXAMPLE_A,
+    today: "2026-11-06",
+    intake: { ...EXAMPLE_A.intake, availableDays: ["wed", "sun"] },
+  };
+  const plan = buildPlan(input);
+  const full = buildPlan({ ...input, today: "2026-11-02" });
+
+  it("plans the first ride on the first training day after the start", () => {
+    expect(plan.status).toBe("ok");
+    expect(plan.startDate).toBe("2026-11-02");
+    expect(plan.firstDay).toBe("2026-11-06");
+    expect(plan.weeks).toHaveLength(12);
+    expect(plan.sessions[0]?.date).toBe("2026-11-08");
+    expect(plan.sessions.every((s) => s.date >= "2026-11-06")).toBe(true);
+    expect(plan.weeks[0]?.sessions.map((s) => s.date)).toEqual(["2026-11-08"]);
+  });
+
+  it("gives the partial week a part of the hours and keeps the weeks after it", () => {
+    const week1 = plan.weeks[0];
+    const fullWeek1 = full.weeks[0];
+    expect(week1 && fullWeek1 && week1.targetMinutes).toBeLessThan(fullWeek1?.targetMinutes ?? 0);
+    expect(plan.weeks.slice(1).map((w) => w.targetMinutes)).toEqual(
+      full.weeks.slice(1).map((w) => w.targetMinutes),
+    );
+  });
+
+  it("passes the self-check", () => {
+    expect(checkPlan(plan, input)).toEqual([]);
+  });
+
+  it("starts the next Monday when no training day is left in the week", () => {
+    const late = buildPlan({
+      ...input,
+      intake: { ...input.intake, availableDays: ["tue", "wed"] },
+    });
+    expect(late.startDate).toBe("2026-11-09");
+    expect(late.firstDay).toBe("2026-11-09");
   });
 });

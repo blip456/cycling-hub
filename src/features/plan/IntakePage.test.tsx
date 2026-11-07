@@ -407,11 +407,11 @@ describe("step 3: time and place", () => {
 });
 
 describe("step 4: start and event", () => {
-  it("starts on the next Monday and shows the error states of the event", async () => {
+  it("starts today and shows the error states of the event", async () => {
     const user = setup();
     renderIntake("/plan/new?step=4");
     await screen.findByRole("heading", { name: "When do you start?" });
-    expect(screen.getByRole("radio", { name: /^Monday 2 Nov 2026/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /^Wednesday 28 Oct 2026/ })).toBeChecked();
     await user.click(screen.getByRole("checkbox", { name: "I am training for an event" }));
     await user.click(screen.getByRole("button", { name: "Review the summary" }));
     expect(screen.getByText("Enter the event date.")).toBeInTheDocument();
@@ -424,7 +424,9 @@ describe("step 4: start and event", () => {
     expect(
       screen.getByText("The date is in the past. Pick a date from tomorrow."),
     ).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Event date"), { target: { value: "2026-10-30" } });
+    await user.click(screen.getByRole("radio", { name: "Another date" }));
+    fireEvent.change(screen.getByLabelText("Start date"), { target: { value: "2026-11-04" } });
+    fireEvent.change(screen.getByLabelText("Event date"), { target: { value: "2026-11-01" } });
     await user.click(screen.getByRole("button", { name: "Review the summary" }));
     expect(
       screen.getByText(
@@ -433,8 +435,9 @@ describe("step 4: start and event", () => {
     ).toBeInTheDocument();
   });
 
-  it("rolls another start date forward to a Monday and does not allow the past", async () => {
+  it("starts on another date, the next Monday when no training day is left, never in the past", async () => {
     const user = setup();
+    profile({ availableDays: ["mon", "tue"] });
     renderIntake("/plan/new?step=4");
     await screen.findByRole("heading", { name: "When do you start?" });
     await user.click(screen.getByRole("radio", { name: "Another date" }));
@@ -443,9 +446,15 @@ describe("step 4: start and event", () => {
     expect(
       screen.getByText("The start date is in the past. Pick today or a later date."),
     ).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Start date"), { target: { value: "2026-11-03" } });
+    expect(
+      screen.getByText("Rides are planned on your training days from this date."),
+    ).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Start date"), { target: { value: "2026-11-04" } });
     expect(
-      screen.getByText("Plans run Monday to Sunday, so this plan starts on Monday 9 Nov 2026."),
+      screen.getByText(
+        "No training day is left in that week, so this plan starts on Monday 9 Nov 2026.",
+      ),
     ).toBeInTheDocument();
   });
 
@@ -486,7 +495,7 @@ describe("summary and Build my plan", () => {
     expect(answers).toHaveTextContent("Committed");
     expect(answers).toHaveTextContent("8 h per week");
     expect(answers).toHaveTextContent("Tue, Wed, Fri, Sat, Sun");
-    expect(answers).toHaveTextContent("12 weeks, Mon 2 Nov to Sun 24 Jan");
+    expect(answers).toHaveTextContent("12 weeks, Wed 28 Oct to Sun 17 Jan");
     expect(answers).toHaveTextContent("FTP 250 W");
     expect(within(answers).getByRole("link", { name: "Change purposes" })).toHaveAttribute(
       "href",
@@ -506,7 +515,7 @@ describe("summary and Build my plan", () => {
 
   it("shows the engine's notices and warnings (event too soon, start moved)", async () => {
     const user = setup();
-    full();
+    full({ availableDays: ["mon", "tue"] });
     renderIntake("/plan/new?step=4");
     await screen.findByRole("heading", { name: "When do you start?" });
     await user.click(screen.getByRole("radio", { name: "Another date" }));
@@ -516,7 +525,7 @@ describe("summary and Build my plan", () => {
     await user.click(screen.getByRole("button", { name: "Review the summary" }));
     const assumptions = await screen.findByRole("region", { name: "What the plan will assume" });
     expect(assumptions).toHaveTextContent(
-      "Weeks start on Monday, so the plan starts on 2026-11-09.",
+      "No training day is left in the week of 2026-11-04, so the plan starts on 2026-11-09.",
     );
     expect(assumptions).toHaveTextContent(/Your event is less than 4 weeks away/);
   });
@@ -561,7 +570,9 @@ describe("summary and Build my plan", () => {
     expect(call).toBeDefined();
     if (!call) return;
     expect(call.plan.status).toBe("ok");
-    expect(call.plan.startDate).toBe("2026-11-02");
+    expect(call.plan.startDate).toBe("2026-10-26");
+    expect(call.plan.firstDay).toBe("2026-10-28");
+    expect(call.intake.startDate).toBe("2026-10-28");
     expect(call.plan.weeks).toHaveLength(12);
     expect(call.plan.sessions.length).toBeGreaterThan(40);
     expect(call.ftp).toBe(250);

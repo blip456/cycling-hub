@@ -155,6 +155,7 @@ export function buildPlan(input: PlanInput): Plan {
     hoursPerWeek,
     purposes,
     startDate: structure.startDate,
+    firstDay: structure.firstDay,
     endDate: structure.endDate,
     environment: intake.environment,
     ftp: hasUsableFtp(input.ftp) ? input.ftp : null,
@@ -173,7 +174,7 @@ export function buildPlan(input: PlanInput): Plan {
   const ftpTest = intake.ftpTest ?? "twenty-minute";
   const eventDate = structure.event?.date ?? null;
   const openersDate =
-    eventDate !== null && plusDays(eventDate, -1) >= structure.startDate
+    eventDate !== null && plusDays(eventDate, -1) >= structure.firstDay
       ? plusDays(eventDate, -1)
       : null;
   const templateQ2 = hasSecondSlot(level, purposes);
@@ -300,7 +301,15 @@ export function buildPlan(input: PlanInput): Plan {
   function buildWeek(
     sk: WeekSkeleton,
     state: State,
-  ): { drafts: Draft[]; ceiling: number; chain: number; grew: boolean } {
+  ): {
+    drafts: Draft[];
+    ceiling: number;
+    /** The ceiling of a full week; differs from `ceiling` in a partial week 1. */
+    fullCeiling: number;
+    partial: boolean;
+    chain: number;
+    grew: boolean;
+  } {
     const hold = holdWeeks.has(sk.number) || noSecond.has(sk.number);
     const weightHold = holdWeeks.has(sk.number);
     const budget = weekBudget({
@@ -311,12 +320,18 @@ export function buildPlan(input: PlanInput): Plan {
       hold: sk.type === "loading" && hold,
       state: state.budget,
     });
-    const ceiling = budget.minutes;
     const dates = Array.from({ length: 7 }, (_, i) => plusDays(sk.startDate, i));
+    // A partial week 1 (the plan starts after its Monday): only the days from the first day on, and the
+    // ceiling in proportion to the training days that are left.
+    const open = resolved.days.filter((d) => (dates[d] ?? "") >= structure.firstDay);
+    const partial = open.length < resolved.days.length;
+    const ceiling = partial
+      ? floor5((budget.minutes * open.length) / resolved.days.length)
+      : budget.minutes;
     const eventHere = eventDate !== null && dates.includes(eventDate);
     const openersHere = openersDate !== null && dates.includes(openersDate);
     const cutoff = eventHere ? (openersDate ?? eventDate) : null;
-    const days = resolved.days.filter((d) => {
+    const days = open.filter((d) => {
       const date = dates[d] ?? "";
       if (date === openersDate && openersHere) return false;
       if (eventHere && cutoff !== null && date >= cutoff) return false;
@@ -366,7 +381,7 @@ export function buildPlan(input: PlanInput): Plan {
 
     // Days and the number of rides.
     const reserved = (eventHere ? 1 : 0) + (openersHere ? 1 : 0);
-    let rideTarget = Math.max(0, rides - reserved);
+    let rideTarget = Math.max(0, Math.min(rides, days.length + reserved) - reserved);
     const bounds = (slot: Slot, kind: SessionKind, date: IsoDate): AllocationItem => {
       const indoor = isIndoor(date, kind);
       const recovery = sk.type === "recovery";
@@ -412,6 +427,11 @@ export function buildPlan(input: PlanInput): Plan {
     };
 
     let hasLong = !eventHere;
+    // A partial week 1 too short for the long ride at its level minimum gets easy rides instead.
+    const lastDay = days[days.length - 1];
+    if (partial && hasLong && lastDay !== undefined) {
+      if (bounds("long", "long", dates[lastDay] ?? sk.startDate).min > ceiling) hasLong = false;
+    }
     const layoutFor = (count: number): ReturnType<typeof assignDays> =>
       assignDays({
         days,
@@ -532,7 +552,7 @@ export function buildPlan(input: PlanInput): Plan {
       const spare = floor5(hoursPerWeek * 60) - total;
       const day = resolved.days.find((d) => {
         const date = dates[d] ?? "";
-        return !used.has(date);
+        return date >= structure.firstDay && !used.has(date);
       });
       const length = Math.min(45, spare, settings.easy[1]);
       if (day !== undefined && length >= 30) {
@@ -552,7 +572,14 @@ export function buildPlan(input: PlanInput): Plan {
       }
     }
     drafts.sort((a, b) => (a.date < b.date ? -1 : 1));
-    return { drafts, ceiling, chain: budget.chain, grew: budget.grew };
+    return {
+      drafts,
+      ceiling,
+      fullCeiling: budget.minutes,
+      partial,
+      chain: budget.chain,
+      grew: budget.grew,
+    };
   }
 
   // Caps C3, C5 and C6: lower the longest main set one step (section 5); never below step 1.
@@ -698,14 +725,22 @@ export function buildPlan(input: PlanInput): Plan {
         }
       }
       const longSession = sessions.find((s) => s.kind === "long");
-      state = {
-        budget: { chain: built.chain, lastLoadingPlanned: m.minutes },
-        ladderCounts: counts,
-        lastLoading: {
-          long: longSession?.durationMin ?? state.lastLoading?.long ?? settings.long[0],
-          load: m.load,
-        },
-      };
+      // A partial week 1 counts as a full week for the growth of the next ones: week 2 builds on the
+      // ceiling of a full week 1, and the long ride and load caps start with week 2.
+      state = built.partial
+        ? {
+            budget: { chain: built.chain, lastLoadingPlanned: built.fullCeiling },
+            ladderCounts: counts,
+            lastLoading: state.lastLoading,
+          }
+        : {
+            budget: { chain: built.chain, lastLoadingPlanned: m.minutes },
+            ladderCounts: counts,
+            lastLoading: {
+              long: longSession?.durationMin ?? state.lastLoading?.long ?? settings.long[0],
+              load: m.load,
+            },
+          };
     }
   }
 
