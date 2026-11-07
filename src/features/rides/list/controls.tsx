@@ -19,13 +19,13 @@ export function GroupBySwitch({
     <div
       role="radiogroup"
       aria-label="Group rides by"
-      className="flex h-11 shrink-0 gap-0.5 rounded-[12px] bg-track p-[3px]"
+      className="flex h-11 shrink-0 gap-0.5 rounded-md bg-track p-[3px]"
     >
       {options.map((option) => (
         <label
           key={option.value}
           className={
-            "relative flex min-w-[72px] cursor-pointer items-center justify-center rounded-[9px] px-4 text-[15px] font-medium text-muted " +
+            "relative flex min-w-[72px] cursor-pointer items-center justify-center rounded-sm px-4 text-body font-medium text-muted " +
             "transition-colors duration-(--dur-fast) hover:text-text has-checked:bg-raised has-checked:font-semibold has-checked:text-text " +
             "has-checked:shadow-[inset_0_0_0_1px_var(--input-border)] " +
             "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
@@ -59,7 +59,7 @@ export function Checkbox({
   children: ReactNode;
 }) {
   return (
-    <label className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 text-[15px]">
+    <label className="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2.5 text-body">
       <span className="relative flex size-5 shrink-0">
         <input
           type="checkbox"
@@ -96,7 +96,7 @@ export function Checkbox({
 /** Label above, field below (DESIGN.md input). */
 export function FieldLabel({ htmlFor, children }: { htmlFor: string; children: ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="mb-1.5 block text-[13px] leading-[18px] font-semibold">
+    <label htmlFor={htmlFor} className="mb-1.5 block text-caption font-semibold">
       {children}
     </label>
   );
@@ -128,7 +128,7 @@ export function SelectField({
             d="m6 9 6 6 6-6"
             fill="none"
             stroke="currentColor"
-            strokeWidth="1.8"
+            strokeWidth="1.75"
             strokeLinecap="round"
             strokeLinejoin="round"
           />

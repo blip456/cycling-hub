@@ -35,14 +35,10 @@ export function ImportSummary({
       <div className="flex items-start gap-2.5 lg:col-start-1 lg:row-start-1">
         <CheckIcon className="mt-1.5 shrink-0 text-positive" />
         <div className="min-w-0">
-          <h2
-            ref={headingRef}
-            tabIndex={-1}
-            className="text-2xl font-semibold tracking-[-0.015em] outline-none"
-          >
+          <h2 ref={headingRef} tabIndex={-1} className="text-heading outline-none">
             Import complete
           </h2>
-          <p className="text-[13px] break-words text-muted">
+          <p className="text-caption break-words text-muted">
             {record.file_name} · {formatActivityCount(record.activity_count)} ·{" "}
             {formatDateTime(record.imported_at)}
           </p>
@@ -52,7 +48,7 @@ export function ImportSummary({
       <div className="lg:col-span-2">
         <OutcomeGrid record={record} />
         {note ? (
-          <p aria-live="polite" className="mt-2.5 px-0.5 text-[13px] text-muted">
+          <p aria-live="polite" className="mt-2.5 px-0.5 text-caption text-muted">
             {note}
           </p>
         ) : null}
