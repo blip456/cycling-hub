@@ -44,30 +44,28 @@ function WeekRow({ week, max, current }: { week: WeekSummary; max: number; curre
         aria-current={current ? "true" : undefined}
         aria-label={`Week ${String(week.number)}, ${formatShortDate(week.startDate)}${current ? ", this week" : ""}, ${formatDuration(week.minutes)}, ${PHASE_TEXT[week.phase]}, load ${formatLoad(week.load)}${week.eventDate ? `, event ${formatDay(week.eventDate)}` : ""}`}
         className={
-          "grid min-h-14 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-xl bg-surface px-3.5 py-2 hover:bg-surface-hover " +
-          (current ? "border-2 border-accent" : "border-2 border-transparent")
+          "grid min-h-14 grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 rounded-lg px-3 py-2 " +
+          (current ? "bg-accent-soft" : "bg-surface hover:bg-surface-hover")
         }
       >
         <span className="min-w-0">
-          <span className="block text-[15px] font-semibold">
+          <span className="block text-body font-semibold">
             W{week.number} · {formatShortDate(week.startDate)}
             {current ? " · This week" : ""}
           </span>
-          <span className="block text-[13px] text-muted">
+          <span className="block text-caption text-muted">
             {formatDuration(week.minutes)} · {PHASE_TEXT[week.phase]}
             {week.eventDate ? ` · Event ${formatDay(week.eventDate)}` : ""}
           </span>
         </span>
         <span className="flex items-center gap-2 text-right">
-          <span aria-hidden="true" className="h-2.5 w-20 overflow-hidden rounded-full bg-track">
+          <span aria-hidden="true" className="h-2 w-20 overflow-hidden rounded-sm bg-track">
             <span
-              className="block h-full rounded-full bg-accent"
+              className="block h-full rounded-sm bg-accent"
               style={{ width: `${String(max > 0 ? Math.round((week.load / max) * 100) : 0)}%` }}
             />
           </span>
-          <span className="w-9 text-[15px] font-semibold [font-variant-numeric:tabular-nums]">
-            {formatLoad(week.load)}
-          </span>
+          <span className="w-9 text-body font-semibold">{formatLoad(week.load)}</span>
         </span>
       </Link>
     </li>
@@ -90,7 +88,7 @@ function PhaseList({
           key={`${group.phase}-${String(group.weeks[0]?.number)}`}
           aria-label={`${PHASE_TEXT[group.phase]}, ${weekSpan(group)}`}
         >
-          <h3 className="mb-1.5 text-[15px] font-semibold">
+          <h3 className="mb-1.5 text-body font-semibold">
             {PHASE_TEXT[group.phase]}{" "}
             <span className="font-normal text-muted">{weekSpan(group)}</span>
           </h3>
@@ -116,12 +114,12 @@ function LoadChart({
   current: number;
 }) {
   return (
-    <div>
+    <div data-chart="">
       <div className="flex gap-1" aria-hidden="true">
         {groups.map((group) => (
           <span
             key={`${group.phase}-${String(group.weeks[0]?.number)}`}
-            className="truncate rounded-md bg-subtle px-2 py-1 text-center text-[13px] font-semibold"
+            className="truncate rounded-sm bg-fill px-2 py-1 text-caption font-semibold"
             style={{ flexGrow: group.weeks.length, flexBasis: 0 }}
           >
             {group.phase === "recovery" && group.weeks.length === 1
@@ -140,9 +138,7 @@ function LoadChart({
                 aria-label={`Week ${String(week.number)}, ${PHASE_TEXT[week.phase]}, load ${formatLoad(week.load)}${week.number === current ? ", this week" : ""}`}
                 className="flex h-full flex-col justify-end rounded-md"
               >
-                <span className="mb-1 text-center text-[13px] [font-variant-numeric:tabular-nums]">
-                  {formatLoad(week.load)}
-                </span>
+                <span className="mb-1 text-center text-caption">{formatLoad(week.load)}</span>
                 <span
                   aria-hidden="true"
                   className={
@@ -161,7 +157,7 @@ function LoadChart({
       <ol className="mt-1 flex gap-1" aria-hidden="true">
         {groups.flatMap((group) =>
           group.weeks.map((week) => (
-            <li key={week.number} className="min-w-0 flex-1 text-center text-[13px] text-muted">
+            <li key={week.number} className="min-w-0 flex-1 text-center text-caption text-muted">
               W{week.number}
               {week.number === current ? (
                 <span className="block font-semibold text-text">This week</span>
@@ -177,23 +173,23 @@ function LoadChart({
 function LoadTable({ weeks, id }: { weeks: WeekSummary[]; id: string }) {
   return (
     <div id={id} className="mt-2 overflow-x-auto">
-      <table className="w-full text-[15px]">
+      <table className="w-full text-body">
         <caption className="sr-only">Planned hours and load for each week</caption>
-        <thead className="text-left text-[13px] text-muted">
+        <thead className="text-left text-caption text-muted">
           <tr>
-            <th scope="col" className="py-2 pr-2 font-medium">
+            <th scope="col" className="py-2 pr-2 font-semibold">
               Week
             </th>
-            <th scope="col" className="px-2 py-2 font-medium">
+            <th scope="col" className="px-2 py-2 font-semibold">
               Dates
             </th>
-            <th scope="col" className="px-2 py-2 font-medium">
+            <th scope="col" className="px-2 py-2 font-semibold">
               Phase
             </th>
-            <th scope="col" className="px-2 py-2 text-right font-medium">
+            <th scope="col" className="px-2 py-2 text-right font-semibold">
               Hours
             </th>
-            <th scope="col" className="py-2 pl-2 text-right font-medium">
+            <th scope="col" className="py-2 pl-2 text-right font-semibold">
               Load
             </th>
           </tr>
@@ -202,18 +198,17 @@ function LoadTable({ weeks, id }: { weeks: WeekSummary[]; id: string }) {
           {weeks.map((week) => (
             <tr key={week.number} className="border-t border-border">
               <th scope="row" className="h-11 py-1 pr-2 text-left font-semibold">
-                <Link to={`/plan?week=${String(week.number)}`} className="text-accent underline">
+                <Link
+                  to={`/plan?week=${String(week.number)}`}
+                  className="font-semibold text-accent"
+                >
                   Week {week.number}
                 </Link>
               </th>
               <td className="px-2 py-1">{formatShortDate(week.startDate)}</td>
               <td className="px-2 py-1">{PHASE_TEXT[week.phase]}</td>
-              <td className="px-2 py-1 text-right [font-variant-numeric:tabular-nums]">
-                {formatDuration(week.minutes)}
-              </td>
-              <td className="py-1 pl-2 text-right [font-variant-numeric:tabular-nums]">
-                {formatLoad(week.load)}
-              </td>
+              <td className="px-2 py-1 text-right">{formatDuration(week.minutes)}</td>
+              <td className="py-1 pl-2 text-right">{formatLoad(week.load)}</td>
             </tr>
           ))}
         </tbody>
@@ -240,19 +235,21 @@ function WeightCard({ plan, today }: { plan: StoredPlan; today: IsoDate }) {
         ? "Your trend is flat."
         : `Your trend is ${perWeek < 0 ? "" : "up "}${Math.abs(perWeek).toFixed(1)} kg per week${perWeek < 0 && cap !== null ? (Math.abs(perWeek) <= cap ? `, inside the cap of ${cap.toFixed(1)} kg` : `, above the cap of ${cap.toFixed(1)} kg`) : ""}.`;
   return (
-    <section aria-labelledby="plan-weight" className="rounded-2xl bg-surface px-4 py-4">
-      <h3 id="plan-weight" className="text-[15px] font-semibold text-muted">
+    <section aria-labelledby="plan-weight" className="rounded-lg bg-surface p-4">
+      <h3 id="plan-weight" className="text-caption text-muted">
         Weight
       </h3>
       {weight.isPending ? (
-        <p className="mt-1 text-[15px] text-muted">Loading your weight.</p>
+        <p className="mt-1 text-body text-muted">Loading your weight.</p>
       ) : weight.isError ? (
-        <p className="mt-1 text-[15px] text-muted">Your weight could not be loaded.</p>
+        <p className="mt-1 text-body text-muted">Your weight could not be loaded.</p>
       ) : kg ? (
         <>
-          <p className="mt-1 text-[20px] leading-7 font-semibold">{kg.kg.toFixed(1)} kg</p>
-          <p className="text-[13px] text-muted">7-day average</p>
-          <p className="mt-2 text-[15px]">
+          <p className="mt-1 text-heading">
+            {kg.kg.toFixed(1)} <span className="text-body font-normal text-muted">kg</span>
+          </p>
+          <p className="text-caption text-muted">7-day average</p>
+          <p className="mt-2 text-body">
             {targetKg !== null && targetDate !== null
               ? `Target ${targetKg.toFixed(1)} kg by ${formatDay(targetDate)}. `
               : ""}
@@ -260,13 +257,13 @@ function WeightCard({ plan, today }: { plan: StoredPlan; today: IsoDate }) {
           </p>
         </>
       ) : (
-        <p className="mt-1 text-[15px] text-muted">
+        <p className="mt-1 text-body text-muted">
           Log your weight to see the trend next to your plan.
         </p>
       )}
       <Link
         to="/weight/trend"
-        className="mt-2 inline-flex min-h-11 items-center font-semibold text-accent underline"
+        className="mt-2 inline-flex min-h-11 items-center font-semibold text-accent"
       >
         See weight trend
       </Link>
@@ -300,7 +297,7 @@ export function OverviewPage() {
   return (
     <section aria-labelledby="plan-overview" className="flex flex-col gap-5">
       <div>
-        <h2 id="plan-overview" className="text-xl font-semibold tracking-tight">
+        <h2 id="plan-overview" className="text-title">
           {currentWeek
             ? `Week ${String(current)} of ${String(plan.weeks)} · ${PHASE_TEXT[currentWeek.phase]}`
             : today < plan.startDate
@@ -308,9 +305,9 @@ export function OverviewPage() {
               : `${String(plan.weeks)} weeks`}
         </h2>
         {eventSession ? (
-          <p className="text-[15px] text-muted">{eventText(eventSession.date, today)}</p>
+          <p className="text-body text-muted">{eventText(eventSession.date, today)}</p>
         ) : null}
-        <p className="text-[15px] text-muted">
+        <p className="text-body text-muted">
           Built from your answers.{" "}
           <Link to="/plan/edit" className="font-semibold text-accent underline">
             Edit plan
@@ -327,7 +324,7 @@ export function OverviewPage() {
           {desktop ? (
             <>
               <LoadChart groups={groups} max={max} current={current} />
-              <p className="mt-3 text-[13px] text-muted">
+              <p className="mt-3 text-caption text-muted">
                 Load per week. Recovery and taper weeks are lighter.
                 {eventSession ? ` ${eventText(eventSession.date, today)}.` : ""}
               </p>

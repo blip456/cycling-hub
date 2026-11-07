@@ -1,8 +1,10 @@
 import { Link } from "react-router";
+import { AlertIcon, BaselineIcon, ChevronRightIcon, PlanIcon } from "@/components/icons";
 import { useBaseline } from "@/features/baseline/hooks";
 import { formatShortDate, useCurrentWeight, usePlanProfile } from "../data";
 import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "./page-hooks";
-import { LinkButton, PlanLoadError, PlanSkeleton } from "./parts";
+import { CheckIcon } from "./icons";
+import { EmptyTile, LinkButton, PlanLoadError, PlanSkeleton } from "./parts";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 const ROUTES = [
@@ -27,39 +29,40 @@ const ROUTES = [
 export function BaselineNeeded({ reasons = [] }: { reasons?: readonly string[] }) {
   return (
     <section aria-labelledby="plan-needs-ftp" className="max-w-[640px]">
-      <h2 id="plan-needs-ftp" className="text-xl font-semibold tracking-tight">
+      <EmptyTile>
+        <BaselineIcon className="size-6" />
+      </EmptyTile>
+      <h2 id="plan-needs-ftp" className="text-heading">
         Your plan needs an FTP first
       </h2>
-      <p className="mt-1 text-[15px] text-muted">
+      <p className="mt-2 text-body text-muted">
         Zones, watts and heart rates in every session come from your FTP. You do not have one yet.
       </p>
       {reasons.length > 0 ? (
-        <ul className="mt-2 list-disc pl-5 text-[15px] text-muted">
+        <ul className="mt-2 list-disc pl-5 text-body text-muted">
           {reasons.map((r) => (
             <li key={r}>{r}</li>
           ))}
         </ul>
       ) : null}
-      <h3 className="mt-5 mb-2 text-[17px] font-semibold">Three ways to get an FTP</h3>
+      <h3 className="mt-6 mb-2 text-body font-semibold">Three ways to get an FTP</h3>
       <ul className="flex flex-col gap-2">
         {ROUTES.map((route) => (
           <li key={route.to}>
             <Link
               to={route.to}
-              className="flex min-h-[52px] items-center justify-between gap-3 rounded-2xl bg-surface px-4 py-3 hover:bg-surface-hover"
+              className="flex min-h-[52px] items-center justify-between gap-3 rounded-lg bg-surface px-4 py-3 hover:bg-surface-hover"
             >
               <span className="min-w-0">
-                <span className="block text-[15px] font-semibold">{route.title}</span>
-                <span className="block text-[14px] text-muted">{route.text}</span>
+                <span className="block text-body font-semibold">{route.title}</span>
+                <span className="block text-caption text-muted">{route.text}</span>
               </span>
-              <span aria-hidden="true" className="text-[20px] text-muted">
-                ›
-              </span>
+              <ChevronRightIcon className="shrink-0 text-muted" />
             </Link>
           </li>
         ))}
       </ul>
-      <p className="mt-4 text-[15px] text-muted">
+      <p className="mt-4 text-body text-muted">
         When you have an FTP you come back here and the questions start. Nothing you did is lost.
       </p>
     </section>
@@ -77,10 +80,8 @@ function UseLine({
   fix?: { to: string; label: string };
 }) {
   return (
-    <li className="flex min-h-9 items-center gap-2 text-[15px]">
-      <span aria-hidden="true" className="w-4 shrink-0 text-center">
-        {ok ? "✓" : "!"}
-      </span>
+    <li className="flex min-h-9 items-center gap-2 text-body">
+      {ok ? <CheckIcon className="size-5 shrink-0" /> : <AlertIcon className="size-5 shrink-0" />}
       {ok || !fix ? (
         <span>{children}</span>
       ) : (
@@ -113,17 +114,20 @@ export function NoPlanState() {
   const kg = weight.weight?.kg ?? null;
 
   return (
-    <section aria-labelledby="plan-none" className="max-w-[560px] rounded-2xl bg-surface px-5 py-6">
-      <h2 id="plan-none" className="text-xl font-semibold tracking-tight">
+    <section aria-labelledby="plan-none" className="max-w-[560px]">
+      <EmptyTile>
+        <PlanIcon className="size-6" />
+      </EmptyTile>
+      <h2 id="plan-none" className="text-heading">
         No training plan yet
       </h2>
-      <p className="mt-1 mb-4 text-[15px] text-muted">
+      <p className="mt-2 mb-4 text-body text-muted">
         Answer a few questions and the app builds a 12-week plan in watts and heart rate from your
         FTP, your zones and your week. It takes about three minutes.
       </p>
       <LinkButton to="/plan/new">Create my plan</LinkButton>
-      <h3 className="mt-5 mb-1 text-[15px] font-semibold">What the plan will use</h3>
-      <ul>
+      <h3 className="mt-6 mb-2 text-body font-semibold">What the plan will use</h3>
+      <ul className="rounded-lg bg-surface px-4 py-2">
         <UseLine
           ok
         >{`FTP ${String(ftp.value)} W (baseline of ${formatShortDate(ftp.effectiveDate)})`}</UseLine>

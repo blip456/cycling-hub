@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { Button } from "@/components/ui";
 import { buttonClass } from "@/components/button-class";
+import { AlertIcon } from "@/components/icons";
+import { CheckIcon } from "./icons";
 
 /** A swatch in the zone token colour with the zone as text next to it: "Z4 · Threshold" (never colour alone). */
 export function ZoneLabel({ zone, label }: { zone: number; label: string }) {
@@ -17,9 +19,40 @@ export function ZoneLabel({ zone, label }: { zone: number; label: string }) {
   );
 }
 
+/** The 56 px --fill tile with an accent line icon that opens an empty state (DESIGN.md, Empty, loading, error). */
+export function EmptyTile({ children }: { children: ReactNode }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="mb-4 flex size-14 items-center justify-center rounded-lg bg-fill text-accent"
+    >
+      {children}
+    </div>
+  );
+}
+
+/** A form-level or page-level problem: --danger-soft notice with an alert icon, announced as an alert (DESIGN.md, Form error). */
+export function ErrorNotice({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      role="alert"
+      className={`flex items-start gap-3 rounded-md bg-[var(--danger-soft)] px-4 py-3 text-body text-text ${className}`}
+    >
+      <AlertIcon className="mt-0.5 shrink-0 text-danger" />
+      <div className="min-w-0">{children}</div>
+    </div>
+  );
+}
+
 /** T9a: grey shapes in the form of the page, with a text for screen readers. */
 export function PlanSkeleton({ desktop }: { desktop: boolean }) {
-  const shape = "rounded-2xl bg-surface motion-safe:animate-[pulse_1.6s_ease-in-out_infinite]";
+  const shape = "rounded-lg bg-fill motion-safe:animate-[pulse_1.6s_ease-in-out_infinite]";
   return (
     <div role="status">
       <span className="sr-only">Loading your plan</span>
@@ -43,9 +76,9 @@ export function PlanSkeleton({ desktop }: { desktop: boolean }) {
 /** T9b: the page body when the plan could not be loaded. */
 export function PlanLoadError({ retry }: { retry: () => void }) {
   return (
-    <div className="max-w-[560px] rounded-2xl bg-surface px-5 py-6">
-      <h2 className="text-[17px] font-semibold">We could not load your plan</h2>
-      <p className="mt-1 text-[15px] text-muted">
+    <div className="max-w-[560px] rounded-lg bg-surface p-4">
+      <h2 className="text-body-lg font-semibold">We could not load your plan</h2>
+      <p className="mt-1 text-body text-muted">
         Your plan is safe. The page could not reach the server.
       </p>
       <Button variant="secondary" className="mt-3" onClick={retry}>
@@ -75,7 +108,7 @@ export function LinkButton({
 /** A row of a definition list with a muted label (for summaries). */
 export function FactRow({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-4 gap-y-1 py-1 text-[15px]">
+    <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-4 gap-y-1 py-1 text-body">
       <dt className="text-muted">{label}</dt>
       <dd className="min-w-0 break-words text-right">{children}</dd>
     </div>
@@ -108,28 +141,45 @@ export function ChoiceRow({
   children: ReactNode;
   note?: string | undefined;
 }) {
+  const radio = type === "radio";
   return (
     <label
       className={
-        "flex min-h-11 items-start gap-3 rounded-md px-1 py-2 text-[15px] text-text " +
+        "flex min-h-11 items-start gap-3 rounded-md px-1 py-2 text-body text-text " +
         (disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer")
       }
     >
-      <input
-        type={type}
-        name={name}
-        value={value}
-        checked={checked}
-        disabled={disabled ?? false}
-        onChange={onChange}
-        aria-describedby={describedBy}
-        aria-invalid={invalid ? true : undefined}
-        {...(focusFirst ? { "data-autofocus": "" } : {})}
-        className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]"
-      />
+      <span className="relative mt-px flex size-5 shrink-0">
+        <input
+          type={type}
+          name={name}
+          value={value}
+          checked={checked}
+          disabled={disabled ?? false}
+          onChange={onChange}
+          aria-describedby={describedBy}
+          aria-invalid={invalid ? true : undefined}
+          {...(focusFirst ? { "data-autofocus": "" } : {})}
+          className={
+            "peer size-5 appearance-none border-2 bg-surface " +
+            (invalid ? "border-danger " : "border-input-border ") +
+            (radio
+              ? "rounded-full checked:border-[6px] checked:border-accent"
+              : "rounded-[6px] checked:border-accent checked:bg-accent")
+          }
+        />
+        {radio ? null : (
+          <CheckIcon
+            width={16}
+            height={16}
+            strokeWidth={2.25}
+            className="pointer-events-none absolute inset-0.5 hidden text-on-accent peer-checked:block"
+          />
+        )}
+      </span>
       <span className="min-w-0">
         <span className="block font-medium">{children}</span>
-        {note ? <span className="block text-[13px] text-muted">{note}</span> : null}
+        {note ? <span className="block text-caption text-muted">{note}</span> : null}
       </span>
     </label>
   );

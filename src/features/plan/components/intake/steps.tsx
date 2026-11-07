@@ -16,7 +16,9 @@ import {
   type IntakeDraft,
   type IntakeErrors,
 } from "../../data";
+import { AlertIcon } from "@/components/icons";
 import { RIDING_ENVIRONMENTS } from "../../schemas";
+import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import { ChoiceRow } from "../parts";
 
 export type StepProps = {
@@ -29,11 +31,9 @@ export type StepProps = {
 /** An error line under a field or group: a warning sign, then the text, wired with aria-describedby. */
 export function FieldError({ id, children }: { id: string; children: ReactNode }) {
   return (
-    <p id={id} className="mt-1.5 text-[13px] font-medium text-text">
-      <span aria-hidden="true" className="mr-1 text-accent">
-        !
-      </span>
-      {children}
+    <p id={id} className="mt-1.5 flex items-start gap-1.5 text-caption font-medium text-danger">
+      <AlertIcon className="size-4 shrink-0" />
+      <span>{children}</span>
     </p>
   );
 }
@@ -49,7 +49,7 @@ function Fieldset({
 }) {
   return (
     <fieldset className={className}>
-      <legend className="mb-1 text-[13px] font-semibold text-text">{legend}</legend>
+      <legend className="mb-1 text-caption font-semibold text-text">{legend}</legend>
       {children}
     </fieldset>
   );
@@ -84,27 +84,27 @@ function RankedList({
   }
 
   const buttonClass =
-    "flex size-11 items-center justify-center rounded-md bg-subtle text-[15px] text-text hover:bg-fill-hover aria-disabled:opacity-50";
+    "flex size-11 items-center justify-center rounded-md bg-fill text-text hover:bg-fill-hover aria-disabled:opacity-50";
   return (
     <div>
-      <h3 className="mb-1 text-[13px] font-semibold">Your order</h3>
+      <h3 className="mb-1 text-caption font-semibold">Your order</h3>
       <ol ref={list} className="flex flex-col gap-2">
         {purposes.map((purpose, i) => (
           <li
             key={purpose}
-            className="flex min-h-14 items-center gap-3 rounded-xl bg-surface px-3 py-1.5"
+            className="flex min-h-14 items-center gap-3 rounded-lg bg-surface px-3 py-1.5"
           >
-            <span aria-hidden="true" className="w-5 text-[15px] font-semibold">
+            <span aria-hidden="true" className="w-5 text-body font-semibold">
               {i + 1}
             </span>
-            <span className="min-w-0 flex-1 text-[15px] font-medium">
+            <span className="min-w-0 flex-1 text-body font-medium">
               <span className="sr-only">Number {i + 1}: </span>
               {purposeLabel(purpose)}
               {i === 0 ? (
-                <span className="ml-2 text-[13px] font-normal text-muted">main</span>
+                <span className="ml-2 text-caption font-normal text-muted">main</span>
               ) : null}
               {i === 1 ? (
-                <span className="ml-2 text-[13px] font-normal text-muted">secondary</span>
+                <span className="ml-2 text-caption font-normal text-muted">secondary</span>
               ) : null}
             </span>
             <button
@@ -117,7 +117,7 @@ function RankedList({
                 move(i, -1);
               }}
             >
-              <span aria-hidden="true">▲</span>
+              <ChevronUpIcon />
             </button>
             <button
               type="button"
@@ -129,7 +129,7 @@ function RankedList({
                 move(i, 1);
               }}
             >
-              <span aria-hidden="true">▼</span>
+              <ChevronDownIcon />
             </button>
           </li>
         ))}
@@ -137,7 +137,7 @@ function RankedList({
       <p role="status" className="sr-only">
         {announce}
       </p>
-      <p className="mt-2 text-[13px] text-muted">
+      <p className="mt-2 text-caption text-muted">
         The first purpose shapes most of the plan, the second what is left. Weight loss and muscle
         building pull in different directions, so the plan keeps either small when it is not first.
       </p>
@@ -194,13 +194,13 @@ export function PurposesStep({
             );
           })}
           {errors.purposes ? <FieldError id="purposes-error">{errors.purposes}</FieldError> : null}
-          <p id="purposes-help" className="mt-1.5 text-[13px] text-muted">
+          <p id="purposes-help" className="mt-1.5 text-caption text-muted">
             Choose one or two: a main purpose and a secondary one. You put them in order next.
           </p>
         </Fieldset>
         {hasWeightLoss(draft.purposes) ? (
           <div className="flex flex-col gap-4">
-            <h3 className="text-[17px] font-semibold">Weight loss</h3>
+            <h3 className="text-body-lg font-semibold">Weight loss</h3>
             <TextField
               label="Target weight"
               inputMode="decimal"
@@ -211,7 +211,7 @@ export function PurposesStep({
               onChange={(e) => {
                 change({ targetKg: e.target.value });
               }}
-              trailing={<span className="pr-3.5 text-[15px] text-muted">kg</span>}
+              trailing={<span className="pr-3.5 text-body text-muted">kg</span>}
             />
             <TextField
               label="Target date"
@@ -224,7 +224,7 @@ export function PurposesStep({
               }}
             />
             {ctx.weightKg === null ? (
-              <p className="text-[13px] text-muted">
+              <p className="text-caption text-muted">
                 <Link to="/weight" className="font-semibold text-accent underline">
                   Log your weight
                 </Link>{" "}
@@ -244,7 +244,7 @@ export function PurposesStep({
 export function LevelStep({ draft, change, errors }: StepProps) {
   return (
     <div>
-      <p className="mb-4 max-w-[60ch] text-[15px] text-muted">
+      <p className="mb-4 max-w-[60ch] text-body text-muted">
         Five questions. The answers set how much work and how hard the plan starts, from amateur to
         semi-pro. You see the result on the summary and can change it there.
       </p>
@@ -309,10 +309,10 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
         onChange={(e) => {
           change({ hours: e.target.value });
         }}
-        trailing={<span className="pr-3.5 text-[15px] text-muted">h</span>}
+        trailing={<span className="pr-3.5 text-body text-muted">h</span>}
       />
       {perSession !== null && days > 0 ? (
-        <p role="status" className="-mt-3 text-[13px] text-muted">
+        <p role="status" className="-mt-3 text-caption text-muted">
           With {days} training {days === 1 ? "day" : "days"} that is about{" "}
           {formatDuration(perSession)} per session.
           {perSession > 180
@@ -321,17 +321,17 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
         </p>
       ) : null}
       <div>
-        <h3 className="mb-1 text-[13px] font-semibold">Training days</h3>
+        <h3 className="mb-1 text-caption font-semibold">Training days</h3>
         <div
           aria-describedby={errors.days ? "days-error" : undefined}
-          className="rounded-md border border-dashed border-input-border px-3.5 py-3 text-[15px]"
+          className="rounded-md bg-fill px-3.5 py-3 text-body"
         >
           {days > 0
             ? ctx.availableDays.map((d) => DAY_LABEL[d] ?? d).join(", ")
             : "No training days set"}
         </div>
         {errors.days ? <FieldError id="days-error">{errors.days}</FieldError> : null}
-        <p className="mt-1.5 text-[13px] text-muted">
+        <p className="mt-1.5 text-caption text-muted">
           From your profile.{" "}
           <Link to="/profile" className="font-semibold text-accent underline">
             Change days in your profile
@@ -340,11 +340,11 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
       </div>
       {ctx.profileEnvironment !== null ? (
         <div>
-          <h3 className="mb-1 text-[13px] font-semibold">Indoor or outdoor</h3>
-          <div className="rounded-md border border-dashed border-input-border px-3.5 py-3 text-[15px]">
+          <h3 className="mb-1 text-caption font-semibold">Indoor or outdoor</h3>
+          <div className="rounded-md bg-fill px-3.5 py-3 text-body">
             {ENV_LABEL[ctx.profileEnvironment]}
           </div>
-          <p className="mt-1.5 text-[13px] text-muted">
+          <p className="mt-1.5 text-caption text-muted">
             Set in your profile. Sessions are planned for indoor, outdoor or both.{" "}
             <Link to="/profile" className="font-semibold text-accent underline">
               Change in your profile
@@ -372,7 +372,7 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
           {errors.environment ? (
             <FieldError id="environment-error">{errors.environment}</FieldError>
           ) : null}
-          <p className="mt-1.5 text-[13px] text-muted">
+          <p className="mt-1.5 text-caption text-muted">
             Saved to your profile. Sessions are planned for indoor, outdoor or both.
           </p>
         </Fieldset>
@@ -392,11 +392,11 @@ export function StartStep({ draft, change, errors, ctx }: StepProps) {
     <div className="flex max-w-[480px] flex-col gap-6">
       {ctx.fixedStart ? (
         <div>
-          <h3 className="mb-1 text-[13px] font-semibold">Start date</h3>
-          <div className="rounded-md border border-dashed border-input-border px-3.5 py-3 text-[15px]">
+          <h3 className="mb-1 text-caption font-semibold">Start date</h3>
+          <div className="rounded-md bg-fill px-3.5 py-3 text-body">
             {formatLongDate(ctx.fixedStart)}
           </div>
-          <p className="mt-1.5 text-[13px] text-muted">
+          <p className="mt-1.5 text-caption text-muted">
             The start date of a plan cannot be changed. To start on another date, remove this plan
             and build a new one.
           </p>
@@ -494,7 +494,7 @@ export function StartStep({ draft, change, errors, ctx }: StepProps) {
                   {o.label}
                 </ChoiceRow>
               ))}
-              <p className="mt-1 text-[13px] text-muted">A longer event gets a longer taper.</p>
+              <p className="mt-1 text-caption text-muted">A longer event gets a longer taper.</p>
             </Fieldset>
           </div>
         ) : null}

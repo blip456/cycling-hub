@@ -14,7 +14,7 @@ import { usePlan } from "../data";
 
 function Header({ change }: { change: PlanChange }) {
   return (
-    <div className="rounded-2xl bg-surface px-4 py-3.5 text-[15px]">
+    <div className="rounded-lg bg-surface px-4 py-3.5 text-body">
       <p className="font-semibold">Updated {formatUpdated(change.createdAt)}</p>
       <p className="mt-0.5">{change.message}</p>
       {change.undoneAt ? (
@@ -80,7 +80,7 @@ export function ChangesPage() {
               >
                 Undo all
               </Button>
-              <p className="mt-1.5 max-w-[60ch] text-[13px] text-muted">
+              <p className="mt-1.5 max-w-[60ch] text-caption text-muted">
                 {canUndo.payload.undo.description}
               </p>
             </div>
@@ -89,19 +89,19 @@ export function ChangesPage() {
       )}
       {earlier.length > 0 ? (
         <section aria-labelledby="plan-earlier">
-          <h3 id="plan-earlier" className="mb-1.5 text-[17px] font-semibold">
+          <h3 id="plan-earlier" className="mb-1.5 text-body-lg font-semibold">
             Earlier updates ({earlier.length})
           </h3>
           <ul className="flex flex-col gap-1.5">
             {earlier.map((change) => {
               const expanded = open === change.id;
               return (
-                <li key={change.id} className="rounded-2xl bg-surface">
+                <li key={change.id} className="rounded-lg bg-surface">
                   <button
                     type="button"
                     aria-expanded={expanded}
                     aria-controls={`earlier-${change.id}`}
-                    className="flex min-h-11 w-full flex-col items-start rounded-2xl px-4 py-2.5 text-left text-[15px] hover:bg-surface-hover"
+                    className="flex min-h-11 w-full flex-col items-start rounded-lg px-4 py-2.5 text-left text-body hover:bg-surface-hover"
                     onClick={() => {
                       setOpen(expanded ? null : change.id);
                     }}
