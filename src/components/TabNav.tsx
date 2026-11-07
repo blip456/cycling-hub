@@ -33,7 +33,7 @@ export function TabNav({
               to={to}
               end={end ?? false}
               className={({ isActive }) =>
-                "-mb-px flex min-h-11 items-center border-b-2 px-4 text-[15px] " +
+                "-mb-px flex min-h-11 items-center border-b-2 px-4 text-body " +
                 (isActive
                   ? "border-accent font-semibold text-text"
                   : "border-transparent text-muted hover:text-text")

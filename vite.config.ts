@@ -85,6 +85,40 @@ function releaseData(): Plugin {
   };
 }
 
+/**
+ * Preloads the Latin subset of Inter (P36) so text does not wait for the CSS to be parsed before the font is
+ * requested. The file name is hashed, so the link is written at build time from the bundle. The other subsets
+ * (latin-ext, cyrillic, ...) load on demand through unicode-range.
+ */
+function preloadInter(): Plugin {
+  return {
+    name: "cycling-hub:preload-inter",
+    apply: "build",
+    transformIndexHtml: {
+      order: "post",
+      handler(_html, ctx) {
+        const file = Object.keys(ctx.bundle ?? {}).find((name) =>
+          /inter-latin-wght-normal-.*\.woff2$/.test(name),
+        );
+        if (!file) return [];
+        return [
+          {
+            tag: "link",
+            attrs: {
+              rel: "preload",
+              as: "font",
+              type: "font/woff2",
+              crossorigin: "",
+              href: `/${file}`,
+            },
+            injectTo: "head-prepend",
+          },
+        ];
+      },
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => ({
   define: {
     __APP_VERSION__: JSON.stringify(pkg.version),
@@ -93,6 +127,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     releaseData(),
+    preloadInter(),
     react(),
     tailwindcss(),
     VitePWA({
@@ -123,7 +158,12 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png,webmanifest}"],
+        // Fonts (P36): the installed app must render Inter offline-first. Only the Latin and Latin Extended
+        // subsets are precached (about 130 kB); the rest of the subsets are fetched on demand.
+        globPatterns: [
+          "**/*.{js,css,html,svg,png,webmanifest}",
+          "assets/inter-latin{,-ext}-wght-normal-*.woff2",
+        ],
         navigateFallback: "/index.html",
         cleanupOutdatedCaches: true,
         // No runtime caching: Supabase requests always go to the network.
