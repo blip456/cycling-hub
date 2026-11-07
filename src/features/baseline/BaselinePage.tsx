@@ -26,18 +26,20 @@ export function BaselinePage() {
   return (
     <>
       {onTab ? <TabNav label="Baseline" tabs={tabs} /> : null}
-      <Routes>
-        <Route index element={<BaselineTab />} />
-        <Route path="update" element={<UpdatePage />} />
-        <Route path="suggestion" element={<SuggestionPage />} />
-        <Route path="values" element={<ValuesPage />} />
-        <Route path="test-week" element={<TestWeekPage />} />
-        <Route path="test-week/:position" element={<SessionPage />} />
-        <Route path="test-week/:position/result" element={<ResultPage />} />
-        <Route path="zones" element={<ZonesTab />} />
-        <Route path="history" element={<HistoryTab />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <div className="tabular-nums">
+        <Routes>
+          <Route index element={<BaselineTab />} />
+          <Route path="update" element={<UpdatePage />} />
+          <Route path="suggestion" element={<SuggestionPage />} />
+          <Route path="values" element={<ValuesPage />} />
+          <Route path="test-week" element={<TestWeekPage />} />
+          <Route path="test-week/:position" element={<SessionPage />} />
+          <Route path="test-week/:position/result" element={<ResultPage />} />
+          <Route path="zones" element={<ZonesTab />} />
+          <Route path="history" element={<HistoryTab />} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </div>
     </>
   );
 }

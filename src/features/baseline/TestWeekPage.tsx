@@ -27,12 +27,12 @@ function ProtocolChoice({
   const name = useId();
   return (
     <fieldset className="mb-6">
-      <legend className="mb-2 text-[13px] font-semibold">Test protocol</legend>
+      <legend className="mb-2 text-[13px] leading-[18px] font-semibold">Test protocol</legend>
       <div className="grid gap-2 lg:grid-cols-2">
         {(Object.keys(PROTOCOLS) as Protocol[]).map((key) => (
           <label
             key={key}
-            className="flex min-h-16 cursor-pointer items-start gap-3 rounded-2xl bg-surface p-4 has-checked:shadow-[inset_0_0_0_2px_var(--accent)] has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
+            className="flex min-h-16 cursor-pointer items-start gap-3 rounded-2xl bg-surface p-4 has-checked:bg-fill has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
           >
             <input
               type="radio"
@@ -42,11 +42,11 @@ function ProtocolChoice({
               onChange={() => {
                 onChange(key);
               }}
-              className="mt-1 size-4 accent-[var(--accent)]"
+              className="mt-0.5 size-5 shrink-0 accent-[var(--accent)]"
             />
-            <span className="text-[15px] font-semibold">
+            <span className="text-[15px] leading-[22px] font-semibold">
               {PROTOCOLS[key].label}
-              <span className="block text-[13px] font-normal text-muted">
+              <span className="block text-[13px] leading-[18px] font-normal text-muted">
                 {PROTOCOLS[key].description}
               </span>
             </span>
@@ -93,8 +93,10 @@ function PlanWeek() {
   return (
     <div className="max-w-[640px] lg:max-w-none">
       <ProtocolChoice value={protocol} onChange={setProtocol} />
-      <h2 className="text-[17px] font-semibold">Sessions</h2>
-      <p className="mb-3 text-[15px]">You choose the day of each session. Do them in this order.</p>
+      <h2 className="text-[15px] leading-[22px] font-semibold">Sessions</h2>
+      <p className="mb-3 text-[15px] leading-[22px]">
+        You choose the day of each session. Do them in this order.
+      </p>
       <ol className="flex flex-col gap-3">
         {plan.sessions.map((session, i) => (
           <li
@@ -102,13 +104,13 @@ function PlanWeek() {
             className="grid gap-3 rounded-2xl bg-surface p-4 lg:grid-cols-[1fr_16rem] lg:items-start"
           >
             <div>
-              <h3 className="text-[15px] font-semibold">
+              <h3 className="text-[15px] leading-[22px] font-semibold">
                 {session.position} · {session.title}
               </h3>
-              <p className="text-[15px]">
+              <p className="text-[15px] leading-[22px]">
                 {chosen[i] ? `Planned ${formatShortDate(chosen[i])}` : "Not planned"}
               </p>
-              <p className="mt-1 text-[13px] text-muted">{session.summary}</p>
+              <p className="mt-1 text-[13px] leading-[18px] text-muted">{session.summary}</p>
             </div>
             <TextField
               label={`Date for session ${String(session.position)}, ${session.title}`}
@@ -174,8 +176,8 @@ function ActiveWeek({
   );
   return (
     <div className="max-w-[640px] lg:max-w-none">
-      <h2 className="text-[17px] font-semibold">{plan.label}</h2>
-      <p className="mb-3 text-[15px]">
+      <h2 className="text-[15px] leading-[22px] font-semibold">{plan.label}</h2>
+      <p className="mb-3 text-[15px] leading-[22px]">
         You choose the day of each session. Do them in this order. Results are entered on the
         session.
       </p>
@@ -190,11 +192,11 @@ function ActiveWeek({
               className="grid gap-3 rounded-2xl bg-surface p-4 lg:grid-cols-[1fr_16rem_auto] lg:items-start"
             >
               <div>
-                <h3 className="text-[15px] font-semibold">
+                <h3 className="text-[15px] leading-[22px] font-semibold">
                   {p.position} · {p.title}
                 </h3>
-                <p className="text-[15px]">{statusText(session)}</p>
-                <p className="mt-1 text-[13px] text-muted">{p.summary}</p>
+                <p className="text-[15px] leading-[22px]">{statusText(session)}</p>
+                <p className="mt-1 text-[13px] leading-[18px] text-muted">{p.summary}</p>
               </div>
               <TextField
                 label={`Date for session ${String(p.position)}, ${p.title}`}
@@ -231,7 +233,7 @@ function ActiveWeek({
         >
           Cancel this test week
         </button>
-        <p className="mt-1 px-5 text-[13px] text-muted">
+        <p className="mt-1 px-5 text-[13px] leading-[18px] text-muted">
           Your baseline is not changed. You can plan a new week afterwards.
         </p>
       </div>

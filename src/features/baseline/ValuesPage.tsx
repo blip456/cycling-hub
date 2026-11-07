@@ -36,7 +36,7 @@ function toNumber(text: string): number | null {
 
 function unit(label: string) {
   return (
-    <span aria-hidden="true" className="pr-3.5 text-[15px] text-muted">
+    <span aria-hidden="true" className="pr-3.5 text-[15px] leading-[22px] text-muted">
       {label}
     </span>
   );
@@ -173,7 +173,7 @@ export function ValuesPage() {
 
   return (
     <form onSubmit={submit} noValidate className="max-w-[640px] lg:max-w-none">
-      <p className="mb-5 text-[15px]">
+      <p className="mb-5 text-[15px] leading-[22px]">
         Fill in only what you want to change. Empty fields keep their current value.
       </p>
       {fieldErrors.length > 0 ? (
@@ -213,20 +213,22 @@ export function ValuesPage() {
             }}
           />
           <section aria-labelledby="highest-heading" className="rounded-2xl bg-surface p-4">
-            <h2 id="highest-heading" className="text-[15px] font-semibold">
+            <h2 id="highest-heading" className="text-[15px] leading-[22px] font-semibold">
               Highest heart rate in your rides
             </h2>
             {hrScan.isPending ? (
-              <p role="status" className="mt-1 text-[13px] text-muted">
+              <p role="status" className="mt-1 text-[13px] leading-[18px] text-muted">
                 Looking in your rides. This can take a moment.
               </p>
             ) : found ? (
               <>
-                <p className="mt-1 text-2xl font-semibold tabular-nums">
+                <p className="mt-1 text-[24px] leading-[30px] tracking-[-0.015em] font-semibold tabular-nums">
                   {found.bpm}
-                  <span className="ml-1 text-[15px] font-medium text-muted">bpm</span>
+                  <span className="ml-1 text-[15px] leading-[22px] tracking-normal font-medium text-muted">
+                    bpm
+                  </span>
                 </p>
-                <p className="text-[13px] text-muted">
+                <p className="text-[13px] leading-[18px] text-muted">
                   {hrScan.data?.ride
                     ? `${formatDate(hrScan.data.ride.start_local.slice(0, 10))} · ${hrScan.data.ride.name}. `
                     : ""}
@@ -244,7 +246,7 @@ export function ValuesPage() {
                 </button>
               </>
             ) : (
-              <p className="mt-1 text-[13px] text-muted">
+              <p className="mt-1 text-[13px] leading-[18px] text-muted">
                 {hrScan.isError
                   ? "The ride files could not be read, so there is no suggestion. You can type a value."
                   : "No heart rate data was found in your rides."}

@@ -1,10 +1,12 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { addMonths, diffDays, type IsoDate } from "@/features/athlete";
 import { MONTHS } from "./format";
 
 /** A baseline row that sets FTP: the chart draws these. */
 export type FtpPoint = { date: IsoDate; ftp: number };
 
-const W = 480;
+/** Width the chart is drawn at until it is measured. The chart is drawn 1:1 in CSS pixels, so its text keeps its size. */
+const DEFAULT_W = 480;
 const H = 260;
 const PAD = { left: 52, right: 24, top: 32, bottom: 34 };
 /** Room between the axis and the first and last point, so a label never sits on the axis numbers. */
@@ -51,6 +53,23 @@ function yRange(values: readonly number[]): { min: number; max: number } {
  * way to read it. `today` is where the last step ends.
  */
 export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today: IsoDate }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [W, setW] = useState(DEFAULT_W);
+  useLayoutEffect(() => {
+    const el = svgRef.current;
+    if (!el) return;
+    const measure = () => {
+      const width = Math.round(el.getBoundingClientRect().width);
+      if (width > 0) setW(width);
+    };
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+    };
+  }, [points.length]);
   if (points.length === 0) return null;
   const sorted = [...points].sort((a, b) => a.date.localeCompare(b.date));
   const first = sorted[0]?.date ?? today;
@@ -78,12 +97,16 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
 
   return (
     <figure>
-      <figcaption className="mb-1 text-[13px] text-muted">FTP over time (W)</figcaption>
+      <figcaption className="mb-1 text-[13px] leading-[18px] text-muted">
+        FTP over time (W)
+      </figcaption>
       <svg
+        ref={svgRef}
         viewBox={`0 0 ${String(W)} ${String(H)}`}
         role="img"
         aria-label={`FTP over time. ${description}`}
-        className="h-auto w-full text-text"
+        className="block w-full text-text tabular-nums"
+        style={{ height: H }}
       >
         {yTicks.map((tick) => (
           <g key={tick}>
@@ -98,7 +121,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
               x={PAD.left - 6}
               y={y(tick) + 4}
               textAnchor="end"
-              fontSize="14"
+              fontSize="13"
               fill="var(--muted)"
             >
               {tick}
@@ -111,7 +134,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
             x={x(month < first ? first : month)}
             y={H - 10}
             textAnchor="middle"
-            fontSize="14"
+            fontSize="13"
             fill="var(--muted)"
           >
             {monthLabel(month, multiYear)}
@@ -132,7 +155,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
               x={x(p.date)}
               y={y(p.ftp) - 10}
               textAnchor="middle"
-              fontSize="14"
+              fontSize="13"
               fontWeight="600"
               fill="currentColor"
             >

@@ -20,7 +20,7 @@ export function Skeleton({ label, rows = 3 }: { label: string; rows?: number }) 
       <span className="sr-only">{label}</span>
       <div aria-hidden="true" className={`flex max-w-[640px] flex-col gap-3 ${pulse}`}>
         {Array.from({ length: rows }, (_, i) => (
-          <div key={i} className="h-24 rounded-2xl bg-surface" />
+          <div key={i} className="h-24 rounded-2xl bg-fill" />
         ))}
       </div>
     </div>
@@ -47,12 +47,21 @@ export function LoadError({
     ),
   });
   return (
-    <div className="flex max-w-[640px] flex-col items-start gap-3 rounded-2xl bg-surface px-5 py-6">
-      <p className="text-[15px]">{message}</p>
+    <div className="flex max-w-[640px] flex-col items-start gap-3 rounded-2xl bg-surface p-4">
+      <p className="text-[15px] leading-[22px]">{message}</p>
       <button type="button" className={buttonClass("secondary")} onClick={onRetry}>
         Try again
       </button>
     </div>
+  );
+}
+
+/** An empty state in the page: one left-aligned sentence on a card (never centred). */
+export function EmptyNote({ children }: { children: ReactNode }) {
+  return (
+    <p className="w-full max-w-[640px] rounded-2xl bg-surface p-4 text-[15px] leading-[22px] text-muted">
+      {children}
+    </p>
   );
 }
 
@@ -70,7 +79,7 @@ function Swatch({ index }: { index: number }) {
   return (
     <span
       aria-hidden="true"
-      className="flex size-8 shrink-0 items-center justify-center rounded-md text-[15px] font-semibold text-on-accent"
+      className="flex size-8 shrink-0 items-center justify-center rounded-md text-[15px] leading-[22px] font-semibold text-on-accent"
       style={{ backgroundColor: `var(--zone-${String(index)})` }}
     >
       {index}
@@ -86,7 +95,7 @@ export function ZoneBar({ zones, label }: { zones: readonly Zone[]; label: strin
       {zones.map((zone, i) => (
         <span
           key={zone.index}
-          className="flex min-w-0 items-center justify-center text-[13px] font-semibold text-on-accent"
+          className="flex min-w-0 items-center justify-center text-[13px] leading-[18px] font-semibold text-on-accent"
           style={{
             flexGrow: weights[i] ?? 1,
             flexBasis: 0,
@@ -119,12 +128,14 @@ export function ZoneRows({
         >
           <Swatch index={zone.index} />
           <div className="min-w-0 flex-1">
-            <p className="text-[15px] font-semibold">
+            <p className="text-[15px] leading-[22px] font-semibold">
               Zone {zone.index} · {zone.name}
             </p>
-            <p className="text-[13px] text-muted">{zonePercentText(model, zone.index)}</p>
+            <p className="text-[13px] leading-[18px] text-muted">
+              {zonePercentText(model, zone.index)}
+            </p>
           </div>
-          <p className="shrink-0 text-right text-[15px] font-semibold tabular-nums">
+          <p className="shrink-0 text-right text-[15px] leading-[22px] font-semibold tabular-nums">
             {zoneRangeText(zone, unit)}
           </p>
         </li>
@@ -168,21 +179,21 @@ export function EffectiveFrom({
   }
   return (
     <div>
-      <p className="mb-1.5 text-[13px] font-semibold">Effective from</p>
+      <p className="mb-1.5 text-[13px] leading-[18px] font-semibold">Effective from</p>
       <div className="flex items-center justify-between gap-3">
-        <p className="text-[15px]">{formatDate(value)}</p>
+        <p className="text-[15px] leading-[22px]">{formatDate(value)}</p>
         <button
           type="button"
           aria-label="Change the effective date"
           onClick={() => {
             setEditing(true);
           }}
-          className="inline-flex min-h-11 items-center rounded-md px-3 text-[15px] font-semibold text-accent hover:bg-accent-soft"
+          className="inline-flex min-h-11 items-center rounded-md px-3 text-[15px] leading-[22px] font-semibold text-accent hover:bg-accent-soft"
         >
           Change
         </button>
       </div>
-      <p className="text-[13px] text-muted">{helper}</p>
+      <p className="text-[13px] leading-[18px] text-muted">{helper}</p>
     </div>
   );
 }

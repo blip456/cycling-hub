@@ -1,7 +1,7 @@
 import { useState, type SyntheticEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { buttonClass } from "@/components/button-class";
-import { EmptyState, FormAlert, TextField } from "@/components/ui";
+import { FormAlert, TextField } from "@/components/ui";
 import { isIsoDate, lthrSchema } from "@/features/athlete";
 import { Checkbox } from "@/features/rides/list/controls";
 import type { TestSession } from "./api";
@@ -15,7 +15,7 @@ import {
   useUpdateSession,
 } from "./hooks";
 import { valueOf } from "./model";
-import { LoadError, Skeleton } from "./parts";
+import { EmptyNote, LoadError, Skeleton } from "./parts";
 import { checklistFor, PROTOCOLS, stepsFor, type Protocol, type SessionKind } from "./protocols";
 
 const card = "rounded-2xl bg-surface p-4";
@@ -23,7 +23,7 @@ const RESULT_POWER = { min: 50, max: 1500 } as const;
 
 function unit(label: string) {
   return (
-    <span aria-hidden="true" className="pr-3.5 text-[15px] text-muted">
+    <span aria-hidden="true" className="pr-3.5 text-[15px] leading-[22px] text-muted">
       {label}
     </span>
   );
@@ -50,7 +50,7 @@ function DateLine({ session }: { session: TestSession }) {
   }
   return (
     <div className="flex flex-wrap items-center gap-x-2">
-      <p className="text-[15px]">
+      <p className="text-[15px] leading-[22px]">
         {session.scheduled_on ? formatDate(session.scheduled_on) : "No date chosen"}
       </p>
       <button
@@ -58,11 +58,11 @@ function DateLine({ session }: { session: TestSession }) {
         onClick={() => {
           setEditing(true);
         }}
-        className="inline-flex min-h-11 items-center rounded-md px-3 text-[15px] font-semibold text-accent hover:bg-accent-soft"
+        className="inline-flex min-h-11 items-center rounded-md px-3 text-[15px] leading-[22px] font-semibold text-accent hover:bg-accent-soft"
       >
         Change date
       </button>
-      <p className="text-[13px] text-muted">Status: {status}</p>
+      <p className="text-[13px] leading-[18px] text-muted">Status: {status}</p>
     </div>
   );
 }
@@ -71,7 +71,10 @@ function Checklist({ session, items }: { session: TestSession; items: string[] }
   const [checked, setChecked] = useState(() => loadChecked(session.id));
   return (
     <section aria-labelledby="before-heading" className={`${card} lg:col-start-2 lg:row-start-1`}>
-      <h2 id="before-heading" className="text-[17px] font-semibold">
+      <h2
+        id="before-heading"
+        className="text-[20px] leading-[26px] tracking-[-0.01em] font-semibold"
+      >
         Before you start
       </h2>
       <ul className="mt-1">
@@ -109,10 +112,13 @@ function Steps({
       aria-labelledby="steps-heading"
       className={`${card} lg:col-start-1 lg:row-span-2 lg:row-start-1`}
     >
-      <h2 id="steps-heading" className="text-[17px] font-semibold">
+      <h2
+        id="steps-heading"
+        className="text-[20px] leading-[26px] tracking-[-0.01em] font-semibold"
+      >
         Steps
       </h2>
-      <p className="mt-1 text-[13px] text-muted">
+      <p className="mt-1 text-[13px] leading-[18px] text-muted">
         {ftp === null
           ? "No FTP is set yet, so the steps use effort wording."
           : `Targets use your current FTP of ${String(ftp)} W.`}
@@ -120,14 +126,17 @@ function Steps({
       <ol className="mt-2 divide-y divide-border">
         {steps.map((step, i) => (
           <li key={step.title} className="flex gap-3 py-3">
-            <span aria-hidden="true" className="w-5 shrink-0 text-[15px] font-semibold text-muted">
+            <span
+              aria-hidden="true"
+              className="w-5 shrink-0 text-[15px] leading-[22px] font-semibold text-muted"
+            >
               {i + 1}
             </span>
             <div className="min-w-0">
-              <p className="text-[15px] font-semibold">
+              <p className="text-[15px] leading-[22px] font-semibold">
                 {step.title} · {step.duration}
               </p>
-              <p className="text-[15px]">{step.target}</p>
+              <p className="text-[15px] leading-[22px]">{step.target}</p>
             </div>
           </li>
         ))}
@@ -142,10 +151,10 @@ function DoneToggle({ session, weekId }: { session: TestSession; weekId: string 
   const done = session.completed_at !== null;
   return (
     <section className={`${card} lg:col-start-2 lg:row-start-2`} aria-labelledby="done-heading">
-      <h2 id="done-heading" className="text-[17px] font-semibold">
+      <h2 id="done-heading" className="text-[20px] leading-[26px] tracking-[-0.01em] font-semibold">
         When you have ridden it
       </h2>
-      <p className="mt-1 text-[15px]">
+      <p className="mt-1 text-[15px] leading-[22px]">
         This session has no result. Tick it off to see your progress.
       </p>
       <button
@@ -224,7 +233,10 @@ function ResultForm({
 
   return (
     <section aria-labelledby="result-heading" className={`${card} lg:col-start-2 lg:row-start-2`}>
-      <h2 id="result-heading" className="mb-4 text-[17px] font-semibold">
+      <h2
+        id="result-heading"
+        className="mb-4 text-[20px] leading-[26px] tracking-[-0.01em] font-semibold"
+      >
         Your result
       </h2>
       {errors.form ? <FormAlert>{errors.form}</FormAlert> : null}
@@ -257,9 +269,11 @@ function ResultForm({
           />
         ) : null}
         {ride && ride.bestW !== null ? (
-          <div className="rounded-xl bg-subtle p-3">
-            <h3 className="text-[15px] font-semibold">A ride was found on this day</h3>
-            <p className="text-[13px] text-muted">
+          <div className="rounded-md bg-subtle p-3">
+            <h3 className="text-[15px] leading-[22px] font-semibold">
+              A ride was found on this day
+            </h3>
+            <p className="text-[13px] leading-[18px] text-muted">
               {formatRideStart(ride.ride.start_local)} · {ride.ride.name} ·{" "}
               {protocol === "ramp" ? "best minute" : "best 20 minutes"}: {ride.bestW} W
             </p>
@@ -280,7 +294,9 @@ function ResultForm({
           <button type="submit" disabled={update.isPending} className={buttonClass("primary")}>
             Review result
           </button>
-          <p className="mt-2 text-[13px] text-muted">Nothing is saved to the baseline yet.</p>
+          <p className="mt-2 text-[13px] leading-[18px] text-muted">
+            Nothing is saved to the baseline yet.
+          </p>
         </div>
       </form>
     </section>
@@ -309,9 +325,9 @@ export function SessionPage() {
   if (!week.data || !session) {
     return (
       <div className="flex max-w-[640px] flex-col items-start gap-4">
-        <EmptyState>
+        <EmptyNote>
           This session was not found. The test week may be finished or cancelled.
-        </EmptyState>
+        </EmptyNote>
         <Link to="/baseline/test-week" className={buttonClass("secondary")}>
           Back to the test week
         </Link>
@@ -324,10 +340,10 @@ export function SessionPage() {
   const ftp = baseline ? valueOf(baseline, "ftp") : null;
   return (
     <div className="max-w-[640px] lg:max-w-none">
-      <h2 className="text-[22px] leading-7 font-semibold tracking-tight">
+      <h2 className="text-[24px] leading-[30px] tracking-[-0.015em] font-semibold">
         {plan?.title ?? "Session"}
       </h2>
-      <p className="text-[15px] text-muted">
+      <p className="text-[15px] leading-[22px] text-muted">
         Session {session.position} of {sessions.length} · {PROTOCOLS[protocol].label}
       </p>
       <div className="mt-1 mb-4">
