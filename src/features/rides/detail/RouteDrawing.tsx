@@ -34,7 +34,7 @@ export function RouteDrawing({
   if (!path) {
     return (
       <p
-        className={`flex items-center justify-center rounded-2xl bg-surface px-4 text-center text-[15px] text-muted ${heightClass}`}
+        className={`flex items-center rounded-2xl bg-surface px-4 text-body text-muted ${heightClass}`}
       >
         No route shape for this ride.
       </p>

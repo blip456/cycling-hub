@@ -77,7 +77,7 @@ export function WeightReminderSettings() {
           <span className="grow">The reminder settings could not be loaded.</span>
           <button
             type="button"
-            className="min-h-11 rounded-md px-2 font-semibold text-accent hover:bg-subtle"
+            className="min-h-11 rounded-md px-2 text-body font-semibold text-accent hover:bg-fill"
             onClick={() => {
               void query.refetch();
             }}
@@ -117,7 +117,7 @@ export function WeightReminderSettings() {
         onClick={() => {
           change({ ...settings, enabled: !settings.enabled });
         }}
-        className={`${row} min-h-12 w-full text-left hover:bg-surface-hover focus-visible:-outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60`}
+        className={`${row} w-full text-left hover:bg-surface-hover focus-visible:-outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60`}
       >
         <span id={labelId} className="grow">
           Weight reminder
@@ -137,7 +137,7 @@ export function WeightReminderSettings() {
           />
         </span>
       </button>
-      <p id={switchHelperId} className="px-4 pb-3 text-[13px] text-muted">
+      <p id={switchHelperId} className="px-4 pb-3 text-caption text-muted">
         Shows a card in the app when you have not logged your weight in 7 days.
       </p>
       <div className="px-4 pb-3">
@@ -158,7 +158,7 @@ export function WeightReminderSettings() {
             </option>
           ))}
         </SelectField>
-        <p id={dayHelperId} className="mt-1.5 text-[13px] text-muted">
+        <p id={dayHelperId} className="mt-1.5 text-caption text-muted">
           The card appears from this day until you log your weight.
         </p>
       </div>

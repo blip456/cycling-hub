@@ -38,11 +38,11 @@ export function WeekReasonCard({
   });
   if (!reason) return null;
   return (
-    <section aria-labelledby="plan-why-week" className="mb-4 rounded-2xl bg-surface px-4 py-3.5">
-      <h3 id="plan-why-week" className="text-[15px] font-semibold">
+    <section aria-labelledby="plan-why-week" className="mb-4 rounded-lg bg-surface px-4 py-3.5">
+      <h3 id="plan-why-week" className="text-body font-semibold">
         Why this week
       </h3>
-      <div className="mt-1 flex flex-col gap-1 text-[15px]">
+      <div className="mt-1 flex flex-col gap-1 text-body">
         {reason.lines.map((line) => (
           <p key={line}>{line}</p>
         ))}
@@ -65,7 +65,7 @@ export function SessionReasons({ session, plan }: { session: PlanSession; plan: 
       : null,
   ].filter((line): line is string => line !== null && line !== "");
   return (
-    <ol className="flex max-w-[65ch] list-decimal flex-col gap-1 pl-5 text-[15px]">
+    <ol className="flex max-w-[65ch] list-decimal flex-col gap-1 pl-5 text-body">
       {lines.map((line) => (
         <li key={line}>{line}</li>
       ))}
@@ -102,19 +102,16 @@ export function EventCard({
         ? `Week ${String(first)}`
         : `Weeks ${String(first)} to ${String(last)}`;
   return (
-    <section aria-labelledby="plan-event" className="rounded-2xl bg-surface px-4 py-4">
+    <section aria-labelledby="plan-event" className="rounded-lg bg-surface px-4 py-4">
       <div className="flex items-start justify-between gap-3">
-        <h3 id="plan-event" className="text-[17px] font-semibold [overflow-wrap:anywhere]">
+        <h3 id="plan-event" className="text-body-lg font-semibold [overflow-wrap:anywhere]">
           {event?.name ?? "Event"}
         </h3>
-        <Link
-          to="/profile"
-          className="inline-flex min-h-11 items-center font-semibold text-accent underline"
-        >
+        <Link to="/profile" className="inline-flex min-h-11 items-center font-semibold text-accent">
           Change<span className="sr-only"> the event in your profile</span>
         </Link>
       </div>
-      <p className="text-[15px]">
+      <p className="text-body">
         {formatDay(eventSession.date)}
         {days === null || days < 0
           ? ""
@@ -122,7 +119,7 @@ export function EventCard({
             ? " · today"
             : ` · ${String(days)} ${days === 1 ? "day" : "days"} to go`}
       </p>
-      <p className="mt-2 text-[15px] text-muted">
+      <p className="mt-2 text-body text-muted">
         The plan is built backwards from this date.
         {taperName
           ? ` ${taperName} ${first === last ? "is" : "are"} the ${PHASE_TEXT.taper.toLowerCase()}: fewer and shorter sessions, a few short efforts to stay sharp.`

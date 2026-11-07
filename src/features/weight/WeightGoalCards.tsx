@@ -29,9 +29,9 @@ function paceText(lossKgPerWeek: number | null): string {
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex min-h-11 items-center justify-between gap-4 text-[15px]">
+    <div className="flex min-h-11 items-center justify-between gap-4 text-body">
       <dt className="text-muted">{label}</dt>
-      <dd className="text-right font-semibold [font-variant-numeric:tabular-nums]">{value}</dd>
+      <dd className="text-right font-semibold">{value}</dd>
     </div>
   );
 }
@@ -44,8 +44,8 @@ export function WeightGoalCard() {
 
   if (goal.isError) {
     return (
-      <div className="mb-5 rounded-2xl bg-surface px-5 py-4">
-        <p className="text-[15px]">The weight goal could not be loaded.</p>
+      <div className="mb-5 rounded-lg bg-surface px-5 py-4">
+        <p className="text-body">The weight goal could not be loaded.</p>
         <Button
           variant="secondary"
           className="mt-3"
@@ -66,9 +66,9 @@ export function WeightGoalCard() {
   if (active) {
     const standing = goalStanding(active, entries.data, today);
     return (
-      <section aria-labelledby={headingId} className="mb-5 rounded-2xl bg-surface p-4">
+      <section aria-labelledby={headingId} className="mb-5 rounded-lg bg-surface p-4">
         <div className="flex min-h-11 items-center justify-between gap-3">
-          <h2 id={headingId} className="text-[17px] font-semibold">
+          <h2 id={headingId} className="text-title">
             Weight goal
           </h2>
           <Link
@@ -79,21 +79,21 @@ export function WeightGoalCard() {
             Edit
           </Link>
         </div>
-        <p className="mt-1 text-[15px]">
+        <p className="mt-1 text-body">
           Target <span className="font-semibold">{formatKg(active.targetKg)} kg</span> by{" "}
           {formatDay(active.targetDate)}
         </p>
         {average !== null ? (
-          <p className="text-[15px] text-muted">
+          <p className="text-body text-muted">
             {standing?.state === "reached"
               ? `You reached your target. Your 7-day average is ${formatKg(average)} kg.`
               : `Still to lose ${formatKg(average - active.targetKg)} kg from ${formatKg(average)} kg`}
           </p>
         ) : (
-          <p className="text-[15px] text-muted">Log a weigh-in to see how far you are.</p>
+          <p className="text-body text-muted">Log a weigh-in to see how far you are.</p>
         )}
         {standing && standing.state !== "reached" && standing.state !== "unknown" ? (
-          <p className="mt-2 text-[15px] font-semibold">{STANDING_TEXT[standing.state]}</p>
+          <p className="mt-2 text-body font-semibold">{STANDING_TEXT[standing.state]}</p>
         ) : null}
         {standing?.state === "reached" ? (
           <Link to="/weight/goal" className={buttonClass("secondary", "mt-3")}>
@@ -107,8 +107,8 @@ export function WeightGoalCard() {
   const rate = weeklyTrendLoss(entries.data, today);
   const cap = average === null ? null : capKgPerWeek(average);
   return (
-    <section aria-labelledby={headingId} className="mb-5 rounded-2xl bg-surface p-4">
-      <h2 id={headingId} className="text-[17px] font-semibold">
+    <section aria-labelledby={headingId} className="mb-5 rounded-lg bg-surface p-4">
+      <h2 id={headingId} className="text-title">
         Weight loss trend
       </h2>
       <dl className="mt-1">
@@ -116,11 +116,11 @@ export function WeightGoalCard() {
         <Row label="Last 4 weeks" value={paceText(rate)} />
       </dl>
       {rate !== null && cap !== null ? (
-        <p className="mt-1 text-[15px] font-semibold">
+        <p className="mt-1 text-body font-semibold">
           {rate > cap ? "Faster than the cap" : "Inside the cap"}
         </p>
       ) : null}
-      <p className="mt-1 text-[15px] text-muted">
+      <p className="mt-1 text-body text-muted">
         The plan reacts only if you lose faster than the cap or the trend stalls for 3 weeks.
       </p>
       <Link to="/weight/goal" className={buttonClass("secondary", "mt-3 w-full sm:w-auto")}>
@@ -145,8 +145,8 @@ export function WeightPaceCard() {
   const needed = standing && standing.state !== "reached" ? standing.neededKgPerWeek : null;
 
   return (
-    <section aria-labelledby={headingId} className="mt-5 rounded-2xl bg-surface p-4">
-      <h2 id={headingId} className="text-[17px] font-semibold">
+    <section aria-labelledby={headingId} className="mt-5 rounded-lg bg-surface p-4">
+      <h2 id={headingId} className="text-title">
         Weekly pace
       </h2>
       <dl className="mt-1">
@@ -164,7 +164,7 @@ export function WeightPaceCard() {
           />
         ) : null}
       </dl>
-      <p className="mt-1 text-[13px] text-muted">
+      <p className="mt-1 text-caption text-muted">
         The cap is the fastest loss the plan will ever aim for.
       </p>
       <Button
@@ -179,7 +179,7 @@ export function WeightPaceCard() {
         How the cap works
       </Button>
       {open ? (
-        <div id={capId} className="mt-1 text-[15px]">
+        <div id={capId} className="mt-1 text-body">
           <CapExplanation weightKg={average} />
         </div>
       ) : null}
@@ -190,7 +190,7 @@ export function WeightPaceCard() {
 /** The cap in plain words (R2c): three short sentences and a training-rule note. */
 export function CapExplanation({ weightKg }: { weightKg: number | null }) {
   return (
-    <div className="flex flex-col gap-2 text-[15px]">
+    <div className="flex flex-col gap-2 text-body">
       <p>
         {weightKg === null
           ? "The plan never aims for a loss faster than 0.5 % of your body weight per week."

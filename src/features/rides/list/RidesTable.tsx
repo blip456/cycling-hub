@@ -81,7 +81,7 @@ function GroupRow({
       <th
         scope="colgroup"
         colSpan={COLUMNS}
-        className="h-9 px-4 text-left text-[13px] font-semibold"
+        className="h-9 px-4 text-left text-caption font-semibold"
       >
         <span className="flex items-baseline justify-between gap-4">
           <span>
@@ -120,7 +120,7 @@ export function RidesTable({
   const header = { current: sort, dir, onSort };
   return (
     <div className="overflow-x-auto rounded-2xl bg-surface">
-      <table className="w-full min-w-[680px] border-collapse text-[15px] tabular-nums">
+      <table className="w-full min-w-[680px] border-collapse text-body tabular-nums">
         <caption className="sr-only">{captionFor(sort, dir)}</caption>
         <colgroup>
           <col />

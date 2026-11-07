@@ -45,7 +45,8 @@ import {
 } from "../data";
 import { BaselineNeeded } from "../components/NoPlan";
 import { usePlanLoadErrorCard } from "../components/page-hooks";
-import { PlanLoadError, PlanSkeleton } from "../components/parts";
+import { CheckIcon } from "../components/icons";
+import { ErrorNotice, PlanLoadError, PlanSkeleton } from "../components/parts";
 import { StepBaseContext } from "../components/intake/step-base";
 import { Summary } from "../components/intake/Summary";
 import {
@@ -95,12 +96,12 @@ function Progress({ step, desktop }: { step: IntakeStep | "summary"; desktop: bo
               key={s.step}
               aria-current={s.step === index ? "step" : undefined}
               className={
-                "flex min-h-11 items-center gap-3 rounded-md px-3 text-[15px] " +
-                (s.step === index ? "bg-subtle font-semibold" : "text-muted")
+                "flex min-h-11 items-center gap-3 rounded-md px-3 text-body " +
+                (s.step === index ? "bg-fill font-semibold" : "text-muted")
               }
             >
-              <span aria-hidden="true" className="w-4 text-center">
-                {s.step < index ? "✓" : s.step}
+              <span aria-hidden="true" className="flex w-5 justify-center">
+                {s.step < index ? <CheckIcon className="size-4" /> : s.step}
               </span>
               <span>
                 {s.name}
@@ -113,12 +114,12 @@ function Progress({ step, desktop }: { step: IntakeStep | "summary"; desktop: bo
     );
   return (
     <div className="mb-4">
-      <p className="text-[13px] font-semibold text-muted">
+      <p className="text-caption font-semibold text-muted">
         {step === "summary" ? "Summary" : `Step ${String(step)} of 4`}
       </p>
-      <div aria-hidden="true" className="mt-1 h-1.5 overflow-hidden rounded-full bg-track">
+      <div aria-hidden="true" className="mt-1 h-1.5 overflow-hidden rounded-sm bg-track">
         <div
-          className="h-full rounded-full bg-accent"
+          className="h-full rounded-sm bg-accent"
           style={{ width: `${String(Math.min(index, 4) * 25)}%` }}
         />
       </div>
@@ -351,32 +352,29 @@ function IntakeForm({
             id="intake-heading"
             ref={headingRef}
             tabIndex={-1}
-            className="mb-4 text-xl font-semibold tracking-tight outline-none"
+            className="mb-4 text-title outline-none"
           >
             {step === "summary" && edit ? EDIT_SUMMARY_TITLE : TITLES[step]}
           </h2>
           {edit && step === 1 ? (
-            <p className="mb-4 max-w-[60ch] text-[15px] text-muted">
+            <p className="mb-4 max-w-[60ch] text-body text-muted">
               Your current answers are filled in. Nothing changes until you save on the last step.
             </p>
           ) : null}
           {step === "summary" ? (
             missing !== null || !preview ? (
-              <div
-                role="alert"
-                className="max-w-[560px] rounded-md bg-subtle px-4 py-3 text-[15px]"
-              >
+              <ErrorNotice className="max-w-[560px]">
                 <p className="font-semibold">Some answers are missing</p>
                 <p className="mt-1">
                   <Link
                     to={`${base}?step=${String(missing ?? 1)}`}
-                    className="font-semibold text-accent underline"
+                    className="font-semibold text-accent"
                   >
                     Go to step {String(missing ?? 1)}
                   </Link>{" "}
                   to finish them.
                 </p>
-              </div>
+              </ErrorNotice>
             ) : (
               <Summary
                 draft={draft}

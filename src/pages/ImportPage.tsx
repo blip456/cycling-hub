@@ -228,7 +228,7 @@ export function ImportPage() {
       <div className="flex max-w-3xl flex-col gap-4">
         <FilePicker dragging={dragging} onFile={onFile} />
         {last ? <LastImportLink record={last} /> : null}
-        <p className="px-0.5 text-[13px] text-muted">
+        <p className="px-0.5 text-caption text-muted">
           Rides you already imported are updated, never duplicated.
         </p>
       </div>

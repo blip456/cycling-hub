@@ -10,7 +10,7 @@ import {
 } from "@/features/plan/schemas";
 import { Checkbox } from "@/features/rides/list/controls";
 import type { Profile } from "./api";
-import { FormButtons, NotSet, ViewRow, type SaveReport } from "./form-parts";
+import { FieldError, FormButtons, NotSet, ViewRow, type SaveReport } from "./form-parts";
 import { countdownText, formatLongDate } from "./format";
 import { useSaveProfileSection } from "./hooks";
 import { scoredLevel, toEngineAnswers } from "./level";
@@ -92,7 +92,7 @@ function PurposesForm({ profile, onDone, report }: FormProps) {
   return (
     <form onSubmit={submit} noValidate className="mt-2 flex flex-col gap-5">
       <fieldset ref={groupRef}>
-        <legend className="mb-1 text-[13px] font-semibold">What do you want to work on?</legend>
+        <legend className="mb-1 text-caption font-semibold">What do you want to work on?</legend>
         <div className="divide-y divide-border">
           {TRAINING_PURPOSES.map((purpose) => (
             <div key={purpose}>
@@ -112,32 +112,25 @@ function PurposesForm({ profile, onDone, report }: FormProps) {
             </div>
           ))}
         </div>
-        {error ? (
-          <p role="alert" className="mt-1.5 text-[13px] font-medium text-text">
-            <span aria-hidden="true" className="mr-1 text-accent">
-              !
-            </span>
-            {error}
-          </p>
-        ) : null}
-        <p className="mt-1.5 text-[13px] text-muted">
+        {error ? <FieldError role="alert">{error}</FieldError> : null}
+        <p className="mt-1.5 text-caption text-muted">
           Choose one or two: the first counts as the main purpose, the second as the secondary one.
         </p>
       </fieldset>
 
       {chosen.length > 0 ? (
         <div>
-          <h3 className="mb-1 text-[13px] font-semibold">Order of importance</h3>
+          <h3 className="mb-1 text-caption font-semibold">Order of importance</h3>
           <ol ref={listRef} className="divide-y divide-border">
             {chosen.map((purpose, index) => (
               <li
                 key={purpose}
                 data-purpose={purpose}
-                className="flex min-h-11 flex-wrap items-center justify-between gap-2 py-1 text-[15px]"
+                className="flex min-h-11 flex-wrap items-center justify-between gap-2 py-1 text-body"
               >
                 <span>
                   {PURPOSE_LABEL[purpose]}
-                  <span className="ml-2 text-[13px] text-muted">
+                  <span className="ml-2 text-caption text-muted">
                     {index === 0 ? "main purpose" : "second"}
                   </span>
                 </span>
@@ -168,7 +161,7 @@ function PurposesForm({ profile, onDone, report }: FormProps) {
               </li>
             ))}
           </ol>
-          <p className="mt-1.5 text-[13px] text-muted">
+          <p className="mt-1.5 text-caption text-muted">
             The first one counts most. If two purposes pull in different directions, the higher one
             wins and the plan says so.
           </p>
@@ -204,20 +197,20 @@ export function PurposesSection({ profile, report }: SectionProps) {
       addLabel="Add purposes"
       view={
         <>
-          <p className="mt-1 text-[13px] text-muted">In order of importance</p>
+          <p className="mt-1 text-caption text-muted">In order of importance</p>
           <ol className="mt-1">
             {profile.trainingPurposes.map((purpose, index) => (
-              <li key={purpose} className="flex min-h-11 items-center gap-2 text-[15px]">
+              <li key={purpose} className="flex min-h-11 items-center gap-2 text-body">
                 <span className="tabular-nums">{index + 1}.</span>
                 <span>{PURPOSE_LABEL[purpose]}</span>
-                <span className="text-[13px] text-muted">
+                <span className="text-caption text-muted">
                   {index === 0 ? "main purpose" : "second"}
                 </span>
               </li>
             ))}
           </ol>
           {rest.length > 0 ? (
-            <p className="mt-1 text-[13px] text-muted">
+            <p className="mt-1 text-caption text-muted">
               Not selected: {rest.map((p) => PURPOSE_LABEL[p].toLowerCase()).join(", ")}.
             </p>
           ) : null}
@@ -310,16 +303,9 @@ function LevelForm({ profile, onDone, report }: FormProps) {
           }}
         />
       ))}
-      {error ? (
-        <p role="alert" className="text-[13px] font-medium text-text">
-          <span aria-hidden="true" className="mr-1 text-accent">
-            !
-          </span>
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError role="alert">{error}</FieldError> : null}
       {scored ? (
-        <p aria-live="polite" className="rounded-md bg-subtle px-3.5 py-3 text-[15px]">
+        <p aria-live="polite" className="rounded-md bg-subtle px-3.5 py-3 text-body">
           Your answers score {scored.score} of 15: {LEVEL_LABEL[scored.band].toLowerCase()}.
           {scored.band !== scored.level
             ? ` Lowered to ${LEVEL_LABEL[scored.level].toLowerCase()} because you train fewer hours a week than that level needs.`
@@ -372,7 +358,7 @@ export function LevelSection({ profile, report }: SectionProps) {
             {profile.level === null ? <NotSet /> : LEVEL_LABEL[profile.level]}
           </ViewRow>
           {scored ? (
-            <p className="text-[13px] text-muted">
+            <p className="text-caption text-muted">
               {changed
                 ? `You changed it. Your answers score ${scored.score} of 15: ${LEVEL_LABEL[scored.level].toLowerCase()}.`
                 : `Scored from your answers: ${scored.score} of 15.`}
@@ -503,7 +489,7 @@ export function EventSection({ profile, report }: SectionProps) {
             {profile.eventDate === null ? <NotSet /> : formatLongDate(profile.eventDate)}
           </ViewRow>
           {profile.eventDate !== null ? (
-            <p className="text-[13px] text-muted">
+            <p className="text-caption text-muted">
               {countdownText(today, profile.eventDate)} The plan builds a lighter last week before
               it.
             </p>

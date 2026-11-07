@@ -136,9 +136,7 @@ export function RidesPage() {
     content = <RidesSkeleton desktop={isDesktop} />;
   } else if (!all) {
     content = (
-      <p className="pt-12 text-center text-[13px] text-muted">
-        Your rides appear here once they load.
-      </p>
+      <p className="pt-12 text-caption text-muted">Your rides appear here once they load.</p>
     );
   } else if (!hasRides) {
     content = <RidesEmpty />;
@@ -186,7 +184,7 @@ export function RidesPage() {
       <div>
         {/* Sits beside the page title of the app shell (X1): count line under it, actions right. */}
         <div className="-mt-14 mb-6 flex items-start justify-between gap-4">
-          <p className="min-h-[18px] pt-9 text-[13px] leading-[18px] text-muted tabular-nums">
+          <p className="min-h-[18px] pt-9 text-caption text-muted tabular-nums">
             {hasRides
               ? formatRideCount(all.length) +
                 (lastImport ? ` · last import ${formatDateTime(lastImport.imported_at)}` : "")
@@ -220,7 +218,7 @@ export function RidesPage() {
         ) : null}
         <p
           aria-live="polite"
-          className="mb-2 min-h-[18px] px-0.5 empty:mb-0 empty:min-h-0 text-[13px] leading-[18px] text-muted tabular-nums"
+          className="mb-2 min-h-[18px] px-0.5 empty:mb-0 empty:min-h-0 text-caption text-muted tabular-nums"
         >
           {hasRides && showCountLine && sorted.length > 0 ? formatTotalsLine(shownTotals) : ""}
         </p>

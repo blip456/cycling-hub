@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { WeightIcon } from "@/components/icons";
 import { PageLoading } from "@/components/PageLoading";
 import { Button } from "@/components/ui";
 import type { WeightEntry } from "@/features/athlete";
@@ -45,13 +46,13 @@ export function LogTab() {
         />
       </div>
       <section aria-labelledby="weight-history">
-        <h2 id="weight-history" className="mb-3 text-xl font-semibold tracking-tight">
+        <h2 id="weight-history" className="mb-3 text-title">
           History
         </h2>
         {query.isPending ? <PageLoading /> : null}
         {query.isError ? (
-          <div className="rounded-2xl bg-surface px-5 py-6">
-            <p className="text-[15px]">Your weights could not be loaded.</p>
+          <div className="rounded-lg bg-surface px-5 py-6">
+            <p className="text-body">Your weights could not be loaded.</p>
             <Button
               variant="secondary"
               className="mt-3"
@@ -64,9 +65,15 @@ export function LogTab() {
           </div>
         ) : null}
         {query.isSuccess && newestFirst.length === 0 ? (
-          <div className="rounded-2xl bg-surface px-5 py-8 text-center">
-            <p className="text-[17px] font-semibold">No weights yet</p>
-            <p className="mt-1 text-[15px] text-muted">
+          <div className="rounded-lg bg-surface p-4">
+            <span
+              aria-hidden="true"
+              className="flex size-14 items-center justify-center rounded-md bg-fill text-accent"
+            >
+              <WeightIcon width={24} height={24} />
+            </span>
+            <h3 className="mt-3 text-heading">No weights yet</h3>
+            <p className="mt-1 text-body text-muted">
               Log your first weight {desktop ? "on the left" : "above"}. The trend appears after two
               entries.
             </p>

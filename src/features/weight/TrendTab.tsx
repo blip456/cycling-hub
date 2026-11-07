@@ -25,12 +25,10 @@ const RANGES: readonly { value: WeightRange; label: string; period: string }[] =
 
 function Tile({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div className="rounded-2xl bg-surface px-4 py-3">
-      <dt className="text-[13px] text-muted">{label}</dt>
-      <dd className="mt-0.5 text-[20px] font-semibold leading-7 [font-variant-numeric:tabular-nums]">
-        {value}
-      </dd>
-      {note ? <dd className="text-[13px] text-muted">{note}</dd> : null}
+    <div className="rounded-lg bg-surface px-4 py-3">
+      <dt className="text-caption text-muted">{label}</dt>
+      <dd className="mt-0.5 text-heading">{value}</dd>
+      {note ? <dd className="text-caption text-muted">{note}</dd> : null}
     </div>
   );
 }
@@ -67,8 +65,8 @@ export function TrendTab() {
           <label
             key={value}
             className={
-              "flex min-w-0 flex-1 cursor-pointer items-center justify-center rounded-[9px] px-2 text-[15px] font-medium text-muted " +
-              "transition-colors hover:text-text has-checked:bg-raised has-checked:font-semibold has-checked:text-text " +
+              "flex min-w-0 flex-1 cursor-pointer items-center justify-center rounded-sm px-2 text-body font-medium text-muted " +
+              "transition-colors duration-(--dur-fast) hover:text-text has-checked:bg-raised has-checked:font-semibold has-checked:text-text " +
               "has-checked:shadow-[inset_0_0_0_1px_var(--input-border)] " +
               "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
             }
@@ -93,8 +91,8 @@ export function TrendTab() {
       {query.isPending ? <PageLoading /> : null}
 
       {query.isError ? (
-        <div className="rounded-2xl bg-surface px-5 py-6">
-          <p className="text-[15px]">Your weights could not be loaded.</p>
+        <div className="rounded-lg bg-surface px-5 py-6">
+          <p className="text-body">Your weights could not be loaded.</p>
           <Button
             variant="secondary"
             className="mt-3"
@@ -163,11 +161,11 @@ function TrendBody({
       </dl>
 
       {points.length < 2 || !from ? (
-        <p className="rounded-2xl bg-surface px-5 py-8 text-center text-[15px] text-muted">
+        <p className="rounded-lg bg-surface px-5 py-8 text-body text-muted">
           Not enough entries in this range yet.
         </p>
       ) : (
-        <div className="rounded-2xl bg-surface p-4">
+        <div className="rounded-lg bg-surface p-4">
           <WeightChart
             points={points}
             from={from}
@@ -185,17 +183,17 @@ function TrendBody({
           </Button>
           {showTable ? (
             <div id={tableId} className="mt-2 overflow-x-auto">
-              <table className="w-full text-[15px]">
+              <table className="w-full text-body">
                 <caption className="sr-only">Entries in this range, newest first</caption>
-                <thead className="text-left text-[13px] text-muted">
+                <thead className="text-left text-caption text-muted">
                   <tr>
-                    <th scope="col" className="py-2 pr-2 font-medium">
+                    <th scope="col" className="py-2 pr-2 font-semibold">
                       Date
                     </th>
-                    <th scope="col" className="px-2 py-2 text-right font-medium">
+                    <th scope="col" className="px-2 py-2 text-right font-semibold">
                       Weight (kg)
                     </th>
-                    <th scope="col" className="py-2 pl-2 text-right font-medium">
+                    <th scope="col" className="py-2 pl-2 text-right font-semibold">
                       7-day average (kg)
                     </th>
                   </tr>
@@ -204,12 +202,8 @@ function TrendBody({
                   {[...points].reverse().map((p) => (
                     <tr key={p.date} className="border-t border-border">
                       <td className="h-11 py-1 pr-2">{formatDay(p.date)}</td>
-                      <td className="px-2 py-1 text-right [font-variant-numeric:tabular-nums]">
-                        {formatKg(p.kg)}
-                      </td>
-                      <td className="py-1 pl-2 text-right [font-variant-numeric:tabular-nums]">
-                        {formatKg(p.average)}
-                      </td>
+                      <td className="px-2 py-1 text-right">{formatKg(p.kg)}</td>
+                      <td className="py-1 pl-2 text-right">{formatKg(p.average)}</td>
                     </tr>
                   ))}
                 </tbody>

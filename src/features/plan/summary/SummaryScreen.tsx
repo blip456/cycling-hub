@@ -6,6 +6,8 @@ import { STATUS_PRIORITY, useStatusCard } from "@/components/status/status-conte
 import { Button, EmptyState } from "@/components/ui";
 import { brusselsDate } from "@/features/athlete";
 import { TextAreaField } from "@/features/profile/TextAreaField";
+import { ArrowLeftIcon, ArrowRightIcon, CheckIcon } from "../components/icons";
+import { Segmented } from "../components/Segmented";
 import { DEFAULT_PROMPT_LINES } from "../export";
 import { dayLabel, monthLabel } from "../export/format";
 import { mondayOf, sessionFromRow } from "./adapt";
@@ -89,10 +91,10 @@ function SummaryBody({ source }: { source: SummarySource }) {
       />
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <h2 id={headingId} className="text-[17px] font-semibold">
+          <h2 id={headingId} className="text-body-lg font-semibold">
             {KIND_TITLE[subject.kind]}
           </h2>
-          <p className="text-[15px] text-muted">
+          <p className="text-body text-muted">
             {subjectLabel(
               subject,
               source,
@@ -109,7 +111,7 @@ function SummaryBody({ source }: { source: SummarySource }) {
               go(stepSubject(subject, -1, sessions));
             }}
           >
-            <span aria-hidden="true">←</span>
+            <ArrowLeftIcon />
           </Button>
           <Button
             variant="secondary"
@@ -119,7 +121,7 @@ function SummaryBody({ source }: { source: SummarySource }) {
               go(stepSubject(subject, 1, sessions));
             }}
           >
-            <span aria-hidden="true">→</span>
+            <ArrowRightIcon />
           </Button>
         </div>
       </div>
@@ -178,37 +180,14 @@ function KindSwitch({
   value: Subject["kind"];
   onChange: (kind: Subject["kind"]) => void;
 }) {
-  const name = useId();
   return (
-    <div
-      role="radiogroup"
-      aria-label="Summary of"
-      className="flex h-11 gap-0.5 rounded-md bg-track p-[3px] sm:max-w-md"
-    >
-      {KINDS.map(({ value: kind, label }) => (
-        <label
-          key={kind}
-          className={
-            "flex min-w-0 flex-1 cursor-pointer items-center justify-center rounded-[9px] px-2 text-[15px] font-medium text-muted " +
-            "transition-colors hover:text-text has-checked:bg-raised has-checked:font-semibold has-checked:text-text " +
-            "has-checked:shadow-[inset_0_0_0_1px_var(--input-border)] " +
-            "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
-          }
-        >
-          <input
-            type="radio"
-            name={name}
-            value={kind}
-            checked={value === kind}
-            onChange={() => {
-              onChange(kind);
-            }}
-            className="sr-only"
-          />
-          {label}
-        </label>
-      ))}
-    </div>
+    <Segmented
+      label="Summary of"
+      options={KINDS.map(({ value: kind, label }) => ({ value: kind, label }))}
+      value={value}
+      onChange={onChange}
+      className="sm:max-w-md"
+    />
   );
 }
 
@@ -340,8 +319,8 @@ function SummaryPanel({
   return (
     <div className="flex flex-col gap-4 lg:grid lg:grid-cols-[420px_1fr] lg:items-start">
       <div className="flex flex-col gap-4">
-        <fieldset className="rounded-2xl bg-surface p-4">
-          <legend className="float-left mb-1 w-full text-[13px] font-semibold">Include</legend>
+        <fieldset className="rounded-lg bg-surface p-4">
+          <legend className="float-left mb-1 w-full text-caption font-semibold">Include</legend>
           <div className="clear-both" />
           <Switch
             label="Weight trend"
@@ -366,7 +345,7 @@ function SummaryPanel({
           />
         </fieldset>
         {options.includePrompt ? (
-          <div className="rounded-2xl bg-surface p-4">
+          <div className="rounded-lg bg-surface p-4">
             <TextAreaField
               label="Prompt line"
               helper="Edit it to say what you want from the AI chat. Your words are kept for next time."
@@ -390,7 +369,7 @@ function SummaryPanel({
           </div>
         ) : null}
         <Button
-          className="min-h-14 w-full text-[17px]"
+          className="w-full"
           disabled={loadingRides}
           onClick={() => {
             void copy();
@@ -398,7 +377,7 @@ function SummaryPanel({
         >
           {copied ? (
             <>
-              <span aria-hidden="true">✓</span> Copied
+              <CheckIcon /> Copied
             </>
           ) : (
             "Copy summary"
@@ -409,12 +388,12 @@ function SummaryPanel({
         </p>
       </div>
 
-      <div className="rounded-2xl bg-surface p-4">
-        <h3 id={previewId} className="mb-2 text-[13px] font-semibold">
+      <div className="rounded-lg bg-surface p-4">
+        <h3 id={previewId} className="mb-2 text-caption font-semibold">
           Preview
         </h3>
         {loadingRides ? (
-          <div role="status" className="text-[15px] text-muted">
+          <div role="status" className="text-body text-muted">
             Reading the ride data…
           </div>
         ) : (
@@ -425,14 +404,12 @@ function SummaryPanel({
             // A scrollable region must be reachable by keyboard (WCAG 2.1.1).
             // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
             tabIndex={0}
-            className="max-h-[60vh] overflow-auto rounded-md bg-subtle p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="max-h-[60vh] overflow-auto rounded-md bg-fill p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            <pre className="font-mono text-[13px] leading-5 break-words whitespace-pre-wrap">
-              {text}
-            </pre>
+            <pre className="font-sans text-body break-words whitespace-pre-wrap">{text}</pre>
           </div>
         )}
-        <p className="mt-2 text-[13px] text-muted">
+        <p className="mt-2 text-caption text-muted">
           {text.length.toLocaleString("en-US")} characters. Plain text with simple markdown
           headings, readable as it is.
         </p>

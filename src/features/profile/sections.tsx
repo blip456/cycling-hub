@@ -220,7 +220,7 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
   return (
     <form onSubmit={submit} noValidate className="mt-2 flex flex-col gap-5">
       <fieldset ref={legendRef}>
-        <legend className="mb-1 text-[13px] font-semibold">Available training days</legend>
+        <legend className="mb-1 text-caption font-semibold">Available training days</legend>
         <div className="divide-y divide-border">
           {WEEKDAYS.map((day) => (
             <div key={day}>
@@ -250,7 +250,7 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
         inputMode="decimal"
         autoComplete="off"
         trailing={
-          <span aria-hidden="true" className="pr-3.5 text-[15px] text-muted">
+          <span aria-hidden="true" className="pr-3.5 text-body text-muted">
             h
           </span>
         }
@@ -297,7 +297,7 @@ export function WeekSection({ profile, report }: SectionProps) {
       addLabel="Add your week"
       view={
         <>
-          <p className="mt-1 text-[15px] text-muted">Available days</p>
+          <p className="mt-1 text-body text-muted">Available days</p>
           <ul className="mt-2 grid grid-cols-7 gap-1.5">
             {WEEKDAYS.map((day) => {
               const on = profile.availableDays.includes(day);
@@ -305,9 +305,9 @@ export function WeekSection({ profile, report }: SectionProps) {
                 <li
                   key={day}
                   className={
-                    "flex min-h-11 items-center justify-center rounded-md border px-0.5 text-[13px] " +
+                    "flex min-h-11 items-center justify-center rounded-md border px-0.5 text-caption " +
                     (on
-                      ? "border-text bg-text font-bold text-surface"
+                      ? "border-text bg-text font-semibold text-surface"
                       : "border-input-border text-muted")
                   }
                 >
@@ -419,7 +419,7 @@ export function GoalSection({ profile, report }: SectionProps) {
       empty={profile.goal === null}
       emptyText="No goal yet."
       addLabel="Add a goal"
-      view={<p className="mt-1 text-[15px] break-words whitespace-pre-wrap">{profile.goal}</p>}
+      view={<p className="mt-1 text-body break-words whitespace-pre-wrap">{profile.goal}</p>}
       form={
         <GoalForm
           profile={profile}

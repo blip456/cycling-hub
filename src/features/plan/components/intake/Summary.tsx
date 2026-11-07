@@ -15,7 +15,7 @@ import {
   type IntakeDraft,
   type IntakeStep,
 } from "../../data";
-import { ChoiceRow, FactRow } from "../parts";
+import { ChoiceRow, ErrorNotice, FactRow } from "../parts";
 import { StepBaseContext } from "./step-base";
 
 const DAY_SHORT: Record<string, string> = {
@@ -35,7 +35,7 @@ function Change({ step, what }: { step: IntakeStep; what: string }) {
     <Link
       to={`${base}?step=${String(step)}`}
       aria-label={`Change ${what}`}
-      className="ml-3 inline-flex min-h-11 items-center font-semibold text-accent underline"
+      className="ml-3 inline-flex min-h-11 items-center font-semibold text-accent"
     >
       Change
     </Link>
@@ -102,10 +102,10 @@ export function Summary({
   return (
     <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
       <section aria-labelledby="intake-answers">
-        <h3 id="intake-answers" className="mb-1 text-[17px] font-semibold">
+        <h3 id="intake-answers" className="mb-1 text-body-lg font-semibold">
           Your answers
         </h3>
-        <dl className="rounded-2xl bg-surface px-4 py-1">
+        <dl className="rounded-lg bg-surface px-4 py-1">
           <Row label="Purposes, in order" action={<Change step={1} what="purposes" />}>
             {draft.purposes.map((p, i) => `${String(i + 1)} ${purposeLabel(p)}`).join(", ")}
           </Row>
@@ -126,7 +126,7 @@ export function Summary({
                 onClick={() => {
                   setEditLevel((v) => !v);
                 }}
-                className="ml-3 inline-flex min-h-11 items-center font-semibold text-accent underline"
+                className="ml-3 inline-flex min-h-11 items-center font-semibold text-accent"
               >
                 Change
               </button>
@@ -148,7 +148,7 @@ export function Summary({
             {String(plan.weeks.length)} weeks, {formatDay(plan.startDate)} to{" "}
             {formatDay(plan.endDate)}
             {edit ? (
-              <span className="block text-[13px] text-muted">
+              <span className="block text-caption text-muted">
                 The start date cannot be changed.
               </span>
             ) : null}
@@ -164,8 +164,8 @@ export function Summary({
           </Row>
         </dl>
         {editLevel ? (
-          <fieldset className="mt-3 rounded-2xl bg-surface px-4 py-3">
-            <legend className="px-1 text-[13px] font-semibold">Level</legend>
+          <fieldset className="mt-3 rounded-lg bg-surface px-4 py-3">
+            <legend className="px-1 text-caption font-semibold">Level</legend>
             <ChoiceRow
               type="radio"
               name="level-override"
@@ -199,29 +199,29 @@ export function Summary({
       <section aria-labelledby="intake-assume" className="flex flex-col gap-4">
         {edit ? edit.changes : null}
         <div>
-          <h3 id="intake-assume" className="mb-1 text-[17px] font-semibold">
+          <h3 id="intake-assume" className="mb-1 text-body-lg font-semibold">
             What the plan will assume
           </h3>
-          <ul className="flex list-disc flex-col gap-2 pl-5 text-[15px]">
+          <ul className="flex list-disc flex-col gap-2 pl-5 text-body">
             {lines.map((line) => (
               <li key={line}>{line}</li>
             ))}
           </ul>
         </div>
         {hasExisting && !edit ? (
-          <p role="note" className="rounded-md bg-subtle px-4 py-3 text-[15px]">
+          <p role="note" className="rounded-md bg-fill px-4 py-3 text-body">
             You already have a plan. Building a new one replaces it.
           </p>
         ) : null}
         {blocked ? (
-          <div role="alert" className="rounded-md bg-subtle px-4 py-3 text-[15px]">
+          <ErrorNotice>
             <p className="font-semibold">The plan cannot be built yet</p>
             <ul className="mt-1 list-disc pl-5">
               {plan.warnings.map((w) => (
                 <li key={w.code}>{w.message}</li>
               ))}
             </ul>
-          </div>
+          </ErrorNotice>
         ) : null}
         <div className="flex gap-3">
           <Button variant="secondary" onClick={onBack}>

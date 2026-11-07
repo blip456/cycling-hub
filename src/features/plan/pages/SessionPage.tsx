@@ -16,6 +16,7 @@ import { SessionReasons } from "../adaptation/ReasonCards";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
+import { Segmented } from "../components/Segmented";
 import { canAct, useSessionActions } from "../components/session-actions-context";
 import { StepList } from "../components/StepList";
 
@@ -31,33 +32,22 @@ function PlaceChoice({
   onChange: (indoor: boolean) => void;
 }) {
   return (
-    <fieldset>
-      <legend className="mb-1.5 text-[13px] font-semibold">Where do you ride it?</legend>
-      <div className="inline-flex rounded-md border border-input-border p-0.5">
-        {(["indoor", "outdoor"] as const).map((place) => (
-          <label
-            key={place}
-            className={
-              "relative flex min-h-11 min-w-24 cursor-pointer items-center justify-center rounded-sm px-4 text-[15px] font-semibold focus-within:outline-2 focus-within:outline-accent " +
-              (value === place ? "bg-accent text-on-accent" : "text-text hover:bg-subtle")
-            }
-          >
-            <input
-              type="radio"
-              name="place"
-              value={place}
-              checked={value === place}
-              onChange={() => {
-                onChange(place === "indoor");
-              }}
-              className="sr-only"
-            />
-            {place === "indoor" ? "Indoor" : "Outdoor"}
-          </label>
-        ))}
-      </div>
-      <p className="mt-1.5 max-w-[60ch] text-[13px] text-muted">{PLACE_HELP}</p>
-    </fieldset>
+    <div>
+      <p className="mb-1.5 text-caption font-semibold">Where do you ride it?</p>
+      <Segmented
+        label="Where do you ride it?"
+        options={[
+          { value: "indoor", label: "Indoor" },
+          { value: "outdoor", label: "Outdoor" },
+        ]}
+        value={value}
+        onChange={(place) => {
+          onChange(place === "indoor");
+        }}
+        className="sm:max-w-xs"
+      />
+      <p className="mt-1.5 max-w-[60ch] text-caption text-muted">{PLACE_HELP}</p>
+    </div>
   );
 }
 
@@ -77,12 +67,12 @@ export function SessionPage() {
     return (
       <section
         aria-labelledby="plan-session-gone"
-        className="max-w-[560px] rounded-2xl bg-surface px-5 py-6"
+        className="max-w-[560px] rounded-lg bg-surface p-4"
       >
-        <h2 id="plan-session-gone" className="text-[17px] font-semibold">
+        <h2 id="plan-session-gone" className="text-body-lg font-semibold">
           This session is no longer in your plan
         </h2>
-        <p className="mt-1 mb-3 text-[15px] text-muted">
+        <p className="mt-1 mb-3 text-body text-muted">
           It may have been replaced when the plan changed.
         </p>
         <Link to="/plan" className={buttonClass("secondary")}>
@@ -136,16 +126,13 @@ export function SessionPage() {
     >
       <div className="flex min-w-0 flex-col gap-5">
         <header>
-          <p className="text-[15px] text-muted">
-            {formatDay(session.date)} · Week {session.week} · {PHASE_TEXT[session.phase]}
-          </p>
-          <h2
-            id="plan-session-title"
-            className="text-2xl font-semibold tracking-tight [overflow-wrap:anywhere]"
-          >
+          <h2 id="plan-session-title" className="text-heading [overflow-wrap:anywhere]">
             {session.title}
           </h2>
-          <p className="text-[15px] text-muted">
+          <p className="mt-1 text-body text-muted">
+            {formatDay(session.date)} · Week {session.week} · {PHASE_TEXT[session.phase]}
+          </p>
+          <p className="text-body text-muted">
             {formatDuration(session.durationMin)}
             {event ? " expected" : ` · Load ${formatLoad(session.load)}`} ·{" "}
             {STATUS_TEXT[session.status]}
@@ -164,14 +151,14 @@ export function SessionPage() {
           />
         ) : null}
         {!event && !(environment === "both" && open) && place ? (
-          <p className="text-[15px]">
+          <p className="text-body">
             <span className="text-muted">Ride it: </span>
             <span className="font-semibold">{place === "indoor" ? "Indoor" : "Outdoor"}</span>
           </p>
         ) : null}
 
         <section aria-labelledby="plan-session-why">
-          <h3 id="plan-session-why" className="mb-1 text-[17px] font-semibold">
+          <h3 id="plan-session-why" className="mb-1 text-body-lg font-semibold">
             Why this session
           </h3>
           <SessionReasons session={session} plan={plan} />
@@ -179,7 +166,7 @@ export function SessionPage() {
 
         {!event ? (
           <section aria-labelledby="plan-session-steps">
-            <h3 id="plan-session-steps" className="mb-2 text-[17px] font-semibold">
+            <h3 id="plan-session-steps" className="mb-2 text-body-lg font-semibold">
               Steps
             </h3>
             <StepList steps={session.steps} totalMinutes={session.durationMin} />
@@ -189,12 +176,12 @@ export function SessionPage() {
         {session.strengthNote ? (
           <section
             aria-labelledby="plan-session-strength"
-            className="rounded-2xl bg-surface px-4 py-3"
+            className="rounded-lg bg-surface px-4 py-3"
           >
-            <h3 id="plan-session-strength" className="text-[15px] font-semibold">
+            <h3 id="plan-session-strength" className="text-body font-semibold">
               Strength note
             </h3>
-            <p className="mt-1 text-[15px]">{session.strengthNote}</p>
+            <p className="mt-1 text-body">{session.strengthNote}</p>
           </section>
         ) : null}
 

@@ -27,10 +27,8 @@ function Stat({ metric }: { metric: DetailMetric }) {
   const color = metric.missing ? "text-muted" : metric.color ? COLOR[metric.color] : "text-text";
   return (
     <div className="rounded-2xl bg-surface px-4 py-3.5">
-      <dt className="text-[13px] leading-[18px] text-muted">{metric.label}</dt>
-      <dd
-        className={`mt-0.5 text-2xl leading-[30px] font-semibold tracking-[-0.015em] whitespace-nowrap tabular-nums ${color}`}
-      >
+      <dt className="text-caption text-muted">{metric.label}</dt>
+      <dd className={`mt-0.5 text-heading whitespace-nowrap tabular-nums ${color}`}>
         {metric.missing ? (
           <>
             <span aria-hidden="true">—</span>
@@ -39,7 +37,7 @@ function Stat({ metric }: { metric: DetailMetric }) {
         ) : (
           metric.value
         )}
-        <span aria-hidden={metric.missing} className="ml-[3px] text-[15px] font-medium text-muted">
+        <span aria-hidden={metric.missing} className="ml-[3px] text-body font-medium text-muted">
           {metric.unit}
         </span>
       </dd>
@@ -49,9 +47,9 @@ function Stat({ metric }: { metric: DetailMetric }) {
 
 function Distance({ ride, labelled }: { ride: Ride; labelled: boolean }) {
   const value = (
-    <span className="text-[44px] leading-[46px] font-semibold tracking-[-0.025em] text-m-dist tabular-nums">
+    <span className="text-display text-m-dist tabular-nums">
       {formatDistanceKm(ride.distance_m)}
-      <span className="ml-[3px] text-xl font-medium tracking-normal text-muted">km</span>
+      <span className="ml-[3px] text-title font-medium text-muted">km</span>
     </span>
   );
   if (!labelled) {
@@ -64,14 +62,14 @@ function Distance({ ride, labelled }: { ride: Ride; labelled: boolean }) {
   }
   return (
     <div className="rounded-2xl bg-surface px-4 py-3.5">
-      <p className="text-[13px] leading-[18px] text-muted">Distance</p>
+      <p className="text-caption text-muted">Distance</p>
       <p className="mt-0.5">{value}</p>
     </div>
   );
 }
 
 const row =
-  "relative flex min-h-[52px] items-center gap-3 px-4 text-[15px] " +
+  "relative flex min-h-[52px] items-center gap-3 px-4 text-body " +
   "not-first:before:absolute not-first:before:left-4 not-first:before:right-0 not-first:before:top-0 " +
   "not-first:before:border-t not-first:before:border-border";
 
@@ -147,10 +145,8 @@ export function RideDetail({
 }) {
   const heading = (
     <div className="min-w-0 flex-1">
-      <h2 className="text-2xl leading-[30px] font-semibold tracking-[-0.015em] break-words">
-        {ride.name}
-      </h2>
-      <p className="mt-1 text-[13px] leading-[18px] text-muted">{detailDateLine(ride)}</p>
+      <h2 className="text-heading break-words">{ride.name}</h2>
+      <p className="mt-1 text-caption text-muted">{detailDateLine(ride)}</p>
     </div>
   );
 

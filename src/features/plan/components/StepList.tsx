@@ -59,12 +59,12 @@ function StepLine({
   return (
     <li className="border-t border-border py-3 first:border-t-0 first:pt-0">
       {showTitle ? (
-        <p className="text-[15px] font-semibold">
+        <p className="text-body font-semibold">
           {STEP_NAMES[step.kind]}, {formatStepMinutes(step.durationMin)}
           {repeats > 1 ? <span className="font-normal text-muted"> × {repeats}</span> : null}
         </p>
       ) : null}
-      <dl className="mt-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-[14px]">
+      <dl className="mt-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 text-caption">
         <dt className="text-muted">Power</dt>
         <dd className="min-w-0">
           {power && step.target.powerZone !== null ? (
@@ -72,18 +72,14 @@ function StepLine({
           ) : (
             <span>All out</span>
           )}
-          {watts ? (
-            <span className="block font-medium [font-variant-numeric:tabular-nums]">{watts}</span>
-          ) : null}
+          {watts ? <span className="block font-medium tabular-nums">{watts}</span> : null}
         </dd>
         {hr && step.heartRate ? (
           <>
             <dt className="text-muted">Heart rate</dt>
             <dd className="min-w-0">
               <ZoneLabel zone={step.heartRate.zoneFrom} label={hr} />
-              {bpm ? (
-                <span className="block font-medium [font-variant-numeric:tabular-nums]">{bpm}</span>
-              ) : null}
+              {bpm ? <span className="block font-medium tabular-nums">{bpm}</span> : null}
               {step.powerLeads ? (
                 <span className="block text-muted">Heart rate lags here: follow the power.</span>
               ) : null}
@@ -112,24 +108,24 @@ export function StepList({
   const groups = stepGroups(steps);
   if (steps.length === 0)
     return (
-      <p className="text-[15px] text-muted">
+      <p className="text-body text-muted">
         This session has no steps to show. It is {formatDuration(totalMinutes)} long.
       </p>
     );
   return (
     <div>
       <ShapeBar steps={steps} />
-      <p className="mt-1 text-[13px] text-muted">
+      <p className="mt-1 text-caption text-muted">
         Session shape, {formatDuration(totalMinutes)}. Height and colour show the zone; the steps
         give the numbers.
       </p>
       <ol className="mt-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,13.5rem),1fr))]">
         {groups.map((group, i) => (
-          <li key={`${group.title}-${String(i)}`} className="rounded-2xl bg-surface p-4">
-            <h3 className="text-[17px] font-semibold">
+          <li key={`${group.title}-${String(i)}`} className="rounded-lg bg-surface p-4">
+            <h3 className="text-body-lg font-semibold">
               {i + 1}. {group.title}
             </h3>
-            <p className="mb-3 text-[14px] text-muted">
+            <p className="mb-3 text-caption text-muted">
               {group.summary ? `${group.summary}, ` : ""}
               {formatStepMinutes(group.minutes)}
             </p>

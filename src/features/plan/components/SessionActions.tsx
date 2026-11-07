@@ -18,6 +18,7 @@ import {
   type MoveOption,
   type PlanSession,
 } from "../data";
+import { MoreIcon } from "./icons";
 import { ChoiceRow } from "./parts";
 import { useToday } from "./page-hooks";
 import {
@@ -79,7 +80,7 @@ function MoveDialog({
         <p>There is no day left this week to move it to. Open another week first.</p>
       ) : (
         <fieldset>
-          <legend className="mb-1 text-[13px] font-semibold text-text">Move to</legend>
+          <legend className="mb-1 text-caption font-semibold text-text">Move to</legend>
           {options.map((o, i) => (
             <ChoiceRow
               type="radio"
@@ -97,15 +98,15 @@ function MoveDialog({
               {formatDay(o.date)}
             </ChoiceRow>
           ))}
-          <p className="mt-1 text-[13px]">
+          <p className="mt-1 text-caption">
             Days up to the end of this week. To move further, open another week first.
           </p>
         </fieldset>
       )}
       {warnings.length > 0 ? (
-        <div id={noteId} role="note" className="mt-3 rounded-md bg-subtle px-3 py-2 text-text">
+        <div id={noteId} role="note" className="mt-3 rounded-md bg-fill px-3 py-2 text-text">
           {warnings.map((w) => (
-            <p key={w} className="text-[14px]">
+            <p key={w} className="text-caption">
               <span aria-hidden="true">! </span>
               {w}
             </p>
@@ -150,7 +151,7 @@ function SkipDialog({
     >
       <p>The session stays in the plan as skipped. You can undo it right after.</p>
       <fieldset className="mt-3">
-        <legend className="mb-1 text-[13px] font-semibold text-text">Reason (optional)</legend>
+        <legend className="mb-1 text-caption font-semibold text-text">Reason (optional)</legend>
         {SKIP_REASONS.map((r) => (
           <ChoiceRow
             type="radio"
@@ -274,7 +275,7 @@ export function ActionsMenu({ session }: { session: PlanSession }) {
   }
 
   const itemClass =
-    "flex min-h-11 w-full items-center rounded-sm px-3 text-left text-[15px] text-text hover:bg-subtle focus-visible:bg-subtle";
+    "flex min-h-11 w-full items-center rounded-md px-3 text-left text-body text-text hover:bg-fill focus-visible:bg-fill";
 
   return (
     <div className="relative shrink-0">
@@ -288,11 +289,9 @@ export function ActionsMenu({ session }: { session: PlanSession }) {
         onClick={() => {
           setOpen((o) => !o);
         }}
-        className="flex size-11 items-center justify-center rounded-md text-text hover:bg-subtle"
+        className="flex size-11 items-center justify-center rounded-md text-text hover:bg-fill"
       >
-        <span aria-hidden="true" className="text-[20px] leading-none">
-          ⋯
-        </span>
+        <MoreIcon />
       </button>
       {open ? (
         // The menu handles arrow keys, Escape and Tab for the menu items inside it.
@@ -303,7 +302,7 @@ export function ActionsMenu({ session }: { session: PlanSession }) {
           aria-label={`Actions for ${session.title}`}
           tabIndex={-1}
           onKeyDown={onKeyDown}
-          className="absolute right-0 top-full z-20 mt-1 w-56 rounded-md border border-border bg-raised p-1"
+          className="absolute right-0 top-full z-20 mt-1 w-56 rounded-lg bg-raised p-1 shadow-raised"
         >
           <button
             type="button"

@@ -13,7 +13,7 @@ export function ThemeSwitch() {
 
   return (
     <div className="flex flex-col gap-2 px-4 py-3">
-      <span id={`${id}-label`} className="text-[15px]">
+      <span id={`${id}-label`} className="text-body">
         Theme
       </span>
       <div
@@ -25,7 +25,7 @@ export function ThemeSwitch() {
           <label
             key={choice}
             className={
-              "flex min-w-[72px] flex-1 cursor-pointer items-center justify-center rounded-[9px] px-4 text-[15px] font-medium text-muted " +
+              "flex min-w-[72px] flex-1 cursor-pointer items-center justify-center rounded-sm px-4 text-body font-medium text-muted " +
               "transition-colors hover:text-text has-checked:bg-raised has-checked:font-semibold has-checked:text-text " +
               "has-checked:shadow-[inset_0_0_0_1px_var(--input-border)] " +
               "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"

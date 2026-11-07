@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 
 // Group rows (DESIGN.md "Card and group"): 52 px, a 1 px divider inset 16 px between rows.
 export const row =
-  "relative flex min-h-[52px] items-center gap-3 px-4 text-[15px] " +
+  "relative flex min-h-[52px] items-center gap-3 px-4 text-body " +
   "not-first:before:absolute not-first:before:left-4 not-first:before:right-0 not-first:before:top-0 " +
   "not-first:before:border-t not-first:before:border-border";
 
@@ -13,8 +13,8 @@ export const actionRow = `${row} w-full text-left hover:bg-surface-hover focus-v
 export function Group({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section>
-      <h2 className="mb-2 text-[15px] font-semibold">{title}</h2>
-      <div className="overflow-hidden rounded-2xl bg-surface">{children}</div>
+      <h2 className="mb-2 text-body font-semibold">{title}</h2>
+      <div className="overflow-hidden rounded-lg bg-surface">{children}</div>
     </section>
   );
 }
