@@ -150,7 +150,7 @@ Three tone steps: `--bg` → `--surface` → `--raised` / `--fill`. That is the 
 - **The background is the gradient splash** (P25; decided by the PO, D-PO1, closes Q4). `--page` (= `--splash`) layers three large radial fields (accent, distance colour, accent; 18/13/8 % dark, 16/12/7 % light) over `--bg`. Put it on the screen root only, never on a single element, and keep cards opaque.
 - **Flat is a technical fallback only:** `data-background="flat"` on `<html>` sets `--page` to `--bg` (for example for print, tests or a browser without `color-mix`). It is not a choice in Settings.
 - The flow-lines variant (P26, P27) is dropped.
-- The top bar is transparent over the splash; once the page scrolls it gets `--bg` (solid, never blurred glass).
+- **The top bar blends into the page at every scroll position** (P83). The splash is a fixed layer behind the page (not `background-attachment: fixed`, which iOS ignores, so there it scrolled while the bar stood still), and the phone top bar paints the same splash in its own fixed layer (same size and origin), so there is no step between bar and page, and the bar still hides what scrolls under it. Never blurred glass, never a flat `--bg` block.
 
 ## 7. Iconography
 
@@ -251,7 +251,7 @@ Route thumbnail + name (17 px / 600, one line, ellipsis) + meta line `Sun 11 Oct
 ### Side menu and top bar
 
 - **Phone (< 960 px):** top bar 56 px: menu button, page title (20 px / 600), one page action on the right (Import on Rides). The menu is a drawer from the left (`--raised`, radius 0 20 20 0, float shadow, `--overlay` scrim); closes on scrim tap, swipe left, Escape or choosing an item; focus is trapped inside; the page behind is `inert`.
-- **Desktop (≥ 960 px):** permanent side menu 232 px on the page background: wordmark, items, then at the bottom the status card when there is one, and the version.
+- **Desktop (≥ 960 px):** permanent side menu 232 px on the page background: wordmark, items, then at the bottom the status card when there is one, the version and the short commit id of the build (P84).
 - Nav item: 44 px, radius 12, icon + label 15 px. Hover `--fill`. Active: `--accent-soft` fill, label 600, icon `--accent`, `aria-current="page"`.
 
 ### Bottom status card (P12)

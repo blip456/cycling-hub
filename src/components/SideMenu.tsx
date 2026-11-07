@@ -4,7 +4,7 @@ import { navItems } from "./nav-items";
 
 /**
  * Menu content shared by the phone drawer and the permanent desktop side bar (N1b, P7, P8). On desktop
- * the status card goes in `status`, at the bottom above the version (P31, DS8).
+ * the status card goes in `status`, at the bottom above the version and the build id (P31, DS8).
  */
 export function SideMenu({ onNavigate, status }: { onNavigate?: () => void; status?: ReactNode }) {
   return (
@@ -40,6 +40,7 @@ export function SideMenu({ onNavigate, status }: { onNavigate?: () => void; stat
       <p className={`px-3 text-[13px] text-muted tabular-nums ${status ? "pt-3" : "mt-auto pt-6"}`}>
         Version {__APP_VERSION__}
       </p>
+      <p className="px-3 text-[13px] text-muted tabular-nums">Build {__BUILD_ID__}</p>
     </div>
   );
 }

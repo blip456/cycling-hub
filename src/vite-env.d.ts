@@ -2,6 +2,8 @@
 
 /** App version from package.json, injected by vite.config.ts. */
 declare const __APP_VERSION__: string;
+/** The short commit id of the build (vite.config.ts), "local" when it is not known. */
+declare const __BUILD_ID__: string;
 
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL?: string;

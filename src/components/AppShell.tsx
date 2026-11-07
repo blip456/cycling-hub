@@ -159,7 +159,7 @@ export function AppShell() {
 
       <div className="lg:pl-56">
         {/* Phone: top bar */}
-        <header className="sticky top-0 z-10 bg-bg pt-[env(safe-area-inset-top)] lg:hidden">
+        <header className="topbar sticky top-0 z-10 pt-[env(safe-area-inset-top)] lg:hidden">
           <div className="flex h-14 items-center gap-1.5 px-2">
             {subPage ? (
               <Link
