@@ -84,9 +84,7 @@ export function WeightForm({
 
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
-      <h2 className="text-xl font-semibold tracking-tight">
-        {editing ? "Edit entry" : "Log weight"}
-      </h2>
+      <h2 className="text-title">{editing ? "Edit entry" : "Log weight"}</h2>
       <TextField
         label="Date"
         type="date"
@@ -110,7 +108,7 @@ export function WeightForm({
         error={errors.kg}
         helper="Metric units. One decimal at most."
         trailing={
-          <span aria-hidden="true" className="pr-3.5 text-[15px] text-muted">
+          <span aria-hidden="true" className="pr-3.5 text-body text-muted">
             kg
           </span>
         }

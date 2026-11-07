@@ -40,14 +40,9 @@ export function SectionCard({
   }, [editing]);
 
   return (
-    <section
-      aria-labelledby={headingId}
-      className={
-        "rounded-2xl bg-surface p-4 " + (editing ? "outline-2 -outline-offset-2 outline-text" : "")
-      }
-    >
+    <section aria-labelledby={headingId} className="rounded-lg bg-surface p-4">
       <div className="flex min-h-11 items-center justify-between gap-3">
-        <h2 id={headingId} className="text-[17px] font-semibold">
+        <h2 id={headingId} className="text-title">
           {title}
         </h2>
         {!editing && !empty ? (
@@ -66,7 +61,7 @@ export function SectionCard({
         form
       ) : empty ? (
         <>
-          <p className="mt-1 text-[15px] text-muted">{emptyText}</p>
+          <p className="mt-1 text-body text-muted">{emptyText}</p>
           <button
             ref={actionRef}
             type="button"

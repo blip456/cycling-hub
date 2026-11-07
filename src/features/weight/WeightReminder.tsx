@@ -57,7 +57,7 @@ function QuickLog({
         error={error ?? (failed ? "Could not save your weight. Try again." : undefined)}
         helper="Saved as today's entry."
         trailing={
-          <span aria-hidden="true" className="pr-3.5 text-[15px] text-muted">
+          <span aria-hidden="true" className="pr-3.5 text-body text-muted">
             kg
           </span>
         }
