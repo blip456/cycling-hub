@@ -11,6 +11,7 @@ import {
 } from "../data";
 import { sessionWeightLine, weekReason } from "./reasons";
 import { useWeightFacts } from "./use-weight-facts";
+import { linkClass } from "@/components/button-class";
 
 /**
  * R9 and R8b: the "Why this week" card above a week. It only appears when the weight or the taper changed
@@ -107,7 +108,7 @@ export function EventCard({
         <h3 id="plan-event" className="text-body-lg font-semibold [overflow-wrap:anywhere]">
           {event?.name ?? "Event"}
         </h3>
-        <Link to="/profile" className="inline-flex min-h-11 items-center font-semibold text-accent">
+        <Link to="/profile" className={`inline-flex min-h-11 items-center ${linkClass}`}>
           Change<span className="sr-only"> the event in your profile</span>
         </Link>
       </div>

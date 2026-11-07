@@ -236,7 +236,11 @@ describe("type classes in source", () => {
         .forEach((line, i) => {
           // Prose in comments may name the classes it forbids.
           if (/^\s*(\/\/|\*|\/\*)/.test(line)) return;
-          if (re.test(line)) hits.push(`${file}:${i + 1}: ${why}`);
+          // The one place allowed to underline: linkClass, for links inside sentences (DESIGN.md, Links in text).
+          const text = file.endsWith("components/button-class.ts")
+            ? line.replace(/\bunderline(-offset-\d+)?\b/g, "")
+            : line;
+          if (re.test(text)) hits.push(`${file}:${i + 1}: ${why}`);
         });
     }
     expect(hits).toEqual([]);

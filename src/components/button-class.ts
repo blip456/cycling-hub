@@ -21,3 +21,7 @@ const buttonVariants: Record<ButtonVariant, string> = {
 export function buttonClass(variant: ButtonVariant = "primary", extra = ""): string {
   return `${buttonBase} ${buttonVariants[variant]} ${extra}`.trim();
 }
+
+/** A link inside a sentence: accent, 600, always underlined so colour is never the only signal (WCAG 1.4.1). */
+export const linkClass =
+  "font-semibold text-accent underline underline-offset-2 hover:text-accent-hover";
