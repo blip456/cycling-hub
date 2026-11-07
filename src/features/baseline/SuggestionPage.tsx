@@ -23,13 +23,10 @@ function Reading({ progress, onCancel }: { progress: LoadProgress | null; onCanc
   const done = progress?.done ?? 0;
   return (
     <section aria-labelledby="reading-heading" className="max-w-[640px]">
-      <h2
-        id="reading-heading"
-        className="text-[24px] leading-[30px] tracking-[-0.015em] font-semibold"
-      >
+      <h2 id="reading-heading" className="text-heading">
         Reading your rides…
       </h2>
-      <p role="status" className="mt-2 text-[15px] leading-[22px]">
+      <p role="status" className="mt-2 text-body">
         {total > 0
           ? `${String(done)} of ${String(total)} rides with power data. `
           : "Looking for your rides with power data. "}
@@ -68,15 +65,12 @@ function ReadFailed({ onRetry }: { onRetry: () => void }) {
   });
   return (
     <section aria-labelledby="failed-heading" className="max-w-[640px]">
-      <h2
-        id="failed-heading"
-        className="text-[24px] leading-[30px] tracking-[-0.015em] font-semibold"
-      >
+      <h2 id="failed-heading" className="text-heading">
         We could not finish reading your rides
       </h2>
-      <p className="mt-1 text-[15px] leading-[22px]">Your baseline was not changed.</p>
-      <h3 className="mt-4 text-[15px] leading-[22px] font-semibold">What happened</h3>
-      <p className="mt-1 text-[15px] leading-[22px]">
+      <p className="mt-1 text-body">Your baseline was not changed.</p>
+      <h3 className="mt-4 text-body font-semibold">What happened</h3>
+      <p className="mt-1 text-body">
         The ride files could not be downloaded. Check your connection and try again.
       </p>
       <div className="mt-5 flex flex-col gap-2 lg:flex-row">
@@ -94,21 +88,16 @@ function ReadFailed({ onRetry }: { onRetry: () => void }) {
 function NoSuggestion({ scan }: { scan: FtpScan }) {
   return (
     <section aria-labelledby="none-heading" className="max-w-[640px]">
-      <h2
-        id="none-heading"
-        className="text-[24px] leading-[30px] tracking-[-0.015em] font-semibold"
-      >
+      <h2 id="none-heading" className="text-heading">
         {scan.looked === 0 ? "No rides with power data yet" : "No FTP to suggest"}
       </h2>
-      <p className="mt-2 text-[15px] leading-[22px]">
+      <p className="mt-2 text-body">
         {scan.looked === 0
           ? "None of your rides has power data, so the app cannot suggest an FTP. You can still set your baseline by hand."
           : `The app looked at ${String(scan.looked)} rides with power data and found none with 20 minutes in a row of power. Check that the ride files were imported, or set your baseline by hand.`}
       </p>
       {scan.failed > 0 ? (
-        <p className="mt-2 text-[15px] leading-[22px]">
-          {String(scan.failed)} ride files could not be read.
-        </p>
+        <p className="mt-2 text-body">{String(scan.failed)} ride files could not be read.</p>
       ) : null}
       <div className="mt-5 flex flex-col gap-2 lg:flex-row">
         <Link to="/baseline/values" className={buttonClass("primary")}>
@@ -191,22 +180,18 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
     <div className="grid max-w-[640px] gap-4 lg:max-w-none lg:grid-cols-2">
       <div className="flex flex-col gap-4">
         <section aria-labelledby="suggested-heading" className={card}>
-          <h2 id="suggested-heading" className="text-[13px] leading-[18px] text-muted">
+          <h2 id="suggested-heading" className="text-caption text-muted">
             Suggested FTP
           </h2>
-          <p className="mt-0.5 text-[44px] leading-[46px] font-semibold tracking-[-0.025em] text-m-power tabular-nums">
+          <p className="mt-0.5 text-display text-m-power tabular-nums">
             {estimate.ftp}
-            <span className="ml-1 text-[20px] leading-[26px] font-medium tracking-normal text-muted">
-              W
-            </span>
+            <span className="ml-1 text-title font-medium text-muted">W</span>
           </p>
-          <p className="mt-2 text-[15px] leading-[22px] font-semibold">
-            This is an estimate, not a test result.
-          </p>
-          <p className="mt-1 text-[15px] leading-[22px]">
+          <p className="mt-2 text-body font-semibold">This is an estimate, not a test result.</p>
+          <p className="mt-1 text-body">
             A best 20 minutes is only a good FTP when the ride was a hard, even effort. {comparison}
           </p>
-          <dl className="mt-3 divide-y divide-border text-[15px] leading-[22px]">
+          <dl className="mt-3 divide-y divide-border text-body">
             <div className="flex justify-between gap-3 py-2">
               <dt>Best 20-minute power</dt>
               <dd className="font-semibold tabular-nums">{estimate.avg20MinW} W</dd>
@@ -225,7 +210,7 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
           <h2 id="scope-heading" className="sr-only">
             What was searched
           </h2>
-          <p className="text-[15px] leading-[22px]">
+          <p className="text-body">
             {scan.failed > 0
               ? `Based on ${String(read)} of ${String(scan.looked)} rides with power data${span}. ${String(scan.failed)} could not be read.`
               : `Looked at ${String(scan.looked)} rides with power data${span}.`}
@@ -240,11 +225,11 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
       <div className="flex flex-col gap-4">
         {ride ? (
           <section aria-labelledby="source-heading" className={card}>
-            <h2 id="source-heading" className="text-[15px] leading-[22px] font-semibold">
+            <h2 id="source-heading" className="text-body font-semibold">
               Found in this ride
             </h2>
-            <p className="mt-1 text-[15px] leading-[22px]">{formatRideStart(ride.start_local)}</p>
-            <p className="text-[15px] leading-[22px] text-muted">
+            <p className="mt-1 text-body">{formatRideStart(ride.start_local)}</p>
+            <p className="text-body text-muted">
               {ride.name} · {formatKm(ride.distance_m)} km ·{" "}
               {formatHoursMinutes(ride.moving_time_s)}
             </p>
@@ -280,7 +265,7 @@ function Suggestion({ scan, onRetry }: { scan: FtpScan; onRetry: () => void }) {
             Enter a value instead
           </Link>
         </div>
-        <p className="text-[13px] leading-[18px] text-muted">
+        <p className="text-caption text-muted">
           Nothing changes until you press “Use {estimate.ftp} W as my FTP”.
         </p>
       </div>

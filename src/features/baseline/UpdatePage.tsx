@@ -21,12 +21,10 @@ function Choice({
     <li>
       <Link to={to} className={`${row} h-full hover:bg-surface-hover`}>
         <span className="min-w-0 flex-1">
-          <span className="block text-[15px] leading-[22px] font-semibold">{title}</span>
-          <span className="mt-0.5 block text-[13px] leading-[18px] text-muted">{description}</span>
+          <span className="block text-body font-semibold">{title}</span>
+          <span className="mt-0.5 block text-caption text-muted">{description}</span>
         </span>
-        <span className="hidden text-[15px] leading-[22px] font-semibold text-accent lg:block">
-          {action}
-        </span>
+        <span className="hidden text-body font-semibold text-accent lg:block">{action}</span>
         <ChevronRightIcon
           aria-hidden="true"
           width={18}
@@ -44,7 +42,7 @@ export function UpdatePage() {
   const noPower = power.data === false;
   return (
     <div className="max-w-[640px] lg:max-w-none">
-      <p className="mb-4 text-[15px] leading-[22px]">
+      <p className="mb-4 text-body">
         How do you want to set your baseline? Nothing changes until you confirm.
       </p>
       <ul className="grid gap-3 lg:grid-cols-3">
@@ -52,10 +50,8 @@ export function UpdatePage() {
           <li>
             <div aria-disabled="true" className={`${row} h-full text-muted`}>
               <span className="min-w-0 flex-1">
-                <span className="block text-[15px] leading-[22px] font-semibold">
-                  Suggest from my rides
-                </span>
-                <span className="mt-0.5 block text-[13px] leading-[18px]">
+                <span className="block text-body font-semibold">Suggest from my rides</span>
+                <span className="mt-0.5 block text-caption">
                   No rides with power data yet. Import rides, or use one of the other ways.
                 </span>
               </span>
@@ -82,9 +78,7 @@ export function UpdatePage() {
           action="Plan a test week"
         />
       </ul>
-      <p className="mt-4 text-[13px] leading-[18px] text-muted">
-        Previous values stay in the history.
-      </p>
+      <p className="mt-4 text-caption text-muted">Previous values stay in the history.</p>
     </div>
   );
 }

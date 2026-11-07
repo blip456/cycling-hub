@@ -139,9 +139,7 @@ export function ResultPage() {
 
   return (
     <div className="max-w-[640px]">
-      <p className="mb-4 text-[15px] leading-[22px]">
-        {label}. Nothing is saved until you confirm.
-      </p>
+      <p className="mb-4 text-body">{label}. Nothing is saved until you confirm.</p>
       {newFtp === null ? (
         <FormAlert>
           This result can&apos;t be turned into an FTP. Go back to the session and check the number.
@@ -152,7 +150,7 @@ export function ResultPage() {
             <h2 id="calc-heading" className="sr-only">
               The calculation
             </h2>
-            <dl className="divide-y divide-border text-[15px] leading-[22px]">
+            <dl className="divide-y divide-border text-body">
               <div className="flex justify-between gap-3 py-2">
                 <dt>{info.resultLabel}</dt>
                 <dd className="font-semibold tabular-nums">{average} W</dd>
@@ -163,25 +161,23 @@ export function ResultPage() {
               </div>
               <div className="flex justify-between gap-3 py-2">
                 <dt>New FTP</dt>
-                <dd className="text-[17px] leading-6 tracking-[-0.01em] font-semibold tabular-nums">
-                  {newFtp} W
-                </dd>
+                <dd className="text-body-lg tabular-nums">{newFtp} W</dd>
               </div>
             </dl>
-            <p className="mt-2 text-[15px] leading-[22px]">
+            <p className="mt-2 text-body">
               {currentFtp === null
                 ? "No FTP is set yet."
                 : `Current FTP ${String(currentFtp)} W${change ? `. ${change}.` : "."}`}
             </p>
           </section>
           {isRamp ? (
-            <p className="mt-3 text-[13px] leading-[18px] text-muted">
+            <p className="mt-3 text-caption text-muted">
               The ramp test gives no LTHR, so there is no LTHR option here.
             </p>
           ) : lthr !== null ? (
             <div className="mt-3 rounded-2xl bg-surface p-4">
               {lthrTooHigh ? (
-                <p className="text-[15px] leading-[22px]">
+                <p className="text-body">
                   LTHR {lthr} bpm is higher than your max heart rate of {currentMaxHr} bpm, so it is
                   not saved. Check the number, or update your max heart rate first.
                 </p>
@@ -190,7 +186,7 @@ export function ResultPage() {
                   <Checkbox checked={includeLthr} onChange={setIncludeLthr}>
                     Also save LTHR: {lthr} bpm
                   </Checkbox>
-                  <p className="text-[13px] leading-[18px] text-muted">
+                  <p className="text-caption text-muted">
                     Average heart rate of the last 15 minutes of the test.
                     {baseline && valueOf(baseline, "lthr") === null ? " LTHR is not set yet." : ""}
                   </p>

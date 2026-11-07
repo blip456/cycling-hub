@@ -20,7 +20,7 @@ const card = "rounded-2xl bg-surface";
 
 function Meta({ current }: { current: CurrentValue }) {
   return (
-    <p className="text-[13px] leading-[18px] text-muted">
+    <p className="text-caption text-muted">
       {current.source ? `${sourceLabel(current.source)} · effective ` : "Effective "}
       {formatDate(current.effectiveDate)}
     </p>
@@ -40,29 +40,21 @@ function Metric({
 }) {
   return (
     <div className="px-4 py-3.5 not-first:border-t not-first:border-border lg:rounded-2xl lg:bg-surface lg:not-first:border-t-0">
-      <p className="text-[13px] leading-[18px] text-muted">{label}</p>
-      <p className="mt-0.5 text-[24px] leading-[30px] font-semibold tracking-[-0.015em] tabular-nums">
+      <p className="text-caption text-muted">{label}</p>
+      <p className="mt-0.5 text-heading tabular-nums">
         {current ? (
           <>
             {current.value}
-            <span className="ml-1 text-[15px] leading-[22px] tracking-normal font-medium text-muted">
-              {unit}
-            </span>
+            <span className="ml-1 text-body font-medium text-muted">{unit}</span>
           </>
         ) : (
           <span className="text-muted">
             <span aria-hidden="true">—</span>
-            <span className="ml-1 text-[15px] leading-[22px] tracking-normal font-medium">
-              {unit}
-            </span>
+            <span className="ml-1 text-body font-medium">{unit}</span>
           </span>
         )}
       </p>
-      {current ? (
-        <Meta current={current} />
-      ) : (
-        <p className="text-[13px] leading-[18px] text-muted">Not set</p>
-      )}
+      {current ? <Meta current={current} /> : <p className="text-caption text-muted">Not set</p>}
       {children}
     </div>
   );
@@ -85,15 +77,12 @@ function TestWeekCard() {
     : undefined;
   return (
     <section aria-labelledby="test-week-heading" className={`${card} p-4`}>
-      <h2
-        id="test-week-heading"
-        className="text-[20px] leading-[26px] tracking-[-0.01em] font-semibold"
-      >
+      <h2 id="test-week-heading" className="text-title">
         Guided FTP test week
       </h2>
       {data && next && plan ? (
         <>
-          <p className="mt-1 text-[15px] leading-[22px]">
+          <p className="mt-1 text-body">
             Next: {plan.title}
             {next.scheduled_on ? `, ${formatShortDate(next.scheduled_on)}` : ", no date chosen yet"}
             .
@@ -107,14 +96,14 @@ function TestWeekCard() {
         </>
       ) : data ? (
         <>
-          <p className="mt-1 text-[15px] leading-[22px]">All sessions of this week are done.</p>
+          <p className="mt-1 text-body">All sessions of this week are done.</p>
           <Link to="/baseline/test-week" className={buttonClass("secondary", "mt-3")}>
             Open the test week
           </Link>
         </>
       ) : (
         <>
-          <p className="mt-1 text-[15px] leading-[22px]">
+          <p className="mt-1 text-body">
             {week.isPending
               ? "Checking for a test week."
               : "Not planned. Pick a protocol and choose a date for each session."}
@@ -139,13 +128,10 @@ function ZonesPreview({ baseline }: { baseline: CurrentBaseline }) {
     : "";
   return (
     <section aria-labelledby="preview-heading" className={`${card} hidden p-4 lg:block`}>
-      <h2
-        id="preview-heading"
-        className="text-[20px] leading-[26px] tracking-[-0.01em] font-semibold"
-      >
+      <h2 id="preview-heading" className="text-title">
         Zones from this baseline
       </h2>
-      <p className="mt-1 mb-3 text-[15px] leading-[22px]">
+      <p className="mt-1 mb-3 text-body">
         Coggan power zones from FTP {valueOf(baseline, "ftp")} W{hrText}.
       </p>
       <ZoneBar zones={power} label="Power zones 1 to 7" />
@@ -162,35 +148,31 @@ function Overview({ baseline }: { baseline: CurrentBaseline }) {
       <div className="grid gap-4 lg:grid-cols-4">
         <section aria-labelledby="ftp-heading" className={`${card} px-4 py-4 lg:p-0`}>
           <div className="lg:px-4 lg:py-3.5">
-            <h2 id="ftp-heading" className="text-[13px] leading-[18px] text-muted">
+            <h2 id="ftp-heading" className="text-caption text-muted">
               Functional threshold power (FTP)
             </h2>
-            <p className="mt-0.5 text-[44px] leading-[46px] font-semibold tracking-[-0.025em] text-m-power tabular-nums lg:text-[32px] lg:leading-[36px]">
+            <p className="mt-0.5 text-display text-m-power tabular-nums lg:text-stat">
               {baseline.ftp ? (
                 <>
                   {baseline.ftp.value}
-                  <span className="ml-1 text-[20px] leading-[26px] font-medium tracking-normal text-muted">
-                    W
-                  </span>
+                  <span className="ml-1 text-title font-medium text-muted">W</span>
                 </>
               ) : (
                 <span className="text-muted">
                   <span aria-hidden="true">—</span>
-                  <span className="ml-1 text-[20px] leading-[26px] font-medium tracking-normal">
-                    W
-                  </span>
+                  <span className="ml-1 text-title font-medium">W</span>
                 </span>
               )}
             </p>
             {baseline.ftp ? (
               <Meta current={baseline.ftp} />
             ) : (
-              <p className="text-[13px] leading-[18px] text-muted">Not set</p>
+              <p className="text-caption text-muted">Not set</p>
             )}
             {baseline.ftp?.sourceActivityId ? (
               <Link
                 to={`/rides/${baseline.ftp.sourceActivityId}`}
-                className="-ml-3 inline-flex min-h-11 items-center rounded-md px-3 text-[15px] leading-[22px] font-semibold text-accent hover:bg-accent-soft"
+                className="-ml-3 inline-flex min-h-11 items-center rounded-md px-3 text-body font-semibold text-accent hover:bg-accent-soft"
               >
                 Open the source ride
               </Link>
@@ -198,7 +180,7 @@ function Overview({ baseline }: { baseline: CurrentBaseline }) {
             {baseline.ftp ? (
               <Link
                 to="/baseline/zones"
-                className="-ml-3 inline-flex min-h-11 items-center rounded-md px-3 text-[15px] leading-[22px] font-semibold text-accent hover:bg-accent-soft lg:hidden"
+                className="-ml-3 inline-flex min-h-11 items-center rounded-md px-3 text-body font-semibold text-accent hover:bg-accent-soft lg:hidden"
               >
                 See zones
               </Link>
@@ -206,10 +188,7 @@ function Overview({ baseline }: { baseline: CurrentBaseline }) {
           </div>
         </section>
         <section aria-labelledby="hr-heading" className={`${card} lg:contents`}>
-          <h2
-            id="hr-heading"
-            className="px-4 pt-3.5 text-[20px] leading-[26px] tracking-[-0.01em] font-semibold lg:sr-only"
-          >
+          <h2 id="hr-heading" className="px-4 pt-3.5 text-title lg:sr-only">
             Heart rate
           </h2>
           <Metric label="Max heart rate" current={baseline.maxHr} unit="bpm" />
@@ -234,13 +213,10 @@ function HighestHeartRate() {
   if (!found) return null;
   return (
     <section aria-labelledby="hr-found-heading" className={`${card} p-4`}>
-      <h2
-        id="hr-found-heading"
-        className="text-[20px] leading-[26px] tracking-[-0.01em] font-semibold"
-      >
+      <h2 id="hr-found-heading" className="text-title">
         Heart rate was found in your rides
       </h2>
-      <p className="mt-1 text-[15px] leading-[22px]">
+      <p className="mt-1 text-body">
         Highest value: {found.bpm} bpm
         {scan.data?.ride ? `, ${formatDate(scan.data.ride.start_local.slice(0, 10))}` : ""}.
       </p>
@@ -270,10 +246,8 @@ function EmptyBaseline({ hasPower }: { hasPower: boolean }) {
           >
             <BaselineIcon />
           </span>
-          <h2 className="text-[24px] leading-[30px] tracking-[-0.015em] font-semibold">
-            No baseline yet
-          </h2>
-          <p className="mt-2 text-[15px] leading-[22px]">
+          <h2 className="text-heading">No baseline yet</h2>
+          <p className="mt-2 text-body">
             Your rides have power data, so the app can suggest an FTP from your best 20 minutes. You
             can also type your values or do a guided test week.
           </p>
@@ -297,10 +271,8 @@ function EmptyBaseline({ hasPower }: { hasPower: boolean }) {
           >
             <BaselineIcon />
           </span>
-          <h2 className="text-[24px] leading-[30px] tracking-[-0.015em] font-semibold">
-            No power data yet
-          </h2>
-          <p className="mt-2 text-[15px] leading-[22px]">
+          <h2 className="text-heading">No power data yet</h2>
+          <p className="mt-2 text-body">
             None of your rides has power data, so the app cannot suggest an FTP. Most older rides
             were recorded without a power meter. You can still set your baseline by hand.
           </p>
@@ -312,7 +284,7 @@ function EmptyBaseline({ hasPower }: { hasPower: boolean }) {
               Plan a guided test week
             </Link>
           </div>
-          <p className="mt-3 text-[13px] leading-[18px] text-muted">
+          <p className="mt-3 text-caption text-muted">
             The test week works without power data in the app: you type the result from your head
             unit.
           </p>

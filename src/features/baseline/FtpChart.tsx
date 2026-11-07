@@ -97,9 +97,7 @@ export function FtpChart({ points, today }: { points: readonly FtpPoint[]; today
 
   return (
     <figure>
-      <figcaption className="mb-1 text-[13px] leading-[18px] text-muted">
-        FTP over time (W)
-      </figcaption>
+      <figcaption className="mb-1 text-caption text-muted">FTP over time (W)</figcaption>
       <svg
         ref={svgRef}
         viewBox={`0 0 ${String(W)} ${String(H)}`}

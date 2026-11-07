@@ -25,20 +25,18 @@ function RowZones({ row }: { row: HistoryRow }) {
     <div className="flex flex-col gap-3 px-4 pt-1 pb-4">
       {power ? (
         <div>
-          <p className="mb-1.5 text-[13px] leading-[18px] font-semibold">
+          <p className="mb-1.5 text-caption font-semibold">
             Power zones at {row.ftpInForce} W (ranges in W)
           </p>
           <ZoneBar zones={power} label="Power zones 1 to 7" />
-          <p className="mt-1.5 text-[13px] leading-[18px]">{zoneSummary(power)}</p>
+          <p className="mt-1.5 text-caption">{zoneSummary(power)}</p>
         </div>
       ) : (
-        <p className="text-[13px] leading-[18px] text-muted">
-          No FTP was set yet, so there are no power zones.
-        </p>
+        <p className="text-caption text-muted">No FTP was set yet, so there are no power zones.</p>
       )}
       {hr ? (
         <div>
-          <p className="mb-1.5 text-[13px] leading-[18px] font-semibold">
+          <p className="mb-1.5 text-caption font-semibold">
             Heart rate zones from{" "}
             {hr.reference === "lthr"
               ? `LTHR ${String(row.lthrInForce)}`
@@ -46,7 +44,7 @@ function RowZones({ row }: { row: HistoryRow }) {
             bpm (ranges in bpm)
           </p>
           <ZoneBar zones={hr.zones} label="Heart rate zones 1 to 5" />
-          <p className="mt-1.5 text-[13px] leading-[18px]">{zoneSummary(hr.zones)}</p>
+          <p className="mt-1.5 text-caption">{zoneSummary(hr.zones)}</p>
         </div>
       ) : null}
     </div>
@@ -69,16 +67,14 @@ function Row({ row }: { row: HistoryRow }) {
           className="flex min-h-16 w-full items-center gap-3 px-4 py-3 text-left hover:bg-surface-hover"
         >
           <span className="min-w-0 flex-1">
-            <span className="block text-[15px] leading-[22px] font-semibold">
+            <span className="block text-body font-semibold">
               {formatDate(row.effective_date)} · {setValues(row)}
             </span>
-            <span className="block text-[13px] leading-[18px] text-muted">
+            <span className="block text-caption text-muted">
               {sourceLabel(row.source)}
               {row.note ? ` · ${row.note}` : ""}
             </span>
-            {row.current ? (
-              <span className="block text-[13px] leading-[18px] font-semibold">Current</span>
-            ) : null}
+            {row.current ? <span className="block text-caption font-semibold">Current</span> : null}
           </span>
           <ChevronRightIcon className={`shrink-0 text-muted ${open ? "rotate-90" : ""}`} />
           <span className="sr-only">{open ? "Hide zones" : "Show zones"}</span>
@@ -134,13 +130,13 @@ export function HistoryTab() {
         {points.length > 0 ? (
           <FtpChart points={points} today={today} />
         ) : (
-          <p className="text-[15px] leading-[22px] text-muted">
+          <p className="text-body text-muted">
             No FTP has been saved yet, so there is nothing to draw.
           </p>
         )}
       </div>
       <section aria-labelledby="past-heading">
-        <h2 id="past-heading" className="mb-2 text-[15px] leading-[22px] font-semibold">
+        <h2 id="past-heading" className="mb-2 text-body font-semibold">
           Past baselines
         </h2>
         <ul className="rounded-2xl bg-surface">
@@ -148,7 +144,7 @@ export function HistoryTab() {
             <Row key={row.id} row={row} />
           ))}
         </ul>
-        <p className="mt-3 text-[13px] leading-[18px] text-muted">
+        <p className="mt-3 text-caption text-muted">
           Nothing is overwritten. A new baseline adds a row.
         </p>
       </section>
