@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0](https://github.com/blip456/cycling-hub/compare/v1.0.0...v1.1.0) (2026-11-07)
+
+
+### Features
+
+* **app:** release athlete profile, weight tracking, baseline and the training plan ([f352e4c](https://github.com/blip456/cycling-hub/commit/f352e4cfed74cc45b636e6641f7cb98073d4f6c1))
+
+
+### Bug Fixes
+
+* **app:** underline links inside sentences and document the segment radius ([#20](https://github.com/blip456/cycling-hub/issues/20)) ([3c71fb7](https://github.com/blip456/cycling-hub/commit/3c71fb7a11e738b6d46371290efe4fc3088b6c77))
+
+
+### Technical
+
+* **release:** back-merge v1.0.0 into dev ([db7a909](https://github.com/blip456/cycling-hub/commit/db7a90910c7a58a25512f632181f94c4ec9b0eb0))
+
 ## 1.0.0 (2026-10-28)
 
 
