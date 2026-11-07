@@ -21,7 +21,7 @@ export function AuthLayout({ title, back, children }: AuthLayoutProps) {
         {back ? (
           <Link
             to={back.to}
-            className="-ml-2 flex min-h-11 items-center gap-1 rounded-md px-2 text-[15px] font-semibold text-text hover:bg-subtle"
+            className="-ml-2 flex min-h-11 items-center gap-1 rounded-md px-2 text-body font-semibold text-text hover:bg-fill"
           >
             <BackIcon />
             {back.label}
@@ -29,8 +29,8 @@ export function AuthLayout({ title, back, children }: AuthLayoutProps) {
         ) : null}
       </div>
       <main className="mx-auto w-full max-w-sm flex-1 sm:pt-[8vh]">
-        <p className="mb-8 text-lg font-semibold tracking-tight text-text">Cycling Hub</p>
-        <h1 className="mb-6 text-2xl font-semibold tracking-tight">{title}</h1>
+        <p className="mb-8 text-body-lg text-text">Cycling Hub</p>
+        <h1 className="mb-6 text-heading">{title}</h1>
         {children}
       </main>
     </div>

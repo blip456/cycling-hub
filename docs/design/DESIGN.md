@@ -127,6 +127,20 @@ Rule: colour is never the only signal. A zone always shows its number and name a
 | `--fs-body` | 15 / 22 | 400 (buttons 600) | 0 | Text, rows, inputs, buttons, table cells |
 | `--fs-caption` | 13 / 18 | 400–600 | 0 | Meta, units, helper text, labels, table header |
 
+**Utilities** (`src/styles/app.css`). One class per token sets size, line height, tracking and weight together; use these, never `text-[15px]`, `text-xl`, `tracking-tight` or `leading-*`. `text-body` and `text-caption` default to 400, the others to 600; `font-medium` or `font-semibold` on the same element still wins. `scripts/design-tokens.test.mjs` checks that this table, `tokens.css`, `tokens.json` and the utilities agree.
+
+| Utility | Token | Role |
+| --- | --- | --- |
+| `text-display` | `--fs-display` | The one hero number of a screen |
+| `text-stat` | `--fs-stat` | Outcome numbers |
+| `text-heading` | `--fs-heading` | Page title, phone headline, stat tile value |
+| `text-title` | `--fs-title` | Top bar title, card titles |
+| `text-body-lg` | `--fs-body-lg` | Metric values on cards, ride name, wordmark |
+| `text-body` | `--fs-body` | Text, rows, inputs, buttons (add `font-semibold`), table cells |
+| `text-caption` | `--fs-caption` | Meta, units, helper text, labels, table header |
+
+**Font rules** (set once on `html` in `app.css`): family `--font-sans` inherited by every element, including `button`, `input`, `select`, `textarea`, `pre` and `code` (browsers do not inherit it for form controls; there is no monospace anywhere); `font-synthesis: none` (a missing weight or style is never faked); `font-optical-sizing: auto`; `-webkit-text-size-adjust: 100%`; `font-variant-numeric: tabular-nums` on the whole page, so every number is tabular without a class. The Latin subset is preloaded, and the Latin and Latin Extended files are precached by the service worker for the installed app. `e2e/fonts.spec.mjs` checks the computed family and the loaded font.
+
 - Sentence case everywhere. No uppercase, no letter-spaced labels, no monospace.
 - Left-aligned. Centre only the sign-in card on desktop and button labels.
 - Headlines fit in two lines; cut words before shrinking type.
