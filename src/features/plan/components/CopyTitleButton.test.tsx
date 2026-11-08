@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "@/test/render";
 import { CopyTitleButton } from "./CopyTitleButton";
 
-const TEXT = "Z2 · Endurance (Easy, 135 min)";
+const TEXT = "Z2 · Endurance 135 min";
 
 afterEach(() => {
   vi.restoreAllMocks();

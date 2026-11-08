@@ -348,7 +348,7 @@ describe("the title to paste into Strava", () => {
       kind: "endurance" as const,
       steps: [step("easy", 2)],
     };
-    expect(stravaTitle({ ...ride, durationMin: 135 })).toBe("Z2 · Endurance (Easy, 135 min)");
+    expect(stravaTitle({ ...ride, durationMin: 135 })).toBe("Z2 · Endurance 135 min");
     expect(isStableRide({ kind: "long", steps: [step("easy", 2)] })).toBe(true);
     expect(isStableRide({ kind: "recovery", steps: [step("easy", 1)] })).toBe(true);
   });
@@ -381,6 +381,6 @@ describe("the title to paste into Strava", () => {
       steps: [],
       durationMin: 60,
     };
-    expect(stravaTitle(ride)).toBe("Endurance ride (Easy, 60 min)");
+    expect(stravaTitle(ride)).toBe("Endurance ride 60 min");
   });
 });
