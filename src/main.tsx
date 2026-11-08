@@ -7,12 +7,14 @@ import { BrowserRouter } from "react-router";
 import { App } from "./App";
 import { StatusProvider } from "./components/status/StatusProvider";
 import { AuthProvider } from "./lib/auth/AuthProvider";
+import { preventPinchZoom } from "./lib/prevent-zoom";
 import { applyStoredTheme } from "./lib/theme";
 import { UpdatePrompt } from "./pwa/UpdatePrompt";
 import "@fontsource-variable/inter";
 import "./styles/app.css";
 
 applyStoredTheme();
+preventPinchZoom();
 
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element #root is missing");
