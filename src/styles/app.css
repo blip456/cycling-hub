@@ -128,6 +128,8 @@
     color-scheme: dark;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    /* App, not web page: pan and scroll only, no pinch zoom and no double-tap zoom (src/lib/prevent-zoom.ts). */
+    touch-action: pan-x pan-y;
     /* Inter Variable everywhere (P20, P36): no synthesised bold or italic, tabular figures on every number. */
     font-family: var(--font-sans);
     font-synthesis: none;
@@ -171,7 +173,13 @@
   body::before {
     content: "";
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    /* Sized to the largest viewport (lvh). With inset: 0, iOS Safari sized the layer to the small viewport,
+       so the strip under the browser toolbar, shown when it collapses, stayed flat. */
+    height: 100vh;
+    height: 100lvh;
     z-index: -1;
     pointer-events: none;
     background: var(--page, var(--bg));
@@ -190,6 +198,16 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+/* iOS Safari zooms into a field whose text is under 16 px when it is focused, and stays zoomed. On touch
+   screens the fields are 16 px; the 15 px body text stays everywhere else. */
+@media (pointer: coarse) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 

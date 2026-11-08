@@ -7,10 +7,12 @@ import {
   sessionFactParts,
   sessionFacts,
   STATUS_TEXT,
+  stravaTitle,
   type DayCell,
   type PlanSession,
 } from "../data";
 import { useChangedDates } from "../adaptation/hooks";
+import { CopyTitleButton } from "./CopyTitleButton";
 import { CheckIcon, MinusIcon, PencilIcon } from "./icons";
 import { ActionsMenu } from "./SessionActions";
 import { sessionAriaLabel } from "./session-label";
@@ -76,7 +78,8 @@ export function SessionItem({
           </span>
         ) : null}
       </Link>
-      <div className={card ? "flex justify-end px-1 pb-1" : ""}>
+      <div className={card ? "flex justify-end px-1 pb-1" : "flex shrink-0 items-start"}>
+        <CopyTitleButton text={stravaTitle(session)} />
         <ActionsMenu session={session} />
       </div>
     </div>

@@ -514,6 +514,27 @@ export function mainSetLine(session: PlanSession): string | null {
     .join(" ");
 }
 
+/** A stable ride: recovery, endurance or long, with no work steps. Everything else is a targeted ride. */
+export function isStableRide(session: Pick<PlanSession, "kind" | "steps">): boolean {
+  return (
+    (session.kind === "recovery" || session.kind === "endurance" || session.kind === "long") &&
+    !session.steps.some((s) => s.kind === "work")
+  );
+}
+
+/**
+ * The title to paste into Strava. A targeted ride keeps its plan title ("Sweet spot 3 x 15 min"); a stable
+ * ride gives its zone and its minutes: "Z2 · Endurance 135 min".
+ */
+export function stravaTitle(
+  session: Pick<PlanSession, "title" | "kind" | "steps" | "durationMin">,
+): string {
+  if (!isStableRide(session)) return session.title;
+  const zone = session.steps.map((s) => powerZoneLabel(s)).find((label) => label !== null);
+  const minutes = String(Math.round(session.durationMin));
+  return `${zone ?? session.title} ${minutes} min`;
+}
+
 /** Kind for a screen reader or a label, e.g. "sweet-spot" is "Sweet spot". */
 export function kindName(kind: SessionKind): string {
   const text = kind === "vo2" ? "VO2 max" : kind.replace("-", " ");
