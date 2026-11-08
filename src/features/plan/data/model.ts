@@ -514,6 +514,30 @@ export function mainSetLine(session: PlanSession): string | null {
     .join(" ");
 }
 
+/** A stable ride: recovery, endurance or long, with no work steps. Everything else is a targeted ride. */
+export function isStableRide(session: Pick<PlanSession, "kind" | "steps">): boolean {
+  return (
+    (session.kind === "recovery" || session.kind === "endurance" || session.kind === "long") &&
+    !session.steps.some((s) => s.kind === "work")
+  );
+}
+
+/** The effort word in the Strava title of a stable ride. The engine keeps these rides at easy effort (up to 75 % of FTP). */
+const STABLE_EFFORT = "Easy";
+
+/**
+ * The title to paste into Strava. A targeted ride keeps its plan title ("Sweet spot 3 x 15 min"); a stable
+ * ride gives its zone, then the effort and the minutes in brackets: "Z2 · Endurance (Easy, 135 min)".
+ */
+export function stravaTitle(
+  session: Pick<PlanSession, "title" | "kind" | "steps" | "durationMin">,
+): string {
+  if (!isStableRide(session)) return session.title;
+  const zone = session.steps.map((s) => powerZoneLabel(s)).find((label) => label !== null);
+  const minutes = String(Math.round(session.durationMin));
+  return `${zone ?? session.title} (${STABLE_EFFORT}, ${minutes} min)`;
+}
+
 /** Kind for a screen reader or a label, e.g. "sweet-spot" is "Sweet spot". */
 export function kindName(kind: SessionKind): string {
   const text = kind === "vo2" ? "VO2 max" : kind.replace("-", " ");

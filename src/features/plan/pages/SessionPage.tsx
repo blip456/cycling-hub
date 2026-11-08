@@ -13,6 +13,7 @@ import {
   sessionDistance,
   sessionEffort,
   speedFor,
+  stravaTitle,
   useDistances,
   usePlanSession,
 } from "../data";
@@ -23,6 +24,7 @@ import { GRID_QUERY, usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
 import { Segmented } from "../components/Segmented";
 import { canAct, useSessionActions } from "../components/session-actions-context";
+import { CopyTitleButton } from "../components/CopyTitleButton";
 import { StepList } from "../components/StepList";
 
 const PLACE_HELP =
@@ -137,9 +139,15 @@ export function SessionPage() {
     >
       <div className="flex min-w-0 flex-col gap-5">
         <header>
-          <h2 id="plan-session-title" className="text-heading [overflow-wrap:anywhere]">
-            {session.title}
-          </h2>
+          <div className="flex items-start gap-2">
+            <h2
+              id="plan-session-title"
+              className="min-w-0 flex-1 text-heading [overflow-wrap:anywhere]"
+            >
+              {session.title}
+            </h2>
+            <CopyTitleButton text={stravaTitle(session)} />
+          </div>
           <p className="mt-1 text-body text-muted">
             {formatDay(session.date)} · Week {session.week} · {PHASE_TEXT[session.phase]}
           </p>
