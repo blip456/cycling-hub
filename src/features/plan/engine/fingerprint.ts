@@ -49,6 +49,7 @@ export function canonicalInput(input: PlanInput): string {
       extra: sorted(adjustments.extraEasyRideWeeks),
       noSecond: sorted(adjustments.noSecondHardWeeks),
       missed: (adjustments.missedStructured ?? []).map((m) => `${m.week}:${m.kind}`).sort(),
+      struggled: (adjustments.struggledStructured ?? []).map((m) => `${m.week}:${m.kind}`).sort(),
     },
   };
   return JSON.stringify(canonical);

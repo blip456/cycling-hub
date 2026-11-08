@@ -91,6 +91,7 @@ export function buildEvaluateInput(
   inputs: RunnerInputs,
   today: IsoDate,
   edit?: Intake,
+  force?: boolean,
 ): Evaluation | null {
   const { plan, profile, goal, baseline } = inputs;
   const stored = plan.intake ?? edit ?? null;
@@ -119,6 +120,7 @@ export function buildEvaluateInput(
       lastFingerprint: plan.fingerprint,
       undoneFingerprint: plan.undoneFingerprint,
       ...(edit ? { edited: true } : {}),
+      ...(force ? { force: true } : {}),
     },
   };
 }
