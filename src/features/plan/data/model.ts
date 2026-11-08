@@ -243,6 +243,16 @@ export function weekDays(
   });
 }
 
+/**
+ * The first day of a stored plan: the start date in its intake when that falls in week 1 (a plan can start
+ * after the Monday of week 1), else the plan's start date (the Monday of week 1).
+ */
+export function firstDayOf(plan: Pick<StoredPlan, "startDate" | "intake">): IsoDate {
+  const first = plan.intake?.startDate;
+  if (first === undefined || first < plan.startDate) return plan.startDate;
+  return (diffDays(plan.startDate, first) ?? 7) < 7 ? first : plan.startDate;
+}
+
 /** Monday of the week with `date`. */
 export function mondayOf(date: IsoDate): IsoDate {
   return addDays(date, -(weekdayIndex(date) ?? 0)) ?? date;
@@ -263,7 +273,8 @@ export function todayCard(
   sessions: readonly PlanSession[],
   today: IsoDate,
 ): TodayCard {
-  if (today < plan.startDate) return { kind: "before", startDate: plan.startDate };
+  const firstDay = firstDayOf(plan);
+  if (today < firstDay) return { kind: "before", startDate: firstDay };
   const todays = sessions.filter((s) => s.date === today).sort((a, b) => a.dayOrder - b.dayOrder);
   const open = todays.filter((s) => s.status === "planned" || s.status === "missed");
   const first = open[0];
@@ -501,6 +512,27 @@ export function mainSetLine(session: PlanSession): string | null {
   return [`Main set: ${what}`, watts ? `at ${watts}` : null, zone ? `(${zone})` : null]
     .filter((part): part is string => part !== null)
     .join(" ");
+}
+
+/** A stable ride: recovery, endurance or long, with no work steps. Everything else is a targeted ride. */
+export function isStableRide(session: Pick<PlanSession, "kind" | "steps">): boolean {
+  return (
+    (session.kind === "recovery" || session.kind === "endurance" || session.kind === "long") &&
+    !session.steps.some((s) => s.kind === "work")
+  );
+}
+
+/**
+ * The title to paste into Strava. A targeted ride keeps its plan title ("Sweet spot 3 x 15 min"); a stable
+ * ride gives its zone and its minutes: "Z2 · Endurance 135 min".
+ */
+export function stravaTitle(
+  session: Pick<PlanSession, "title" | "kind" | "steps" | "durationMin">,
+): string {
+  if (!isStableRide(session)) return session.title;
+  const zone = session.steps.map((s) => powerZoneLabel(s)).find((label) => label !== null);
+  const minutes = String(Math.round(session.durationMin));
+  return `${zone ?? session.title} ${minutes} min`;
 }
 
 /** Kind for a screen reader or a label, e.g. "sweet-spot" is "Sweet spot". */

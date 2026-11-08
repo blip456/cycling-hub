@@ -5,10 +5,16 @@ import { useMediaQuery } from "@/lib/use-media-query";
 import {
   formatDay,
   formatDuration,
+  formatKm,
   formatLoad,
   PHASE_TEXT,
   placeOf,
   STATUS_TEXT,
+  sessionDistance,
+  sessionEffort,
+  speedFor,
+  stravaTitle,
+  useDistances,
   usePlanSession,
 } from "../data";
 import { MissedSession } from "../adaptation/MissedSession";
@@ -18,6 +24,7 @@ import { GRID_QUERY, usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
 import { Segmented } from "../components/Segmented";
 import { canAct, useSessionActions } from "../components/session-actions-context";
+import { CopyTitleButton } from "../components/CopyTitleButton";
 import { StepList } from "../components/StepList";
 
 const PLACE_HELP =
@@ -57,6 +64,7 @@ export function SessionPage() {
   const data = usePlanSession(id);
   const { actions, askMove, askSkip } = useSessionActions();
   const desktop = useMediaQuery(GRID_QUERY);
+  const distances = useDistances(data.plan);
   usePlanLoadErrorCard(data.isError, data.refetch);
 
   if (data.isError) return <PlanLoadError retry={data.refetch} />;
@@ -87,6 +95,11 @@ export function SessionPage() {
   const event = session.kind === "event";
 
   const missed = session.status === "missed" && !event;
+  const distance = sessionDistance(session, distances.model, distances.ridesById);
+  const speed =
+    distance?.estimated && distances.model
+      ? Math.round(speedFor(distances.model, sessionEffort(session.steps)))
+      : null;
   const buttons =
     open && !missed ? (
       <div className="flex flex-col gap-3">
@@ -126,18 +139,31 @@ export function SessionPage() {
     >
       <div className="flex min-w-0 flex-col gap-5">
         <header>
-          <h2 id="plan-session-title" className="text-heading [overflow-wrap:anywhere]">
-            {session.title}
-          </h2>
+          <div className="flex items-start gap-2">
+            <h2
+              id="plan-session-title"
+              className="min-w-0 flex-1 text-heading [overflow-wrap:anywhere]"
+            >
+              {session.title}
+            </h2>
+            <CopyTitleButton text={stravaTitle(session)} />
+          </div>
           <p className="mt-1 text-body text-muted">
             {formatDay(session.date)} · Week {session.week} · {PHASE_TEXT[session.phase]}
           </p>
           <p className="text-body text-muted">
             {formatDuration(session.durationMin)}
+            {distance ? ` · ${formatKm(distance.km, distance.estimated)}` : ""}
             {event ? " expected" : ` · Load ${formatLoad(session.load)}`} ·{" "}
             {STATUS_TEXT[session.status]}
             {session.movedFrom ? ` · Moved from ${formatDay(session.movedFrom)}` : ""}
           </p>
+          {speed !== null ? (
+            <p className="mt-1 max-w-[60ch] text-caption text-muted">
+              Distance estimated from your outdoor rides of the last 3 months: about {String(speed)}{" "}
+              km/h at this effort on your usual roads. Hills and wind make it shorter.
+            </p>
+          ) : null}
         </header>
 
         {missed ? <MissedSession session={session} /> : null}

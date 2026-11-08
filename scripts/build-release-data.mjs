@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Build-time data for What's new (G2) and What's next (G3), so the app never calls GitHub at runtime.
 //
-//   CHANGELOG.md     (written by release-please)       -> src/features/release/generated/changelog.json
+//   GitHub releases  (published by release.yml, T15)    ─┐
+//   CHANGELOG.md     (history up to v1.0.0)              ─┴-> src/features/release/generated/changelog.json
 //   docs/backlog.md  (the "Sprint format" sections)     -> src/features/release/generated/roadmap.json
 //
 // The output is gitignored. package.json runs this before dev, build, lint, typecheck and the tests, and
@@ -224,15 +225,69 @@ export function upcoming(items) {
 // ---------------------------------------------------------------------------------------------------
 
 /**
- * Reads the sources and writes the two JSON files. A missing CHANGELOG.md (no release yet) gives an
- * empty list; a missing or broken backlog throws.
- * @param {{ root?: string; outDir?: string }} [options]
+ * Release notes published on GitHub (decision T15), newest first, as one CHANGELOG-format markdown string.
+ * The repository is public, so no token is needed; GITHUB_RELEASES_TOKEN (optional) only raises the GitHub
+ * rate limit. The repository name comes from GITHUB_REPOSITORY (Actions) or the Vercel Git variables. When
+ * GitHub cannot be reached, it returns "" and the build uses CHANGELOG.md alone.
+ * @param {{ env?: Record<string, string | undefined>; fetchImpl?: typeof fetch; warn?: (message: string) => void }} [options]
+ * @returns {Promise<string>}
  */
-export function buildReleaseData({ root = ROOT, outDir = OUT_DIR } = {}) {
+export async function fetchPublishedReleases({
+  env = process.env,
+  fetchImpl = fetch,
+  warn = console.warn,
+} = {}) {
+  const token = env.GITHUB_RELEASES_TOKEN;
+  const repo =
+    env.GITHUB_REPOSITORY ??
+    (env.VERCEL_GIT_REPO_OWNER && env.VERCEL_GIT_REPO_SLUG
+      ? `${env.VERCEL_GIT_REPO_OWNER}/${env.VERCEL_GIT_REPO_SLUG}`
+      : undefined);
+  if (!repo) return "";
+
+  try {
+    const bodies = [];
+    for (let page = 1; ; page += 1) {
+      const response = await fetchImpl(
+        `https://api.github.com/repos/${repo}/releases?per_page=100&page=${page}`,
+        {
+          headers: {
+            Accept: "application/vnd.github+json",
+            "User-Agent": "cycling-hub-build",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        },
+      );
+      if (!response.ok) throw new Error(`GitHub answered ${response.status}`);
+      const batch = await response.json();
+      for (const release of batch) {
+        if (!release.draft && !release.prerelease && release.body) bodies.push(release.body);
+      }
+      if (batch.length < 100) break;
+    }
+    return bodies.join("\n\n");
+  } catch (error) {
+    warn(
+      `release notes: GitHub not read (${error instanceof Error ? error.message : error}); using CHANGELOG.md only`,
+    );
+    return "";
+  }
+}
+
+/**
+ * Reads the sources and writes the two JSON files. Published releases (T15) come first; CHANGELOG.md
+ * adds the older releases it still holds. A missing CHANGELOG.md gives an empty history; a missing or
+ * broken backlog throws.
+ * @param {{ root?: string; outDir?: string; published?: string }} [options]
+ */
+export function buildReleaseData({ root = ROOT, outDir = OUT_DIR, published = "" } = {}) {
   const changelogPath = join(root, "CHANGELOG.md");
-  const releases = existsSync(changelogPath)
+  const history = existsSync(changelogPath)
     ? parseChangelog(readFileSync(changelogPath, "utf8"))
     : [];
+  const newer = parseChangelog(published);
+  const known = new Set(newer.map((release) => release.version));
+  const releases = [...newer, ...history.filter((release) => !known.has(release.version))];
   const roadmap = upcoming(parseBacklog(readFileSync(join(root, "docs/backlog.md"), "utf8")));
 
   mkdirSync(outDir, { recursive: true });
@@ -249,15 +304,17 @@ function writeJson(path, data) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  // Optional: --root <dir> --out <dir> (used by the tests).
+  // Optional: --root <dir> --out <dir> (used by the tests). Set --offline to skip GitHub.
   const arg = (name) => {
     const i = process.argv.indexOf(name);
     return i > 0 ? resolve(process.argv[i + 1]) : undefined;
   };
   try {
+    const published = process.argv.includes("--offline") ? "" : await fetchPublishedReleases();
     const { releases, roadmap } = buildReleaseData({
       root: arg("--root") ?? ROOT,
       outDir: arg("--out") ?? OUT_DIR,
+      published,
     });
     console.log(
       `release data: ${releases.length} release(s) in What's new, ${roadmap.length} item(s) in What's next`,

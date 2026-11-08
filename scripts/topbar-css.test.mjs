@@ -26,6 +26,14 @@ describe("page background and phone top bar", () => {
     const layer = rule("body::before");
     expect(layer).toContain("position: fixed");
     expect(layer).toContain("var(--page, var(--bg))");
+    // Sized to the largest viewport, so iOS does not leave a flat strip under the collapsing toolbar.
+    expect(layer).toContain("height: 100lvh");
+  });
+
+  it("keeps fields at 16 px on touch screens, so iOS does not zoom into them", () => {
+    expect(css).toMatch(
+      /@media \(pointer: coarse\) \{\s*input,\s*select,\s*textarea \{\s*font-size: 16px;/,
+    );
   });
 
   it("paints the same splash in the top bar so it blends in at any scroll position", () => {

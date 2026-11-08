@@ -9,14 +9,14 @@ The plan lives in [`docs/backlog.md`](docs/backlog.md) (roadmap and sprints) and
 
 ## Stack
 
-| Layer    | Choice                                                                                   |
-| -------- | ---------------------------------------------------------------------------------------- |
-| Frontend | Vite, React, TypeScript (strict), client-rendered SPA, installable PWA (T1)              |
-| Backend  | Supabase: Auth (email + password), Postgres with Row Level Security, CLI migrations (T2) |
-| Hosting  | Vercel: production from `main`, previews for `dev` and every other branch (T4)           |
-| Quality  | ESLint, Prettier, Vitest + Testing Library, pgTAP, commitlint, lefthook                  |
-| Releases | Conventional Commits and release-please: version, `CHANGELOG.md`, tags, GitHub Releases  |
-| Tools    | pnpm 10, Node 22 (`.nvmrc`), Docker for the local database                               |
+| Layer    | Choice                                                                                                              |
+| -------- | ------------------------------------------------------------------------------------------------------------------- |
+| Frontend | Vite, React, TypeScript (strict), client-rendered SPA, installable PWA (T1)                                         |
+| Backend  | Supabase: Auth (email + password), Postgres with Row Level Security, CLI migrations (T2)                            |
+| Hosting  | Vercel: production from `main`, previews for `dev` and every other branch (T4)                                      |
+| Quality  | ESLint, Prettier, Vitest + Testing Library, pgTAP, commitlint, lefthook                                             |
+| Releases | Conventional Commits: every push to `dev` with a feature, fix or breaking change is a release (tag, GitHub Release) |
+| Tools    | pnpm 10, Node 22 (`.nvmrc`), Docker for the local database                                                          |
 
 ## Setup
 
@@ -67,11 +67,11 @@ Before pushing: `pnpm lint && pnpm format:check && pnpm typecheck && pnpm test &
 
 Two Supabase projects, no branching (T3). Previews share the dev database.
 
-| Environment | Git branch                                  | Supabase project   | Vercel                |
-| ----------- | ------------------------------------------- | ------------------ | --------------------- |
-| Local       | any                                         | local, in Docker   | `pnpm dev`            |
-| Dev         | `dev`, and every PR / work branch (preview) | `cycling-hub-dev`  | Preview deployments   |
-| Production  | `main`, release commits only                | `cycling-hub-prod` | Production deployment |
+| Environment | Git branch                                           | Supabase project                                  | Vercel                |
+| ----------- | ---------------------------------------------------- | ------------------------------------------------- | --------------------- |
+| Local       | any                                                  | local, in Docker                                  | `pnpm dev`            |
+| Dev         | `dev`, and every PR / work branch (preview)          | `cycling-hub-dev`                                 | Preview deployments   |
+| Production  | `dev`, release commits only (`main` is not deployed) | `cycling-hub-dev` today, `cycling-hub-prod` later | Production deployment |
 
 Vercel's **Preview** environment variables point to `cycling-hub-dev`, **Production** to
 `cycling-hub-prod`. The one-time setup of GitHub, Supabase and Vercel is a checklist for the PO in
@@ -115,17 +115,17 @@ Every PR runs these jobs; they are the required status checks in `.github/rulese
 
 ## Releases
 
-Versions follow the sprints (D5, D6): Sprint 0 ships v0.1.0, every next sprint the next minor.
+Every push to `dev` is a release (D10). Versions are semantic (D5): a breaking change bumps the major
+version from 1.0.0 on (the minor before), a `feat` the minor, a `fix` or `perf` the patch. Pushes that
+only contain other types (docs, chore, ci, …) make no release; they appear under Technical in the next one.
 
-1. Every push to `main` runs **release-please**. It keeps a PR **`chore(release): release X.Y.Z`** open
-   with the version bump in `package.json` and the new `CHANGELOG.md` section (Features, Bug Fixes,
-   Performance, Technical).
-2. Merge the release PR with **squash** when the sprint is done. release-please then tags `vX.Y.Z` and
-   publishes a GitHub Release.
-3. Vercel deploys production **only for that release commit** (`scripts/vercel-ignore-build.sh`), so
-   the version in the app always matches a release. Other pushes to `main` build nothing.
-4. The **Back-merge** workflow opens a PR `main` → `dev` (`chore(release): back-merge vX.Y.Z into dev`).
-   Merge it with a **merge commit** so `dev` gets the version bump and keeps `main`'s history.
+1. `.github/workflows/release.yml` runs on the push: `scripts/next-release.mjs` works out the version from
+   the Conventional Commits since the last `vX.Y.Z` tag, creates the tag on that commit and publishes the
+   GitHub Release with the notes (Features, Bug Fixes, Performance, Technical).
+2. It then calls the Vercel **deploy hook** (secret `VERCEL_DEPLOY_HOOK`), so Vercel builds `dev` for
+   production after the tag exists. Vercel's own build of the push is skipped unless the commit is tagged.
+3. `main` is not deployed and no release is cut from it. Release notes are not written to `CHANGELOG.md`
+   any more; `CHANGELOG.md` keeps the history up to v1.0.0 (T15).
 
 ### What's new and What's next in the app
 
@@ -137,6 +137,10 @@ releases yet") and the sprint sections of `docs/backlog.md`, and writes
 (`pre*` scripts in `package.json`; by hand: `pnpm release-data`), so CI and Vercel always build from the
 current changelog and backlog, and `pnpm dev` regenerates them when either file changes. A broken sprint
 entry in the backlog fails the build with a list of what is wrong (see "Sprint format" in the backlog).
+
+The version the app shows (side menu, What's new card, "Updated to" message) is the newest release in that
+generated data, or the `package.json` version when it is newer (`src/features/release/app-version.ts`).
+Releases do not bump `package.json` any more (D10), so it stays at 1.0.0.
 
 Hotfixes between sprints use `fix:` titles: before 1.0 a `feat:` bumps the minor version, which belongs
 to the next sprint.

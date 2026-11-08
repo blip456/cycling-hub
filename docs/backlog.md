@@ -8,11 +8,11 @@ from [`decisions.md`](decisions.md); screens by ID from the wireframes in [`wire
 - **Dual-track agile** (D1). The roadmap below is epic-level and revisited at every sprint review. Only
   the next sprint is planned in detail. No sprint starts without the PO's go.
 - **One-week sprints**; a sprint is a unit of scope, not of calendar time.
-- **Versions** (D5, D6): Sprint 0 ships **v0.1.0**, then every sprint ships the next minor version.
-  Hotfixes between sprints are patch releases with `fix:` titles. The release PR is merged once per
-  sprint, after the PO has tested on the `dev` preview.
-- **Environments** (T3, T4): `dev` branch → `cycling-hub-dev` Supabase project + Vercel preview;
-  `main` → `cycling-hub-prod` + Vercel production.
+- **Versions** (D5, D10): every push to `dev` that adds a feature, fix or breaking change is a release,
+  with the next semantic version from the commits (see the README). Test on the `dev` preview before you
+  push to `dev`: a push there is a production release.
+- **Environments** (T3, T4, D10): `dev` branch → production (`cycling-hub-dev` for now, `cycling-hub-prod`
+  later); other branches → Vercel previews; `main` is not deployed.
 - **Designs first** (D2): a screen is built only after its wireframe and design are approved.
 - **Sprint ritual:** demo summary with preview URL and a phone test checklist → PO feedback → fixes →
   release PR `dev → main` after PO approval → retro (3 bullets) → re-plan → stop.
@@ -513,6 +513,10 @@ Product
 - Weather per ride: temperature, wind speed and direction (P19).
 - Extra Strava tags beyond commute and indoor, once export v2 has them (P11, Q1).
 - Per-second streams (power, HR, cadence) for E1 and E3, stored in Supabase Storage (T6, Q1).
+- Trend dashboard (E3): progress lines over time from the outdoor rides, such as the average speed per
+  100 W of average power, and the speed and power at a baseline heart rate (for example in zone 2). Shows
+  whether the PO rides faster at the same or a lower power or heart rate. Builds on the speed trendline of
+  P89; terrain (climbing) and wind still need a correction or a filter.
 
 Platform
 

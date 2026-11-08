@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as baselineApi from "@/features/baseline/api";
+import * as ridesApi from "@/features/rides/api";
+import type { Ride } from "@/features/rides/api";
 import * as weightApi from "@/features/weight/api";
 import { UNDO_MS } from "@/features/weight/use-weight-cards";
 import { mockViewport } from "@/test/match-media";
@@ -29,6 +31,10 @@ vi.mock("@/features/baseline/api", async (importOriginal) => ({
   ...(await importOriginal<typeof baselineApi>()),
   fetchCurrentBaseline: vi.fn(),
   fetchBaselineEntries: vi.fn(),
+}));
+vi.mock("@/features/rides/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof ridesApi>()),
+  fetchRides: vi.fn(),
 }));
 vi.mock("@/features/weight/api", async (importOriginal) => ({
   ...(await importOriginal<typeof weightApi>()),
@@ -59,6 +65,7 @@ beforeEach(() => {
   vi.setSystemTime(NOW);
   viewport = mockViewport(390);
   mockPlanApi();
+  vi.mocked(ridesApi.fetchRides).mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -614,5 +621,68 @@ describe("Session page", () => {
     expect(await screen.findByRole("heading", { name: event.title })).toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Steps" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Mark as done" })).not.toBeInTheDocument();
+  });
+});
+
+describe("estimated distance", () => {
+  const long = fixture.sessions.find(
+    (s) => s.kind === "long" && !s.indoor && s.status === "planned" && s.date > TODAY,
+  );
+  if (!long) throw new Error("no outdoor long ride after today");
+
+  /** Two hours at 22 km/h, outdoors, on `day`. */
+  function outdoorRide(id: string, day: string): Ride {
+    return {
+      id,
+      strava_id: Number(id.slice(2)),
+      name: "Morning ride",
+      sport_type: "Ride",
+      start_local: `${day}T09:00:00`,
+      start_at: `${day}T08:00:00Z`,
+      distance_m: 44_000,
+      moving_time_s: 7200,
+      elevation_m: 200,
+      commute: false,
+      trainer: false,
+      average_watts: 160,
+      max_watts: null,
+      average_heartrate: null,
+      max_heartrate: null,
+      average_cadence: null,
+      polyline: null,
+    };
+  }
+
+  beforeEach(() => {
+    vi.mocked(ridesApi.fetchRides).mockResolvedValue([
+      outdoorRide("r-1", "2026-10-20"),
+      outdoorRide("r-2", "2026-10-13"),
+      outdoorRide("r-3", "2026-10-06"),
+    ]);
+  });
+
+  it("shows the estimated distance of an outdoor session and how it is estimated", async () => {
+    renderPage(`/plan/session/${long.id}`);
+    await screen.findByRole("heading", { name: long.title });
+    const km = Math.round((22 * long.durationMin) / 60);
+    expect(await screen.findByText(new RegExp(`about ${String(km)} km`))).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Distance estimated from your outdoor rides of the last 3 months: about 22 km\/h/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("adds up the week", async () => {
+    renderPage(`/plan?week=${String(long.week)}`);
+    await screen.findByRole("heading", { name: new RegExp(`^Week ${String(long.week)} of`) });
+    expect(await screen.findByText(/· about \d+ km/)).toBeInTheDocument();
+  });
+
+  it("shows no distance without rides", async () => {
+    vi.mocked(ridesApi.fetchRides).mockResolvedValue([]);
+    renderPage(`/plan/session/${long.id}`);
+    await screen.findByRole("heading", { name: long.title });
+    expect(screen.queryByText(/about \d+ km/)).not.toBeInTheDocument();
   });
 });

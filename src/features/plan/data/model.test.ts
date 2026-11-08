@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { Step } from "../engine";
 import {
+  firstDayOf,
   formatDuration,
   formatLongDate,
   heartRateText,
   isHard,
+  isStableRide,
   mainSetLine,
   moveOptions,
   moveWarnings,
@@ -13,6 +15,7 @@ import {
   placeOf,
   spokenDuration,
   stepGroups,
+  stravaTitle,
   todayCard,
   weekDays,
   weekNumberOf,
@@ -86,6 +89,31 @@ describe("the days of a week", () => {
     expect(days.find((d) => d.isToday)?.date).toBe(TODAY);
     expect(days[0]?.trainingDay).toBe(false);
     expect(days[1]?.trainingDay).toBe(true);
+  });
+});
+
+describe("the first day of a plan", () => {
+  const stored = { ...plan, startDate: "2026-11-02", intake: plan.intake };
+  it("is the intake's start date when it falls in week 1", () => {
+    if (!stored.intake) throw new Error("no intake");
+    const intake = stored.intake;
+    expect(firstDayOf({ ...stored, intake: { ...intake, startDate: "2026-11-06" } })).toBe(
+      "2026-11-06",
+    );
+    expect(firstDayOf({ ...stored, intake: { ...intake, startDate: "2026-11-02" } })).toBe(
+      "2026-11-02",
+    );
+  });
+  it("is the Monday of week 1 otherwise", () => {
+    if (!stored.intake) throw new Error("no intake");
+    const intake = stored.intake;
+    expect(firstDayOf({ ...stored, intake: { ...intake, startDate: "2026-10-28" } })).toBe(
+      "2026-11-02",
+    );
+    expect(firstDayOf({ ...stored, intake: { ...intake, startDate: "2026-11-09" } })).toBe(
+      "2026-11-02",
+    );
+    expect(firstDayOf({ ...stored, intake: null })).toBe("2026-11-02");
   });
 });
 
@@ -292,5 +320,67 @@ describe("the weight trend", () => {
   it("has no pace with less than a week of data and nothing without weigh-ins", () => {
     expect(currentWeight([{ date: "2026-10-28", kg: 78 }], "2026-10-28")?.perWeek).toBeNull();
     expect(currentWeight([], "2026-10-28")).toBeNull();
+  });
+});
+
+describe("the title to paste into Strava", () => {
+  const step = (kind: Step["kind"], zone: number | null): Step => ({
+    kind,
+    label: kind,
+    durationSec: 8100,
+    durationMin: 135,
+    target: {
+      percentFtp: 65,
+      minPercent: 56,
+      maxPercent: 75,
+      watts: { target: null, min: 140, max: 187 },
+      powerZone: zone,
+      exact: false,
+    },
+    heartRate: null,
+    powerLeads: false,
+    cadence: null,
+  });
+
+  it("writes a stable ride as its zone, effort and minutes", () => {
+    const ride = {
+      title: "Steady endurance",
+      kind: "endurance" as const,
+      steps: [step("easy", 2)],
+    };
+    expect(stravaTitle({ ...ride, durationMin: 135 })).toBe("Z2 · Endurance 135 min");
+    expect(isStableRide({ kind: "long", steps: [step("easy", 2)] })).toBe(true);
+    expect(isStableRide({ kind: "recovery", steps: [step("easy", 1)] })).toBe(true);
+  });
+
+  it("keeps the plan title of a targeted ride", () => {
+    const targeted = {
+      title: "Sweet spot 3 x 15 min",
+      kind: "sweet-spot" as const,
+      steps: [step("work", 4)],
+      durationMin: 90,
+    };
+    expect(stravaTitle(targeted)).toBe("Sweet spot 3 x 15 min");
+    expect(isStableRide(targeted)).toBe(false);
+  });
+
+  it("keeps the plan title of a long ride with tempo blocks", () => {
+    const blocks = {
+      title: "Long ride with tempo blocks 3 x 10 min",
+      kind: "long" as const,
+      steps: [step("easy", 2), step("work", 3)],
+      durationMin: 150,
+    };
+    expect(stravaTitle(blocks)).toBe("Long ride with tempo blocks 3 x 10 min");
+  });
+
+  it("falls back to the plan title when there is no zone to name", () => {
+    const ride = {
+      title: "Endurance ride",
+      kind: "endurance" as const,
+      steps: [],
+      durationMin: 60,
+    };
+    expect(stravaTitle(ride)).toBe("Endurance ride 60 min");
   });
 });

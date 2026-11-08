@@ -29,6 +29,7 @@ import type {
 } from "../adapt";
 import { evaluatePlan } from "../adapt";
 import { phaseToDb } from "../data/mapping";
+import { firstDayOf } from "../data/model";
 import type { StoredPhase } from "../data/types";
 import type { Warning } from "../engine";
 import type { ChangePayload, PlanChange } from "./changes";
@@ -320,7 +321,7 @@ export function createRunner(api: RunnerApi): Runner {
           const skeleton = before
             ? () =>
                 buildPlan({
-                  intake: { ...before, startDate: inputs.plan.startDate },
+                  intake: { ...before, startDate: firstDayOf(inputs.plan) },
                   today: inputs.plan.startDate,
                   ftp: change.payload.before.ftp,
                   lthr: inputs.baseline.lthr,

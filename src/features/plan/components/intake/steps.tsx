@@ -385,8 +385,8 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
 // ---- step 4: start and event ---------------------------------------------------------------------------
 
 export function StartStep({ draft, change, errors, ctx }: StepProps) {
-  const next = effectiveStart({ ...draft, startChoice: "next-monday" }, ctx.today);
-  const chosen = effectiveStart(draft, ctx.today);
+  const first = effectiveStart({ ...draft, startChoice: "today" }, ctx.today, ctx.availableDays);
+  const chosen = effectiveStart(draft, ctx.today, ctx.availableDays);
   const moved =
     draft.startChoice === "other" && draft.startDate !== "" && chosen !== draft.startDate;
   return (
@@ -407,14 +407,18 @@ export function StartStep({ draft, change, errors, ctx }: StepProps) {
           <ChoiceRow
             type="radio"
             name="start"
-            value="next-monday"
-            checked={draft.startChoice === "next-monday"}
-            note="Plans run Monday to Sunday"
+            value="today"
+            checked={draft.startChoice === "today"}
+            note={
+              first === ctx.today
+                ? "Today. Rides are planned on your training days from today."
+                : "No training day is left this week, so the plan starts next Monday."
+            }
             onChange={() => {
-              change({ startChoice: "next-monday" });
+              change({ startChoice: "today" });
             }}
           >
-            {formatLongDate(next)}
+            {formatLongDate(first)}
           </ChoiceRow>
           <ChoiceRow
             type="radio"
@@ -436,8 +440,8 @@ export function StartStep({ draft, change, errors, ctx }: StepProps) {
                 error={errors.startDate}
                 helper={
                   moved
-                    ? `Plans run Monday to Sunday, so this plan starts on ${formatLongDate(chosen)}.`
-                    : "Plans run Monday to Sunday."
+                    ? `No training day is left in that week, so this plan starts on ${formatLongDate(chosen)}.`
+                    : "Rides are planned on your training days from this date."
                 }
                 onChange={(e) => {
                   change({ startDate: e.target.value });

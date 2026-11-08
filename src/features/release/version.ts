@@ -1,4 +1,4 @@
-/** The running app version, from package.json at build time (vite.config.ts). */
+/** The running app version: the newest release at build time (`app-version.ts`, vite.config.ts). */
 export const APP_VERSION: string = __APP_VERSION__;
 
 function parse(version: string): [number, number, number] | null {

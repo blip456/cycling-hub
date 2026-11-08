@@ -4,6 +4,7 @@ import { assumptionLines } from "./assumptions";
 import {
   draftFromProfile,
   EMPTY_DRAFT,
+  effectiveStart,
   engineInput,
   firstInvalidStep,
   goalOf,
@@ -125,7 +126,8 @@ describe("step 4: start and event", () => {
     const base = { ...COMPLETE, hasEvent: true };
     expect(validateStep(4, base, CTX).eventDate).toBe("Enter the event date.");
     expect(validateStep(4, { ...base, eventDate: TODAY }, CTX).eventDate).toMatch(/in the past/);
-    expect(validateStep(4, { ...base, eventDate: "2026-10-30" }, CTX).eventDate).toMatch(
+    const later = { ...base, startChoice: "other" as const, startDate: "2026-11-04" };
+    expect(validateStep(4, { ...later, eventDate: "2026-11-01" }, CTX).eventDate).toMatch(
       /before the plan starts/,
     );
     expect(validateStep(4, { ...base, eventDate: "2026-12-19" }, CTX)).toEqual({});
@@ -252,7 +254,16 @@ describe("the engine input", () => {
     const plan = buildPlan(input);
     expect(plan.status).toBe("ok");
     expect(plan.weeks).toHaveLength(12);
-    expect(plan.startDate).toBe("2026-11-02");
+    expect(plan.startDate).toBe("2026-10-26");
+    expect(plan.firstDay).toBe(TODAY);
+    expect(input.intake.startDate).toBe(TODAY);
+  });
+
+  it("starts on the chosen date, or the next Monday when no training day is left in its week", () => {
+    const chosen = { ...COMPLETE, startChoice: "other" as const, startDate: "2026-10-30" };
+    expect(effectiveStart(chosen, TODAY, CTX.availableDays)).toBe("2026-10-30");
+    expect(effectiveStart(chosen, TODAY, ["mon", "wed"])).toBe("2026-11-02");
+    expect(effectiveStart(COMPLETE, TODAY, CTX.availableDays)).toBe(TODAY);
   });
 });
 
