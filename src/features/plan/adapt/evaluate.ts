@@ -21,6 +21,7 @@ import {
   type Warning,
 } from "../engine";
 import { between, dayLabel, plus } from "./dates";
+import { effectiveness, struggledStructured, type EffectivenessReport } from "./effectiveness";
 import { hashText } from "./hash";
 import { matchRides } from "./match";
 import {
@@ -92,6 +93,12 @@ export type EvaluateInput = {
    * "plan-edited" ("you edited your plan") instead of a guess from what differs.
    */
   edited?: boolean;
+  /**
+   * True when the PO asked to re-plan: the fingerprint shortcuts ("unchanged", "pinned") are skipped and the
+   * future is rebuilt with the engine as it is now. Sessions that change without another cause are given the
+   * reason "replanned".
+   */
+  force?: boolean;
 };
 
 export type EvaluateOutcome =
@@ -134,11 +141,14 @@ export type EvaluateResult = {
   /** Set after 21 days without a ride: the plan is not changed, the notice offers a new plan. */
   inactivity: { days: number; message: string } | null;
   warnings: Warning[];
+  /** How the plan works for the rides so far (signals for the Overview). */
+  effectiveness: EffectivenessReport;
 };
 
 const REASON_PRIORITY: readonly ChangeReason[] = [
   "missed-session",
   "extra-ride",
+  "ride-feedback",
   "ramp-back",
   "weight-faster-than-cap",
   "weight-stalled",
@@ -147,6 +157,7 @@ const REASON_PRIORITY: readonly ChangeReason[] = [
   "event-changed",
   "new-ftp",
   "new-heart-rate-zones",
+  "replanned",
   "settings-changed",
 ];
 
@@ -229,6 +240,10 @@ function noticeMessage(input: {
           ? `your ${Math.round(input.extraRide.ride.movingMinutes)}-minute ride on ${dayLabel(input.extraRide.ride.date)} counts as this week's long ride`
           : `of your ${Math.round(input.extraRide.ride.movingMinutes)}-minute ride on ${dayLabel(input.extraRide.ride.date)}`
       }.`;
+    case "ride-feedback":
+      return `${plural(count)} changed because a hard session was cut short, so that build waits one step.`;
+    case "replanned":
+      return `${plural(count)} changed because the plan was recalculated with the current engine.`;
     case "ramp-back":
       return `${plural(count)} changed to ease you back in after a week without riding.`;
     case "weight-faster-than-cap":
@@ -275,6 +290,7 @@ type Pass = {
   noPower: NoPowerWarning | null;
   blocked: boolean;
   warnings: Warning[];
+  effectiveness: EffectivenessReport;
   missedList: Missed[];
   noSecond: number[];
   make: (adjustments: PlanAdjustments) => PlanInput;
@@ -314,6 +330,13 @@ function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass
     noPower,
     warnings: skeleton.warnings,
     inactivity: null,
+    effectiveness: effectiveness({
+      plan: skeleton,
+      sessions: current,
+      rides: input.rides,
+      ftp,
+      today,
+    }),
     weight: null,
     weekNumber: undefined,
     missedList: [] as Missed[],
@@ -364,6 +387,13 @@ function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass
 
   // The adjustments and the rebuilt future settle together (a move changes what counts as missed, an
   // overload depends on the plan's own weekly minutes).
+  const struggled = struggledStructured({
+    plan: skeleton,
+    sessions: current,
+    rides: input.rides,
+    ftp,
+    today,
+  });
   let noSecond: number[] = [];
   let moved = new Set<IsoDate>();
   let adjustments: PlanAdjustments = base;
@@ -374,6 +404,7 @@ function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass
     missedList = missedStructured(current, moved);
     adjustments = {
       ...base,
+      ...(struggled.length > 0 ? { struggledStructured: struggled } : {}),
       ...(weightRaw && weightRaw.holdWeeks.length > 0 ? { holdWeeks: weightRaw.holdWeeks } : {}),
       ...(weightRaw && weightRaw.extraEasyRideWeeks.length > 0
         ? { extraEasyRideWeeks: weightRaw.extraEasyRideWeeks }
@@ -438,6 +469,7 @@ function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass
     missedList,
     noSecond,
     inactivity,
+    effectiveness: effectiveness({ plan, sessions: current, rides: input.rides, ftp, today }),
     fingerprint,
     weekNumber: thisWeek?.number,
     weight:
@@ -475,6 +507,7 @@ export function evaluatePlan(input: EvaluateInput): EvaluateResult {
     weight: state.weight,
     inactivity: state.inactivity,
     warnings: state.plan.warnings.length > 0 ? state.plan.warnings : state.warnings,
+    effectiveness: state.effectiveness,
     fingerprint: state.fingerprint,
   });
   const quiet = {
@@ -491,7 +524,8 @@ export function evaluatePlan(input: EvaluateInput): EvaluateResult {
       undoneFingerprint: input.undoneFingerprint,
     };
   }
-  if (input.lastFingerprint === first.fingerprint) {
+  const forced = input.force === true;
+  if (!forced && input.lastFingerprint === first.fingerprint) {
     return {
       ...common(first),
       ...quiet,
@@ -500,7 +534,7 @@ export function evaluatePlan(input: EvaluateInput): EvaluateResult {
       undoneFingerprint: input.undoneFingerprint === first.fingerprint ? first.fingerprint : null,
     };
   }
-  if (input.undoneFingerprint === first.fingerprint) {
+  if (!forced && input.undoneFingerprint === first.fingerprint) {
     return {
       ...common(first),
       ...quiet,
@@ -619,10 +653,11 @@ function withUpdate(
     (previous.maxHr !== undefined && (previous.maxHr ?? null) !== (profileInput.maxHr ?? null));
 
   // Which dates does each adjustment move? Rebuild without it and compare: the rigorous way to name a cause.
-  type Owner = "missed" | "overload" | "hold" | "extra";
+  type Owner = "missed" | "struggled" | "overload" | "hold" | "extra";
   const owners = new Map<IsoDate, Owner>();
   const groups: [Owner, keyof PlanAdjustments][] = [
     ["missed", "missedStructured"],
+    ["struggled", "struggledStructured"],
     ["overload", "noSecondHardWeeks"],
     ["hold", "holdWeeks"],
     ["extra", "extraEasyRideWeeks"],
@@ -674,6 +709,15 @@ function withUpdate(
             : "Your weight trend has been flat for 3 weeks, so one easy ride is added and the week is trimmed to stay within its limits.",
       };
     }
+    if (owner === "struggled") {
+      return {
+        code: "ride-feedback",
+        reason:
+          kind !== undefined && STRUCTURED_KINDS.includes(kind)
+            ? `Your last ${kindWords(kind)} session was cut short, so the build of this ${kindWords(kind)} stays one step behind.`
+            : "A hard session was cut short, so the build stays one step behind.",
+      };
+    }
     if (owner === "missed") {
       return {
         code: "missed-session",
@@ -714,6 +758,12 @@ function withUpdate(
       return {
         code: "plan-edited",
         reason: "You edited your plan, so this session was recalculated.",
+      };
+    }
+    if (input.force === true) {
+      return {
+        code: "replanned",
+        reason: "You asked to re-plan, so this session was recalculated with the current engine.",
       };
     }
     return {

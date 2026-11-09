@@ -118,6 +118,11 @@ export type PlanAdjustments = {
   noSecondHardWeeks?: readonly number[];
   /** Structured sessions that were missed or skipped: that week does not count for the ladder step. */
   missedStructured?: readonly { week: number; kind: SessionKind }[];
+  /**
+   * Structured sessions that were ridden but cut short (well under the planned time): the ladder step is
+   * repeated, like a missed session, because the PO could not finish the work (ride feedback).
+   */
+  struggledStructured?: readonly { week: number; kind: SessionKind }[];
 };
 
 /** Everything `buildPlan` needs. `today` is the only clock (Brussels date). */
@@ -275,6 +280,10 @@ export const CHANGE_REASONS = [
   "event-changed",
   /** The PO edited the plan's answers (the intake questions) and saved. */
   "plan-edited",
+  /** The PO asked to re-plan: the future sessions were recalculated with the current engine. */
+  "replanned",
+  /** A ridden session was cut short, so the build of that type waits a step (ride feedback). */
+  "ride-feedback",
 ] as const;
 export type ChangeReason = (typeof CHANGE_REASONS)[number];
 

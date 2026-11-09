@@ -21,6 +21,7 @@ import { buildPlan, type Intake, type Plan } from "../engine";
 import type { IsoDate } from "@/features/athlete";
 import type {
   AdaptationUpdate,
+  EffectivenessReport,
   EvaluateOutcome,
   NoPowerWarning,
   PlanDiff,
@@ -73,6 +74,8 @@ export type AdaptationView = {
   extraRides: number;
   /** Ride id to the session id it counts for, after matching. */
   matches: Record<string, string>;
+  /** How the plan works for the rides so far. */
+  effectiveness: EffectivenessReport;
 };
 
 export type RunResult =
@@ -107,6 +110,11 @@ export type RunOptions = {
    * profile laid over it; the result is marked as an edit and the intake is stored even when no session changes.
    */
   edit?: Intake;
+  /**
+   * Re-plan now: evaluate even when the inputs have not changed, so the future sessions are rebuilt with the
+   * engine as it is today. Like an edit, it is queued by itself.
+   */
+  replan?: boolean;
 };
 
 export type UndoResult =
@@ -165,11 +173,11 @@ export function createRunner(api: RunnerApi): Runner {
     return next;
   }
 
-  async function once(today: IsoDate, edit?: Intake): Promise<RunResult> {
+  async function once(today: IsoDate, edit?: Intake, replan?: boolean): Promise<RunResult> {
     try {
       const inputs = await api.load();
       if (!inputs) return { status: "no-plan" };
-      const evaluation = buildEvaluateInput(inputs, today, edit);
+      const evaluation = buildEvaluateInput(inputs, today, edit, replan);
       if (!evaluation) return { status: "no-plan" };
       const { input, profileInput } = evaluation;
       const result = evaluatePlan(input);
@@ -181,6 +189,7 @@ export function createRunner(api: RunnerApi): Runner {
         inactivity: result.inactivity,
         extraRides: result.extraRides.length,
         matches: Object.fromEntries(result.matches.map((m) => [m.rideId, m.sessionId])),
+        effectiveness: result.effectiveness,
       };
 
       if (result.statusUpdates.length > 0) await api.writeStatuses(result.statusUpdates);
@@ -279,6 +288,7 @@ export function createRunner(api: RunnerApi): Runner {
     run(today, options) {
       const edit = options?.edit;
       if (edit) return enqueue(() => once(today, edit));
+      if (options?.replan) return enqueue(() => once(today, undefined, true));
       if (waiting) return waiting.promise;
       const slot: { today: IsoDate; promise: Promise<RunResult> } = {
         today,

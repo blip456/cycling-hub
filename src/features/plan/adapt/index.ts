@@ -8,6 +8,14 @@ export type {
   PreviousInputs,
 } from "./evaluate";
 export { INACTIVE_DAYS, OVERLOAD_FACTOR } from "./evaluate";
+export { effectiveness, struggledStructured } from "./effectiveness";
+export type {
+  EffectivenessReport,
+  Signal,
+  SignalTone,
+  SessionEffect,
+  WeekEffect,
+} from "./effectiveness";
 export { isIgnoredRide, matchRides, plannedPercentFtp } from "./match";
 export { applyStatuses, markStatuses } from "./status";
 export { noPowerWarning, NO_POWER_MIN_SESSIONS, NO_POWER_WINDOW_DAYS } from "./no-power";

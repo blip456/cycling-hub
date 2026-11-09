@@ -170,7 +170,11 @@ export function buildPlan(input: PlanInput): Plan {
   const holdWeeks = new Set(adjustments.holdWeeks ?? []);
   const noSecond = new Set(adjustments.noSecondHardWeeks ?? []);
   const extraEasy = new Set(adjustments.extraEasyRideWeeks ?? []);
-  const missed = new Set((adjustments.missedStructured ?? []).map((m) => `${m.week}:${m.kind}`));
+  const missed = new Set(
+    [...(adjustments.missedStructured ?? []), ...(adjustments.struggledStructured ?? [])].map(
+      (m) => `${m.week}:${m.kind}`,
+    ),
+  );
   const ftpTest = intake.ftpTest ?? "twenty-minute";
   const eventDate = structure.event?.date ?? null;
   const openersDate =

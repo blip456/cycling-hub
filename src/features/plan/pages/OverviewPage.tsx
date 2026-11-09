@@ -20,6 +20,7 @@ import {
   type StoredPlan,
   type WeekSummary,
 } from "../data";
+import { FeedbackCard } from "../adaptation/FeedbackCard";
 import { EventCard } from "../adaptation/ReasonCards";
 import { NoPlanState } from "../components/NoPlan";
 import { GRID_QUERY, usePlanLoadErrorCard, useToday } from "../components/page-hooks";
@@ -316,6 +317,7 @@ export function OverviewPage() {
         </p>
       </div>
       {!desktop ? <EventCard plan={plan} sessions={sessions} weeks={weeks} today={today} /> : null}
+      <FeedbackCard />
       <div
         className={
           desktop ? "grid grid-cols-[minmax(0,1fr)_18rem] items-start gap-6" : "flex flex-col gap-5"

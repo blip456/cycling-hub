@@ -199,6 +199,7 @@ describe("No power data (R7, R7b)", () => {
     inactivity: null,
     extraRides: 0,
     matches: {},
+    effectiveness: { sessions: [], weeks: [], signals: [] },
   });
 
   it("shows the card with the count and How to fix, and Not now hides it until the count changes", async () => {
