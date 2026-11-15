@@ -1,7 +1,14 @@
-import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
+import { SuggestionHint } from "@/components/SuggestionHint";
 import { Button, TextField } from "@/components/ui";
+import { useHistoryRides } from "@/features/plan/adaptation/use-history";
 import { HISTORY_WEEKS, LEVEL_SETTINGS, SETTING_LIMITS, ZONE2 } from "@/features/plan/engine";
-import type { HistoryStat, IntensityBalance } from "@/features/plan/engine";
+import {
+  suggestMaxLongRide,
+  suggestMaxWeeklyHours,
+  type HistoryStat,
+  type IntensityBalance,
+} from "@/features/plan/engine";
 import {
   DEFAULT_HISTORY_STAT,
   DEFAULT_INTENSITY_BALANCE,
@@ -144,6 +151,15 @@ function TrainingForm({
   const longRideRef = useRef<HTMLInputElement>(null);
   const hoursRef = useRef<HTMLInputElement>(null);
   const { mutate, isPending } = useSaveProfileSection();
+  const rideHistory = useHistoryRides();
+  const suggestedLongRide = useMemo(
+    () => suggestMaxLongRide(rideHistory.rides, rideHistory.today),
+    [rideHistory.rides, rideHistory.today],
+  );
+  const suggestedHours = useMemo(
+    () => suggestMaxWeeklyHours(rideHistory.rides, rideHistory.today),
+    [rideHistory.rides, rideHistory.today],
+  );
   const clearError = (field: Field) => {
     setErrors((current) =>
       Object.fromEntries(Object.entries(current).filter(([key]) => key !== field)),
@@ -245,6 +261,21 @@ function TrainingForm({
         autoComplete="off"
         trailing={<Suffix>min</Suffix>}
       />
+      {suggestedLongRide ? (
+        <SuggestionHint
+          id="suggestedLongRide-suggestion"
+          {...(longRide.trim() !== String(suggestedLongRide.value)
+            ? {
+                actionLabel: `Use ${String(suggestedLongRide.value)} min`,
+                onUse: () => {
+                  setLongRide(String(suggestedLongRide.value));
+                },
+              }
+            : {})}
+        >
+          From your rides: {suggestedLongRide.note}.
+        </SuggestionHint>
+      ) : null}
       <ResetButton
         field="Longest long ride"
         atDefault={longRide.trim() === ""}
@@ -257,7 +288,7 @@ function TrainingForm({
       <TextField
         ref={hoursRef}
         label="Most hours in a week"
-        helper={`The most your average hours per week can be, from ${String(SETTING_LIMITS.maxHoursPerWeek.min)} to ${String(SETTING_LIMITS.maxHoursPerWeek.max)}. Half hours are fine. Leave empty for ${limits ? `your level's limit (${hoursText(limits.hours)} h)` : "the limit of your level"}.`}
+        helper={`The most the plan schedules in a week, from ${String(SETTING_LIMITS.maxHoursPerWeek.min)} to ${String(SETTING_LIMITS.maxHoursPerWeek.max)}. Half hours are fine. Leave empty for ${limits ? `your level's limit (${hoursText(limits.hours)} h)` : "the limit of your level"}.`}
         error={errors.hours}
         value={hours}
         onChange={(e) => {
@@ -267,6 +298,21 @@ function TrainingForm({
         autoComplete="off"
         trailing={<Suffix>h</Suffix>}
       />
+      {suggestedHours ? (
+        <SuggestionHint
+          id="suggestedHours-suggestion"
+          {...(hours.trim() !== String(suggestedHours.value)
+            ? {
+                actionLabel: `Use ${String(suggestedHours.value)} h`,
+                onUse: () => {
+                  setHours(String(suggestedHours.value));
+                },
+              }
+            : {})}
+        >
+          From your rides: {suggestedHours.note}.
+        </SuggestionHint>
+      ) : null}
       <ResetButton
         field="Most hours in a week"
         atDefault={hours.trim() === ""}

@@ -345,7 +345,7 @@ describe("Profile: what the plan adds (R1, R1b)", () => {
     });
   });
 
-  describe("level question about hours (L2)", () => {
+  describe("suggestions from the rides", () => {
     /** One ride of `hours` hours on the Wednesday of each of the 13 complete weeks before this one. */
     function weeklyRides(hours: number): Ride[] {
       const now = new Date();
@@ -384,8 +384,35 @@ describe("Profile: what the plan adds (R1, R1b)", () => {
       await user.click(await screen.findByRole("radio", { name: "8 to 11" }));
       expect(screen.getByRole("radio", { name: "8 to 11" })).toBeChecked();
       expect(
-        screen.getByText("Your rides show about 6 h a week over the last 3 months."),
+        screen.getByText("From your rides: about 6 h a week over the last 3 months."),
       ).toBeInTheDocument();
+    });
+
+    it("suggests the hours you want to train and takes them over on request", async () => {
+      vi.mocked(fetchRides).mockResolvedValue(weeklyRides(5));
+      const user = userEvent.setup();
+      renderPage();
+      await user.click(await screen.findByRole("button", { name: "Edit Training week" }));
+      expect(
+        await screen.findByText("From your rides: about 5 h a week over the last 24 weeks."),
+      ).toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: "Use 5 h" }));
+      expect(screen.getByLabelText("Hours you want to train per week")).toHaveValue("5");
+      expect(screen.queryByRole("button", { name: "Use 5 h" })).not.toBeInTheDocument();
+    });
+
+    it("suggests the most hours and the longest long ride without filling them in", async () => {
+      vi.mocked(fetchRides).mockResolvedValue(weeklyRides(5));
+      const user = userEvent.setup();
+      renderPage();
+      await user.click(await screen.findByRole("button", { name: "Change training settings" }));
+      const hours = screen.getByLabelText("Most hours in a week");
+      expect(hours).toHaveValue("");
+      await user.click(await screen.findByRole("button", { name: "Use 5 h" }));
+      expect(hours).toHaveValue("5");
+      expect(screen.getByLabelText("Longest long ride")).toHaveValue("");
+      await user.click(screen.getByRole("button", { name: "Use 300 min" }));
+      expect(screen.getByLabelText("Longest long ride")).toHaveValue("300");
     });
 
     it("keeps a saved answer and leaves the question open without rides", async () => {

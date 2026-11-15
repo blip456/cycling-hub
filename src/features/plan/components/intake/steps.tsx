@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { TextField } from "@/components/ui";
-import type { Purpose } from "../../engine";
+import { suggestionText, type Purpose } from "../../engine";
 import {
   EVENT_DURATION_OPTIONS,
   formatDuration,
@@ -21,6 +21,7 @@ import { RIDING_ENVIRONMENTS } from "../../schemas";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import { ChoiceRow } from "../parts";
 import { linkClass } from "@/components/button-class";
+import { SuggestionHint } from "@/components/SuggestionHint";
 
 export type StepProps = {
   draft: IntakeDraft;
@@ -244,23 +245,19 @@ export function PurposesStep({
 
 // ---- step 2: level ---------------------------------------------------------------------------------
 
-/** Index of the hours question (L2) in the level questions. */
-const HOURS_QUESTION = 1;
-
 export function LevelStep({ draft, change, errors, ctx }: StepProps) {
-  const suggested = ctx.suggestedHours;
-  const prefilled = useRef(false);
-  const touched = useRef(false);
+  const suggestions = ctx.levelSuggestions;
+  const touched = useRef(new Set<number>());
 
-  // L2 starts from the rides of the last 3 months, once, and only while the question is still open.
+  // Open questions start from the rides of the last 3 months, once each, and only until the PO answers.
   useEffect(() => {
-    if (prefilled.current || touched.current || !suggested) return;
-    if (draft.answers[HOURS_QUESTION] !== null) return;
-    prefilled.current = true;
-    change({
-      answers: draft.answers.map((a, i) => (i === HOURS_QUESTION ? suggested.answer : a)),
+    if (!suggestions) return;
+    const next = draft.answers.map((a, i) => {
+      const suggestion = suggestions[i];
+      return a === null && suggestion && !touched.current.has(i) ? suggestion.answer : a;
     });
-  }, [suggested, draft.answers, change]);
+    if (next.some((a, i) => a !== draft.answers[i])) change({ answers: next });
+  }, [suggestions, draft.answers, change]);
 
   return (
     <div>
@@ -272,7 +269,8 @@ export function LevelStep({ draft, change, errors, ctx }: StepProps) {
         {LEVEL_QUESTIONS.map((q, qi) => {
           const key = `answer${String(qi)}` as "answer0";
           const error = errors[key];
-          const hint = qi === HOURS_QUESTION && suggested ? `${key}-hint` : undefined;
+          const suggestion = suggestions?.[qi];
+          const hint = suggestion ? `${key}-hint` : undefined;
           return (
             <Fieldset
               key={q.question}
@@ -289,21 +287,16 @@ export function LevelStep({ draft, change, errors, ctx }: StepProps) {
                   invalid={error !== undefined && ai === 0}
                   describedBy={error ? `${key}-error` : undefined}
                   onChange={() => {
-                    if (qi === HOURS_QUESTION) touched.current = true;
+                    touched.current.add(qi);
                     change({ answers: draft.answers.map((a, i) => (i === qi ? ai : a)) });
                   }}
                 >
                   {answer}
                 </ChoiceRow>
               ))}
-              {hint && suggested ? (
+              {hint && suggestion ? (
                 <p id={hint} className="mt-1.5 text-caption text-muted">
-                  {draft.answers[qi] === suggested.answer
-                    ? "Filled in from your rides: "
-                    : "Your rides show "}
-                  about {String(Math.round(suggested.hours * 10) / 10)} h a week over the last 3
-                  months.
-                  {draft.answers[qi] === suggested.answer ? " Change it if that is not right." : ""}
+                  {suggestionText(suggestion.note, draft.answers[qi] === suggestion.answer)}
                 </p>
               ) : null}
               {error ? <FieldError id={`${key}-error`}>{error}</FieldError> : null}
@@ -347,6 +340,21 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
         }}
         trailing={<span className="pr-3.5 text-body text-muted">h</span>}
       />
+      {ctx.suggestedTargetHours ? (
+        <SuggestionHint
+          id="hours-suggestion"
+          {...(draft.hours.trim() !== String(ctx.suggestedTargetHours.value)
+            ? {
+                actionLabel: `Use ${String(ctx.suggestedTargetHours.value)} h`,
+                onUse: () => {
+                  change({ hours: String(ctx.suggestedTargetHours?.value ?? "") });
+                },
+              }
+            : {})}
+        >
+          From your rides: {ctx.suggestedTargetHours.note}.
+        </SuggestionHint>
+      ) : null}
       {perSession !== null && days > 0 ? (
         <p role="status" className="-mt-3 text-caption text-muted">
           With {days} training {days === 1 ? "day" : "days"} that is about{" "}

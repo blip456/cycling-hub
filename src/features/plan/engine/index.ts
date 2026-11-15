@@ -5,6 +5,7 @@ export * from "./calendar";
 export * from "./constants";
 export * from "./fingerprint";
 export * from "./history";
+export * from "./suggestions";
 export * from "./level";
 export * from "./library";
 export * from "./mix";
