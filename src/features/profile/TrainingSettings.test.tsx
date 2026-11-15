@@ -70,7 +70,8 @@ describe("Profile: training settings (P96 to P98)", () => {
     expect(within(card).getByText("270 min")).toBeInTheDocument();
     expect(within(card).getByText("10 h")).toBeInTheDocument();
     expect(within(card).getAllByText("Set by your level")).toHaveLength(2);
-    expect(within(card).getByText("Average of the last 24 weeks")).toBeInTheDocument();
+    expect(within(card).getByText("Average")).toBeInTheDocument();
+    expect(within(card).getByText("Of the last 24 weeks")).toBeInTheDocument();
   });
 
   it("explains the fields with a visible label and helper text, and no example values", async () => {
@@ -115,7 +116,8 @@ describe("Profile: training settings (P96 to P98)", () => {
     const card = await region();
     expect(await within(card).findByText("70 % of FTP")).toBeInTheDocument();
     expect(within(card).getByText("12.5 h")).toBeInTheDocument();
-    expect(within(card).getByText("Average of the last 24 weeks")).toBeInTheDocument();
+    expect(within(card).getByText("Average")).toBeInTheDocument();
+    expect(within(card).getByText("Of the last 24 weeks")).toBeInTheDocument();
   });
 
   it("keeps Zone 2 target inside the band and says how to fix it", async () => {
