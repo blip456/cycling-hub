@@ -29,7 +29,7 @@ import {
   type RidingEnvironment,
   type TrainingPurpose,
 } from "../schemas";
-import type { EventDuration } from "../engine";
+import type { EventDuration, LevelSuggestion, NumberSuggestion } from "../engine";
 import type { PlanProfile, WeightGoalRecord } from "./api";
 import { formatLongDate } from "./model";
 
@@ -250,8 +250,10 @@ export type IntakeContext = {
   availableDays: readonly Weekday[];
   /** Environment of the profile; null when it is not set (the intake asks). */
   profileEnvironment: RidingEnvironment | null;
-  /** What the rides of the last 3 months suggest for level question L2; undefined without enough rides. */
-  suggestedHours?: { answer: 0 | 1 | 2 | 3; hours: number };
+  /** What the rides suggest for the five level questions (undefined where they say too little). */
+  levelSuggestions?: readonly (LevelSuggestion | undefined)[];
+  /** What the rides suggest for the hours the PO wants to train per week. */
+  suggestedTargetHours?: NumberSuggestion;
   /**
    * Set when an existing plan is edited: the plan keeps this start date (its first day), so the start
    * question is not asked and an event has to fit between this date and the end of the plan's twelfth week.

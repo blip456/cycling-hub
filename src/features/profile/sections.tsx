@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
+import { SuggestionHint } from "@/components/SuggestionHint";
 import { TextField } from "@/components/ui";
+import { useHistoryRides } from "@/features/plan/adaptation/use-history";
+import { suggestTargetHours } from "@/features/plan/engine";
 import { Checkbox } from "@/features/rides/list/controls";
 import { LIMITS, profileSchema, WEEKDAYS, type Weekday } from "@/features/athlete";
 import { planProfileSchema, type RidingEnvironment } from "@/features/plan/schemas";
@@ -170,6 +173,11 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
   const legendRef = useRef<HTMLFieldSetElement>(null);
   const hoursRef = useRef<HTMLInputElement>(null);
   const { mutate, isPending } = useSaveProfileSection();
+  const history = useHistoryRides();
+  const suggestedHours = useMemo(
+    () => suggestTargetHours(history.rides, history.today, history.stat),
+    [history.rides, history.today, history.stat],
+  );
 
   useEffect(() => {
     legendRef.current?.querySelector("input")?.focus();
@@ -255,6 +263,21 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
           </span>
         }
       />
+      {suggestedHours ? (
+        <SuggestionHint
+          id="hours-suggestion"
+          {...(hours.trim() !== String(suggestedHours.value)
+            ? {
+                actionLabel: `Use ${String(suggestedHours.value)} h`,
+                onUse: () => {
+                  setHours(String(suggestedHours.value));
+                },
+              }
+            : {})}
+        >
+          From your rides: {suggestedHours.note}.
+        </SuggestionHint>
+      ) : null}
       <RadioGroup
         legend="Where do you ride?"
         options={ENVIRONMENT_OPTIONS}

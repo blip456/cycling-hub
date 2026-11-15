@@ -356,7 +356,7 @@ describe("step 2: level", () => {
     await choose(user, "How many hours a week did you ride in the last 3 months?", "8 to 11 hours");
     expect(screen.getByRole("radio", { name: "8 to 11 hours" })).toBeChecked();
     expect(
-      screen.getByText("Your rides show about 6 h a week over the last 3 months."),
+      screen.getByText("From your rides: about 6 h a week over the last 3 months."),
     ).toBeInTheDocument();
   });
 
