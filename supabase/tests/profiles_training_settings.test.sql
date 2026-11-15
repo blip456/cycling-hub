@@ -4,12 +4,13 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set search_path = public, extensions;
 
-select plan(20);
+select plan(24);
 
 select has_column('public', 'profiles', 'zone2_target_percent', 'has zone2_target_percent');
 select has_column('public', 'profiles', 'max_long_ride_min', 'has max_long_ride_min');
 select has_column('public', 'profiles', 'max_weekly_hours', 'has max_weekly_hours');
 select has_column('public', 'profiles', 'ride_history_stat', 'has ride_history_stat');
+select has_column('public', 'profiles', 'intensity_balance', 'has intensity_balance');
 
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at)
 values
@@ -79,6 +80,18 @@ select throws_ok(
 select throws_ok(
   $$ update public.profiles set max_weekly_hours = 8.2 where id = '11111111-1111-1111-1111-111111111111' $$,
   '23514', null, 'a weekly maximum that is not whole or half hours is rejected'
+);
+select lives_ok(
+  $$ update public.profiles set intensity_balance = 'balanced' where id = '11111111-1111-1111-1111-111111111111' $$,
+  'the balanced intensity balance is allowed'
+);
+select lives_ok(
+  $$ update public.profiles set intensity_balance = 'high' where id = '11111111-1111-1111-1111-111111111111' $$,
+  'the high intensity balance is allowed'
+);
+select throws_ok(
+  $$ update public.profiles set intensity_balance = 'extreme' where id = '11111111-1111-1111-1111-111111111111' $$,
+  '23514', null, 'an unknown intensity balance is rejected'
 );
 select throws_ok(
   $$ update public.profiles set ride_history_stat = 'mode' where id = '11111111-1111-1111-1111-111111111111' $$,
