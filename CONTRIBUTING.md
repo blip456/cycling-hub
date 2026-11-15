@@ -26,7 +26,12 @@ Branch from `dev` (not `main`) and name the branch `<type>/<description>`:
 | `ci/`       | CI/CD workflows                               | `ci`             |
 
 The description is lower case `a-z` and `0-9`, words joined by single hyphens: `feat/ride-list`,
-`fix/import-timezone`. Rename a branch with `git branch -m <type>/<description>`. The pre-push hook and
+`fix/import-timezone`. Rename a branch with `git branch -m <type>/<description>`.
+
+The description says what the change does, in two to five words: `feat/training-settings`, not
+`feat/changes` or a generated name like `claude/gallant-hamilton-5iu4bh`. Agents rename the branch their
+session suggests before the first push; the script still accepts `claude/*` so a session that cannot be
+renamed is not blocked, but that is the exception and is reported to the PO. The pre-push hook and
 the `Branch name` CI check run `scripts/branch-name.mjs`.
 
 ## Commit messages and PR titles

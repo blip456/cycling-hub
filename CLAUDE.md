@@ -17,7 +17,12 @@ pnpm 10, Node 22. Setup and flows: [README.md](README.md). Rules for changes:
 ## Git
 
 - Branch from `dev`: `<type>/<kebab-case>` with type `feat fix hotfix chore docs refactor test ci`
-  (`scripts/branch-name.mjs`). In a Claude Code session the suggested `claude/*` branch is allowed.
+  (`scripts/branch-name.mjs`).
+- Give every work branch a meaningful name: the type, then two to five words that say what the change does
+  (`feat/training-settings`, `fix/import-timezone`), never a random or generic name (`feat/changes`,
+  `fix/bug`, `claude/gallant-hamilton-5iu4bh`). Rename the branch a Claude Code session suggests with
+  `git branch -m <type>/<description>` before the first push. If the session fixes the branch name and
+  does not allow a rename, say so and ask the PO instead of pushing under the random name.
 - Conventional Commits, scopes from `commitlint.config.js`; the PR title is the changelog line.
 - A pull request is opened only from a work branch into `dev`, the default branch. Never open one into
   `main` or any other branch, and never from `dev` or `main`; `main` is the PO's call.
