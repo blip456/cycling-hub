@@ -112,6 +112,18 @@ describe("the entry points", () => {
     expect(screen.getByRole("button", { name: "Remove plan" })).toBeInTheDocument();
   });
 
+  it("opens the plan changes from the plan options", async () => {
+    const user = setup();
+    renderApp();
+    await user.click(await screen.findByRole("button", { name: /Plan options/ }));
+    expect(screen.getByRole("link", { name: "Plan changes" })).toHaveAttribute(
+      "href",
+      "/plan/changes",
+    );
+    await user.click(screen.getByRole("link", { name: "Plan changes" }));
+    expect(await screen.findByRole("heading", { name: "Plan changes" })).toBeInTheDocument();
+  });
+
   it("offers an Edit plan link in the Overview too", async () => {
     renderApp("/plan/overview");
     expect(await screen.findByRole("link", { name: "Edit plan" })).toHaveAttribute(

@@ -76,7 +76,7 @@ function RemoveDialog({
 }
 
 /**
- * The plan options on the Plan page and the Overview: Edit plan, Re-plan now and Remove plan. A button that opens a short list
+ * The plan options on the Plan page and the Overview: Edit plan, Plan changes, Re-plan now and Remove plan. A button that opens a short list
  * (not an ARIA menu: plain links and buttons, so every key works as on any page). Escape closes it and gives the
  * focus back to the button; so does choosing "Remove plan" and then "Keep plan".
  */
@@ -143,6 +143,17 @@ export function PlanMenu({ plan }: { plan: StoredPlan }) {
               }}
             >
               Edit plan
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/plan/changes"
+              className={itemClass}
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              Plan changes
             </Link>
           </li>
           <li>
