@@ -2,9 +2,11 @@ import { z } from "zod";
 import { brusselsDate, isIsoDate, LIMITS as ATHLETE_LIMITS } from "@/features/athlete";
 import {
   HISTORY_STATS,
+  INTENSITY_BALANCES,
   SETTING_LIMITS,
   ZONE2,
   type HistoryStat,
+  type IntensityBalance,
   type PlanSettings,
 } from "./engine";
 
@@ -190,15 +192,19 @@ export type TrainingSettings = {
   maxWeeklyHours: number | null;
   /** Summary of the weekly hours of the last 24 weeks for week 1 of a plan. */
   historyStat: HistoryStat;
+  /** How much of the riding is hard (P99); base-focused is the original plan. */
+  intensityBalance: IntensityBalance;
 };
 
 export const DEFAULT_HISTORY_STAT: HistoryStat = "median";
+export const DEFAULT_INTENSITY_BALANCE: IntensityBalance = "base";
 
 export const DEFAULT_TRAINING_SETTINGS: TrainingSettings = {
   zone2TargetPercent: null,
   maxLongRideMin: null,
   maxWeeklyHours: null,
   historyStat: DEFAULT_HISTORY_STAT,
+  intensityBalance: DEFAULT_INTENSITY_BALANCE,
 };
 
 /** The Zone 2 target in percent of FTP: whole percents inside the Coggan band (56 to 75). */
@@ -239,6 +245,11 @@ export const maxWeeklyHoursSchema = z
 
 export const historyStatSchema = z.enum(HISTORY_STATS, "Choose median or average.");
 
+export const intensityBalanceSchema = z.enum(
+  INTENSITY_BALANCES,
+  "Choose base-focused, balanced or high-intensity.",
+);
+
 /** The settings as the engine takes them: the values that are set, nothing for the defaults. */
 export function planSettingsOf(settings: TrainingSettings): PlanSettings {
   return {
@@ -247,6 +258,9 @@ export function planSettingsOf(settings: TrainingSettings): PlanSettings {
       : {}),
     ...(settings.maxLongRideMin !== null ? { maxLongRideMin: settings.maxLongRideMin } : {}),
     ...(settings.maxWeeklyHours !== null ? { maxHoursPerWeek: settings.maxWeeklyHours } : {}),
+    ...(settings.intensityBalance !== DEFAULT_INTENSITY_BALANCE
+      ? { intensityBalance: settings.intensityBalance }
+      : {}),
   };
 }
 
@@ -256,6 +270,7 @@ export function trainingSettingsFromRow(row: {
   max_long_ride_min: number | null;
   max_weekly_hours: number | null;
   ride_history_stat: string | null;
+  intensity_balance: string | null;
 }): TrainingSettings {
   const valid = <T>(schema: z.ZodType<T>, value: number | null): T | null => {
     if (value === null) return null;
@@ -263,11 +278,13 @@ export function trainingSettingsFromRow(row: {
     return parsed.success ? parsed.data : null;
   };
   const stat = historyStatSchema.safeParse(row.ride_history_stat);
+  const balance = intensityBalanceSchema.safeParse(row.intensity_balance);
   return {
     zone2TargetPercent: valid(zone2TargetSchema, row.zone2_target_percent),
     maxLongRideMin: valid(maxLongRideSchema, row.max_long_ride_min),
     maxWeeklyHours: valid(maxWeeklyHoursSchema, row.max_weekly_hours),
     historyStat: stat.success ? stat.data : DEFAULT_HISTORY_STAT,
+    intensityBalance: balance.success ? balance.data : DEFAULT_INTENSITY_BALANCE,
   };
 }
 
@@ -278,5 +295,6 @@ export function trainingSettingsToColumns(settings: TrainingSettings) {
     max_long_ride_min: settings.maxLongRideMin,
     max_weekly_hours: settings.maxWeeklyHours,
     ride_history_stat: settings.historyStat,
+    intensity_balance: settings.intensityBalance,
   };
 }

@@ -19,6 +19,10 @@ import {
   QUALITY_PERCENT,
   REST_MINUTES,
   SPRINT_CYCLE_MINUTES,
+  SPRINT_RIDE_CYCLE_MINUTES,
+  SPRINT_RIDE_LEAD_MINUTES,
+  SPRINT_RIDE_MIN_MINUTES,
+  SPRINT_RIDE_TAIL_MINUTES,
   TEST_MINUTES,
   VO2_MIN_REST_MINUTES,
   type LadderKind,
@@ -384,6 +388,52 @@ function longWithBlocks(ctx: StepContext, set: MainSet, durationMin: number): St
   return steps;
 }
 
+/**
+ * An easy ride with short sprints (section 7.5): steady Zone 2 first (it is the warm-up), then a sprint every
+ * 4 minutes with easy spinning between, then Zone 2 to the end. The ride stays an easy ride: the sprints are
+ * short and fully rested, so it does not count as a hard day. Null when the sets do not fit the time.
+ */
+function sprintRideSteps(ctx: StepContext, set: MainSet, durationMin: number): Step[] | null {
+  const [count, seconds] = set;
+  const used = SPRINT_RIDE_LEAD_MINUTES + count * SPRINT_RIDE_CYCLE_MINUTES;
+  if (used + SPRINT_RIDE_TAIL_MINUTES > durationMin || durationMin < SPRINT_RIDE_MIN_MINUTES) {
+    return null;
+  }
+  const easy = (label: string, minutes: number): Step =>
+    makeStep(ctx, {
+      kind: "easy",
+      label,
+      seconds: minutes * SEC,
+      spec: SPECS.endurance,
+    });
+  const steps: Step[] = [easy("Steady endurance", SPRINT_RIDE_LEAD_MINUTES)];
+  for (let i = 1; i <= count; i += 1) {
+    steps.push(
+      makeStep(ctx, {
+        kind: "work",
+        label: `Sprint ${i} of ${count}`,
+        seconds,
+        spec: SPECS.sprint,
+        allOut: true,
+        powerLeads: true,
+        heartRate: false,
+      }),
+      restStep(ctx, SPRINT_RIDE_CYCLE_MINUTES * SEC - seconds, "Easy spinning"),
+    );
+  }
+  steps.push(easy("Steady endurance", durationMin - used));
+  return steps;
+}
+
+/** The sprint set of a main set written like "6x8s"; null for anything else. */
+export function parseSprintSet(mainSet: string | null): MainSet | null {
+  const match = /^(\d+)x(\d+)s$/.exec(mainSet ?? "");
+  if (!match) return null;
+  const count = Number(match[1]);
+  const seconds = Number(match[2]);
+  return count > 0 && seconds > 0 ? [count, seconds] : null;
+}
+
 function openersSession(ctx: StepContext, durationMin: number): Step[] {
   const wu = 15;
   const steps: Step[] = [warmUp(ctx, wu)];
@@ -481,6 +531,8 @@ export function sessionSteps(input: {
   durationMin: number;
   ladderStep?: number;
   longBlocks?: number | null;
+  /** Sprints for an easy endurance ride (section 7.5): `[sprints, seconds]`; fewer are used when time is short. */
+  sprintRide?: MainSet | null;
   ftpTest?: FtpTestKind;
   context: StepContext;
 }): SessionSteps {
@@ -502,8 +554,20 @@ export function sessionSteps(input: {
   });
   switch (kind) {
     case "recovery":
-    case "endurance":
       return plain(kind);
+    case "endurance": {
+      if (input.sprintRide) {
+        const ride = input.sprintRide;
+        for (let count = ride[0]; count >= 2; count -= 1) {
+          const set: MainSet = [count, ride[1]];
+          const steps = sprintRideSteps(ctx, set, durationMin);
+          if (steps) {
+            return { kind, steps, mainSet: formatMainSet("sprint", set), ladderStep: null };
+          }
+        }
+      }
+      return plain(kind);
+    }
     case "long": {
       if (input.longBlocks !== null && input.longBlocks !== undefined) {
         const ladder = ladderFor(level, "tempo");
@@ -581,6 +645,10 @@ export function sessionTitle(input: {
   ftpTest?: FtpTestKind;
   eventName?: string;
 }): string {
+  if (input.kind === "endurance" && input.mainSet) {
+    const [count, seconds] = input.mainSet.replace("s", "").split("x");
+    return `Endurance ride with sprints ${count} x ${seconds} s`;
+  }
   const base = TITLES[input.kind];
   if (input.kind === "event") return input.eventName ? `Event: ${input.eventName}` : base;
   if (input.kind === "test") {
@@ -626,6 +694,8 @@ export function sessionReason(input: {
   /** The purpose this hard session serves; null for plain rides. */
   purpose?: Purpose | null;
   longBlocks?: boolean;
+  /** An easy ride with short sprints (section 7.5). */
+  sprintRide?: boolean;
   steppedDown?: boolean;
   /** The week is held because the weight trend falls faster than the weekly cap. */
   held?: boolean;
@@ -634,6 +704,11 @@ export function sessionReason(input: {
   const parts: string[] = [BASE_REASON[input.kind]];
   if (input.kind === "long" && input.longBlocks) {
     parts.push("Tempo blocks inside make it your third hard effort of the week.");
+  }
+  if (input.kind === "endurance" && input.sprintRide) {
+    parts.push(
+      "A few short, all-out sprints with full rests keep your legs sharp. It stays an easy day: ride the rest at Zone 2.",
+    );
   }
   if (input.purpose && input.weekType === "loading") {
     parts.push(`It fits your goal: ${PURPOSE_NAME[input.purpose]}.`);

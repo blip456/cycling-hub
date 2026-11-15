@@ -30,6 +30,7 @@ describe("buildEvaluateInput: settings and history", () => {
         maxLongRideMin: null,
         maxWeeklyHours: 12,
         historyStat: "median",
+        intensityBalance: "base",
       },
     };
     const inputs = await fakeApi(db).load();
@@ -84,5 +85,34 @@ describe("the runner with a Zone 2 target", () => {
     // Sessions that were ridden keep what they were planned with.
     const past = api.db.sessions.filter((s) => s.date < TODAY && s.kind === "long");
     expect(past.every((s) => s.steps[0]?.target.percentFtp === 65)).toBe(true);
+  });
+});
+
+describe("the runner with an intensity balance", () => {
+  it("puts sprint rides and VO2 max in the future, keeps what was ridden, and settles", async () => {
+    const db = fakeDb(EXAMPLE_B);
+    addHistory(db, TODAY);
+    db.profile = {
+      ...db.profile,
+      training: { ...db.profile.training, intensityBalance: "high" },
+    };
+    const api = fakeApi(db);
+    const runner = createRunner(api);
+    const first = await runner.run(TODAY);
+    expect(first.status === "done" && first.outcome).toBe("recalculated");
+
+    const future = api.db.sessions.filter((s) => s.date >= TODAY);
+    const sprintRides = future.filter(
+      (s) => s.kind === "endurance" && s.steps.some((step) => step.kind === "work"),
+    );
+    expect(sprintRides.length).toBeGreaterThan(0);
+    expect(sprintRides.every((s) => s.title.startsWith("Endurance ride with sprints"))).toBe(true);
+    // Sessions that were ridden are not touched.
+    const past = api.db.sessions.filter((s) => s.date < TODAY && s.status === "done");
+    expect(past.some((s) => s.steps.some((step) => step.label.startsWith("Sprint")))).toBe(false);
+
+    // The sprint sets come back from the stored rows the way the engine wrote them: nothing to change.
+    const again = await runner.run(TODAY);
+    expect(again.status === "done" && again.outcome).toBe("unchanged");
   });
 });

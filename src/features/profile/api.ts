@@ -103,11 +103,12 @@ const profileRow = z
     max_long_ride_min: z.number().nullable(),
     max_weekly_hours: z.number().nullable(),
     ride_history_stat: z.string().nullable(),
+    intensity_balance: z.string().nullable(),
   })
   .nullable();
 
 const PROFILE_COLUMNS =
-  "display_name, birth_year, available_days, goal, riding_environment, weekly_hours, training_purposes, level, level_answers, event_name, event_date, zone2_target_percent, max_long_ride_min, max_weekly_hours, ride_history_stat";
+  "display_name, birth_year, available_days, goal, riding_environment, weekly_hours, training_purposes, level, level_answers, event_name, event_date, zone2_target_percent, max_long_ride_min, max_weekly_hours, ride_history_stat, intensity_balance";
 
 /** The profile of the signed-in user (RLS: own row only). No row yet is an empty profile. */
 export async function fetchProfile(userId: string): Promise<Profile> {

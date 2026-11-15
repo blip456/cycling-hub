@@ -188,6 +188,7 @@ const profileRow = z
     max_long_ride_min: z.number().nullable(),
     max_weekly_hours: z.number().nullable(),
     ride_history_stat: z.string().nullable(),
+    intensity_balance: z.string().nullable(),
   })
   .nullable();
 
@@ -195,7 +196,7 @@ export async function fetchPlanProfile(userId: string): Promise<PlanProfile> {
   const { data, error } = await getSupabase()
     .from("profiles")
     .select(
-      "riding_environment, weekly_hours, training_purposes, level_answers, event_name, event_date, available_days, zone2_target_percent, max_long_ride_min, max_weekly_hours, ride_history_stat",
+      "riding_environment, weekly_hours, training_purposes, level_answers, event_name, event_date, available_days, zone2_target_percent, max_long_ride_min, max_weekly_hours, ride_history_stat, intensity_balance",
     )
     .eq("id", userId)
     .maybeSingle();

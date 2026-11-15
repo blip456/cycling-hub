@@ -118,7 +118,16 @@ export type PlanSettings = {
   maxLongRideMin?: number;
   /** Most hours in a normal week (H is clamped to it). Replaces the level maximum. */
   maxHoursPerWeek?: number;
+  /** How much of the riding is hard. Missing: base-focused (the original plan). */
+  intensityBalance?: IntensityBalance;
 };
+
+/**
+ * How much of the riding is hard (rules section 3b): base-focused is the original plan (default), balanced is
+ * about 80/20 (a VO2 session a week from Build and a sprint ride), high-intensity goes further.
+ */
+export const INTENSITY_BALANCES = ["base", "balanced", "high"] as const;
+export type IntensityBalance = (typeof INTENSITY_BALANCES)[number];
 
 /** How the weekly riding hours of the last 24 weeks are summarised (section 5). */
 export const HISTORY_STATS = ["median", "average"] as const;

@@ -186,6 +186,7 @@ describe("training settings (P96 to P98)", () => {
       max_long_ride_min: null,
       max_weekly_hours: null,
       ride_history_stat: null,
+      intensity_balance: null,
     };
     expect(trainingSettingsFromRow(empty)).toEqual(DEFAULT_TRAINING_SETTINGS);
     expect(DEFAULT_TRAINING_SETTINGS.historyStat).toBe("median");
@@ -195,12 +196,14 @@ describe("training settings (P96 to P98)", () => {
         max_long_ride_min: 240,
         max_weekly_hours: 9.5,
         ride_history_stat: "average",
+        intensity_balance: "balanced",
       }),
     ).toEqual({
       zone2TargetPercent: 70,
       maxLongRideMin: 240,
       maxWeeklyHours: 9.5,
       historyStat: "average",
+      intensityBalance: "balanced",
     });
     expect(
       trainingSettingsFromRow({
@@ -208,6 +211,7 @@ describe("training settings (P96 to P98)", () => {
         max_long_ride_min: 5,
         max_weekly_hours: 40,
         ride_history_stat: "mode",
+        intensity_balance: "extreme",
       }),
     ).toEqual(DEFAULT_TRAINING_SETTINGS);
   });
@@ -220,7 +224,8 @@ describe("training settings (P96 to P98)", () => {
         maxLongRideMin: null,
         maxWeeklyHours: 9,
         historyStat: "average",
+        intensityBalance: "high",
       }),
-    ).toEqual({ zone2TargetPercent: 70, maxHoursPerWeek: 9 });
+    ).toEqual({ zone2TargetPercent: 70, maxHoursPerWeek: 9, intensityBalance: "high" });
   });
 });

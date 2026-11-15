@@ -30,6 +30,7 @@ vi.mock("@/features/profile/api", async (importOriginal) => ({
       maxLongRideMin: null,
       maxWeeklyHours: null,
       historyStat: "median",
+      intensityBalance: "base",
     },
   })),
 }));

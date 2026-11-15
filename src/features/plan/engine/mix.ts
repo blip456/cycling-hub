@@ -1,6 +1,6 @@
 /** Purposes and the session mix (section 8): main and secondary combination and conflict rules. */
 import { AMATEUR_SECONDARY_WEEKS, LEVEL_SETTINGS, PURPOSE_MIX } from "./constants";
-import type { Level, Phase, Purpose, SessionKind } from "./types";
+import type { IntensityBalance, Level, Phase, Purpose, SessionKind } from "./types";
 
 export type PurposePair = { main: Purpose; secondary: Purpose | null };
 
@@ -36,6 +36,8 @@ export function hardMix(input: {
   purposes: PurposePair;
   phase: BlockPhase;
   week: number;
+  /** How much of the riding is hard (section 3b). Missing: base-focused, the original mix. */
+  balance?: IntensityBalance;
 }): HardMix {
   const { level, purposes, phase, week } = input;
   const { main, secondary } = purposes;
@@ -47,7 +49,7 @@ export function hardMix(input: {
     secondary !== main;
   const q1Purpose = swap ? secondary : main;
   const q1: HardSession = { kind: PURPOSE_MIX[q1Purpose].q1[phase] ?? "tempo", purpose: q1Purpose };
-  if (budget < 2) return { q1, q2: null };
+  if (budget < 2) return intensify({ q1, q2: null }, input);
 
   let q2: HardSession | null;
   if (main === "weight-loss") {
@@ -66,7 +68,45 @@ export function hardMix(input: {
   if (q2?.kind === "sprint" && !LEVEL_SETTINGS[level].sprintAllowed) {
     q2 = { kind: "threshold", purpose: q2.purpose };
   }
-  return { q1, q2 };
+  return intensify({ q1, q2 }, input);
+}
+
+const isTop = (kind: SessionKind): boolean => kind === "vo2" || kind === "sprint";
+
+/**
+ * The intensity balance on top of the purpose mix (section 3b). Only endurance and speed as main purpose give
+ * up their Q1, and a Q2 that serves weight loss is left alone, so a purpose is never overruled where it
+ * matters most. Balanced: from Build on, one VO2 session in a loading week (Q2; an amateur with only Q1 every
+ * other week). High: VO2 as Q1 from the first week, and from Build on Q2 is VO2 as well (a sprint Q2 stays).
+ * The taper keeps the peak session type, so it follows the same mix (`week` is 0 outside loading weeks).
+ */
+function intensify(
+  mix: HardMix,
+  input: { purposes: PurposePair; phase: BlockPhase; week: number; balance?: IntensityBalance },
+): HardMix {
+  const balance = input.balance ?? "base";
+  if (balance === "base") return mix;
+  const { q1, q2 } = mix;
+  const main = input.purposes.main;
+  const q1Open = main === "endurance" || main === "speed";
+  const q2Open = q2 !== null && q2.purpose !== "weight-loss";
+  const grown = input.phase !== "base";
+  let next = mix;
+  if (balance === "balanced") {
+    if (!grown || isTop(q1.kind) || (q2 !== null && isTop(q2.kind))) return mix;
+    if (q2 !== null && q2Open) {
+      next = { q1, q2: { kind: "vo2", purpose: q2.purpose } };
+    } else if (q2 === null && q1Open && input.week % 2 === 1) {
+      next = { q1: { kind: "vo2", purpose: q1.purpose }, q2 };
+    }
+    return next;
+  }
+  // High.
+  if (q1Open && q1.kind !== "vo2") next = { q1: { kind: "vo2", purpose: q1.purpose }, q2: next.q2 };
+  if (grown && q2 !== null && q2Open && !isTop(q2.kind)) {
+    next = { q1: next.q1, q2: { kind: "vo2", purpose: q2.purpose } };
+  }
+  return next;
 }
 
 /** True when the week template has a Q2 slot for this level and these purposes (section 6). */

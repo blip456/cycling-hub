@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import { Button, TextField } from "@/components/ui";
 import { HISTORY_WEEKS, LEVEL_SETTINGS, SETTING_LIMITS, ZONE2 } from "@/features/plan/engine";
-import type { HistoryStat } from "@/features/plan/engine";
+import type { HistoryStat, IntensityBalance } from "@/features/plan/engine";
 import {
   DEFAULT_HISTORY_STAT,
+  DEFAULT_INTENSITY_BALANCE,
   historyStatSchema,
+  intensityBalanceSchema,
   maxLongRideSchema,
   maxWeeklyHoursSchema,
   zone2TargetSchema,
@@ -22,7 +24,7 @@ interface SectionProps {
   report: SaveReport;
 }
 
-type Field = "zone2" | "longRide" | "hours" | "history";
+type Field = "zone2" | "longRide" | "hours" | "history" | "balance";
 type Errors = Partial<Record<Field, string>>;
 
 const HISTORY_OPTIONS: readonly { value: HistoryStat; label: string; detail: string }[] = [
@@ -37,6 +39,33 @@ const HISTORY_OPTIONS: readonly { value: HistoryStat; label: string; detail: str
     detail: "Every week counts, also the quiet ones.",
   },
 ];
+
+const BALANCE_OPTIONS: readonly { value: IntensityBalance; label: string; detail: string }[] = [
+  {
+    value: "base",
+    label: "Base-focused",
+    detail:
+      "The plan as it is: mostly easy riding, with sweet spot, tempo and threshold as the hard sessions.",
+  },
+  {
+    value: "balanced",
+    label: "Balanced",
+    detail:
+      "From the Build phase one VO2 max session a week, and one easy ride a week with a few short sprints. The limits on hard work are 1.5 times higher.",
+  },
+  {
+    value: "high",
+    label: "High-intensity",
+    detail:
+      "VO2 max from the first week, two VO2 max sessions a week from Build, and two easy rides a week with sprints. The limits on hard work are 2 times higher. No trial has tested this at 8 to 10 hours a week, so watch how tired you get.",
+  },
+];
+
+const BALANCE_LABEL: Record<IntensityBalance, string> = {
+  base: "Base-focused",
+  balanced: "Balanced",
+  high: "High-intensity",
+};
 
 const HISTORY_LABEL: Record<HistoryStat, string> = {
   median: "Median",
@@ -103,6 +132,7 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
   const [longRide, setLongRide] = useState(training.maxLongRideMin?.toString() ?? "");
   const [hours, setHours] = useState(training.maxWeeklyHours?.toString() ?? "");
   const [history, setHistory] = useState<HistoryStat>(training.historyStat);
+  const [balance, setBalance] = useState<IntensityBalance>(training.intensityBalance);
   const [errors, setErrors] = useState<Errors>({});
   const zone2Ref = useRef<HTMLInputElement>(null);
   const longRideRef = useRef<HTMLInputElement>(null);
@@ -136,10 +166,12 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
       const result = maxWeeklyHoursSchema.safeParse(hoursValue);
       if (!result.success) next.hours = result.error.issues[0]?.message ?? "Check this number.";
     }
+    const mix = intensityBalanceSchema.safeParse(balance);
+    if (!mix.success) next.balance = mix.error.issues[0]?.message ?? "Choose one option.";
     const stat = historyStatSchema.safeParse(history);
     if (!stat.success) next.history = stat.error.issues[0]?.message ?? "Choose median or average.";
 
-    if (Object.keys(next).length > 0 || !stat.success) {
+    if (Object.keys(next).length > 0 || !stat.success || !mix.success) {
       setErrors(next);
       report.fail("training", "Check the training settings, then save again.");
       if (next.zone2) zone2Ref.current?.focus();
@@ -153,6 +185,7 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
       maxLongRideMin: longRideValue,
       maxWeeklyHours: hoursValue,
       historyStat: stat.data,
+      intensityBalance: mix.data,
     };
     mutate(
       { section: "training", training: settings },
@@ -237,6 +270,22 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
         }}
       />
       <RadioGroup
+        legend="Intensity balance"
+        options={BALANCE_OPTIONS}
+        value={balance}
+        onChange={setBalance}
+        error={errors.balance}
+        helper="How much of your riding is hard. The number of hard sessions, the rest days and the recovery weeks stay the same in every option. Zone 2 stays the base of your week."
+      />
+      <ResetButton
+        field="intensity balance"
+        atDefault={balance === DEFAULT_INTENSITY_BALANCE}
+        onReset={() => {
+          setBalance(DEFAULT_INTENSITY_BALANCE);
+          clearError("balance");
+        }}
+      />
+      <RadioGroup
         legend="Your recent weekly hours"
         options={HISTORY_OPTIONS}
         value={history}
@@ -269,7 +318,8 @@ function isDefault(training: TrainingSettings): boolean {
     training.zone2TargetPercent === null &&
     training.maxLongRideMin === null &&
     training.maxWeeklyHours === null &&
-    training.historyStat === DEFAULT_HISTORY_STAT
+    training.historyStat === DEFAULT_HISTORY_STAT &&
+    training.intensityBalance === DEFAULT_INTENSITY_BALANCE
   );
 }
 
@@ -307,10 +357,11 @@ export function TrainingSettingsSection({ profile, report }: SectionProps) {
         setEditing(true);
       }}
       empty={isDefault(training)}
-      emptyText={`The plan uses its defaults: Zone 2 at ${String(ZONE2.default)} % of FTP, the long ride and weekly hour limits of your level, and the ${HISTORY_LABEL.median.toLowerCase()} of your last ${String(HISTORY_WEEKS)} weeks.`}
+      emptyText={`The plan uses its defaults: Zone 2 at ${String(ZONE2.default)} % of FTP, the long ride and weekly hour limits of your level, a base-focused intensity balance and the ${HISTORY_LABEL.median.toLowerCase()} of your last ${String(HISTORY_WEEKS)} weeks.`}
       addLabel="Change training settings"
       view={
         <div className="mt-1">
+          <ViewRow label="Intensity balance">{BALANCE_LABEL[training.intensityBalance]}</ViewRow>
           <ViewRow label="Zone 2 target">
             <span className="tabular-nums">
               {training.zone2TargetPercent ?? ZONE2.default} % of FTP

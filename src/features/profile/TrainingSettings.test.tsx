@@ -29,6 +29,12 @@ function useStore(initial: Profile) {
 
 const COMMITTED: Profile = { ...EMPTY_PROFILE, level: "committed", weeklyHours: 8 };
 
+/** The training settings of the last save. */
+function savedTraining() {
+  const patch = vi.mocked(saveProfileSection).mock.calls.at(-1)?.[1];
+  return patch?.section === "training" ? patch.training : undefined;
+}
+
 const region = () => screen.findByRole("region", { name: "Training settings" });
 
 describe("Profile: training settings (P96 to P98)", () => {
@@ -95,6 +101,7 @@ describe("Profile: training settings (P96 to P98)", () => {
           maxLongRideMin: null,
           maxWeeklyHours: 12.5,
           historyStat: "average",
+          intensityBalance: "base",
         },
       });
     });
@@ -135,6 +142,7 @@ describe("Profile: training settings (P96 to P98)", () => {
         maxLongRideMin: 300,
         maxWeeklyHours: 12,
         historyStat: "median",
+        intensityBalance: "base",
       },
     });
     renderPage();
@@ -154,6 +162,7 @@ describe("Profile: training settings (P96 to P98)", () => {
           maxLongRideMin: null,
           maxWeeklyHours: null,
           historyStat: "median",
+          intensityBalance: "base",
         },
       });
     });
@@ -179,6 +188,7 @@ describe("Profile: training settings (P96 to P98)", () => {
         maxLongRideMin: 300,
         maxWeeklyHours: null,
         historyStat: "average",
+        intensityBalance: "base",
       },
     });
     renderPage();
@@ -205,6 +215,7 @@ describe("Profile: training settings (P96 to P98)", () => {
           maxLongRideMin: null,
           maxWeeklyHours: null,
           historyStat: "median",
+          intensityBalance: "base",
         },
       });
     });
@@ -220,5 +231,45 @@ describe("Profile: training settings (P96 to P98)", () => {
     await user.click(screen.getByRole("button", { name: "Reset Zone 2 target to default" }));
     expect(screen.getByLabelText("Zone 2 target")).toBeValid();
     expect(screen.getByLabelText("Zone 2 target")).toHaveValue("");
+  });
+
+  it("offers the three balances, base-focused first, and saves the one you choose", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(await screen.findByRole("button", { name: "Change training settings" }));
+    expect(screen.getByRole("radio", { name: /Base-focused/ })).toBeChecked();
+    expect(screen.getByRole("radio", { name: /Balanced/ })).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: /High-intensity/ })).toHaveAccessibleName(
+      /No trial has tested this at 8 to 10 hours a week/,
+    );
+    expect(
+      screen.getByRole("button", { name: "Reset intensity balance to default" }),
+    ).toBeDisabled();
+    await user.click(screen.getByRole("radio", { name: /Balanced/ }));
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(vi.mocked(saveProfileSection)).toHaveBeenCalled();
+    });
+    expect(savedTraining()?.intensityBalance).toBe("balanced");
+    const card = await region();
+    expect(await within(card).findByText("Balanced")).toBeInTheDocument();
+  });
+
+  it("resets the balance to base-focused", async () => {
+    const user = userEvent.setup();
+    useStore({
+      ...COMMITTED,
+      training: { ...EMPTY_PROFILE.training, intensityBalance: "high" },
+    });
+    renderPage();
+    await user.click(await screen.findByRole("button", { name: "Edit Training settings" }));
+    expect(screen.getByRole("radio", { name: /High-intensity/ })).toBeChecked();
+    await user.click(screen.getByRole("button", { name: "Reset intensity balance to default" }));
+    expect(screen.getByRole("radio", { name: /Base-focused/ })).toBeChecked();
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(vi.mocked(saveProfileSection)).toHaveBeenCalled();
+    });
+    expect(savedTraining()?.intensityBalance).toBe("base");
   });
 });

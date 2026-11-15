@@ -3,8 +3,8 @@
  * level limits for the long ride and the weekly hours reach. Pure. The Coggan bands never change; only the
  * target inside the band does (P40).
  */
-import { LEVEL_SETTINGS, type LevelSettings } from "./constants";
-import type { Level, Notice, PlanSettings } from "./types";
+import { BALANCE_CAP_FACTOR, LEVEL_SETTINGS, type LevelSettings } from "./constants";
+import type { IntensityBalance, Level, Notice, PlanSettings } from "./types";
 
 /** The Zone 2 band of the Coggan zones (56 to 75 % of FTP) and the default target inside it. */
 export const ZONE2 = { min: 56, max: 75, default: 65 } as const;
@@ -24,6 +24,12 @@ export function zone2Percent(settings?: PlanSettings): number {
   return Math.min(ZONE2.max, Math.max(ZONE2.min, Math.round(value)));
 }
 
+/** The intensity balance of the settings; base-focused when missing. */
+export function intensityBalance(settings?: PlanSettings): IntensityBalance {
+  const value = settings?.intensityBalance;
+  return value === "balanced" || value === "high" ? value : "base";
+}
+
 function usable(value: number | undefined, min: number): value is number {
   return value !== undefined && Number.isFinite(value) && value >= min;
 }
@@ -33,6 +39,8 @@ export function normalizeSettings(settings?: PlanSettings): PlanSettings {
   const out: PlanSettings = {};
   const zone2 = zone2Percent(settings);
   if (zone2 !== ZONE2.default) out.zone2TargetPercent = zone2;
+  const balance = intensityBalance(settings);
+  if (balance !== "base") out.intensityBalance = balance;
   const long = settings?.maxLongRideMin;
   if (usable(long, 1)) {
     const { min, max } = SETTING_LIMITS.maxLongRideMin;
@@ -53,8 +61,11 @@ export function normalizeSettings(settings?: PlanSettings): PlanSettings {
 export function levelSettingsFor(level: Level, settings?: PlanSettings): LevelSettings {
   const base = LEVEL_SETTINGS[level];
   const own = normalizeSettings(settings);
+  const factor = BALANCE_CAP_FACTOR[intensityBalance(settings)];
   return {
     ...base,
+    qualityCap: base.qualityCap * factor,
+    aboveThresholdCap: base.aboveThresholdCap * factor,
     long: [base.long[0], Math.max(base.long[0], own.maxLongRideMin ?? base.long[1])],
     hours: [base.hours[0], Math.max(base.hours[0], own.maxHoursPerWeek ?? base.hours[1])],
   };
@@ -69,6 +80,13 @@ export function settingsNotice(level: Level, settings?: PlanSettings): Notice | 
   const own = normalizeSettings(settings);
   const base = LEVEL_SETTINGS[level];
   const parts: string[] = [];
+  if (own.intensityBalance !== undefined) {
+    parts.push(
+      own.intensityBalance === "balanced"
+        ? "the intensity is balanced (a VO2 session a week from Build and a sprint ride)"
+        : "the intensity is high (VO2 from the start, two sprint rides a week)",
+    );
+  }
   if (own.zone2TargetPercent !== undefined) {
     parts.push(`easy and long rides aim at ${own.zone2TargetPercent} % of FTP`);
   }

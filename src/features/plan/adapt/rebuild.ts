@@ -12,6 +12,7 @@ import {
   RECOVERY_LONG_MIN,
   STRUCTURED_KINDS,
   floor5,
+  parseSprintSet,
   sessionLoad,
   sessionReason,
   sessionSteps,
@@ -205,6 +206,8 @@ export function rebuildFuture(input: RebuildInput): Rebuilt {
       durationMin,
       ...(s.ladderStep !== null && kind === s.kind ? { ladderStep: s.ladderStep } : {}),
       longBlocks: blocks ? s.ladderStep : null,
+      // A shortened sprint ride keeps its sprints as far as the time allows (section 7.5).
+      sprintRide: kind === "endurance" && s.kind === "endurance" ? parseSprintSet(s.mainSet) : null,
       ftpTest: input.ftpTest,
       context: context(s.indoor),
     });
