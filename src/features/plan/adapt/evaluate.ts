@@ -268,7 +268,7 @@ function noticeMessage(input: {
     case "plan-edited":
       return `${plural(count)} changed because you edited your plan.`;
     case "settings-changed":
-      return `${plural(count)} changed because your settings changed.`;
+      return `${plural(count)} changed because your settings or recent riding changed.`;
   }
 }
 
@@ -426,6 +426,7 @@ function runPass(input: EvaluateInput, sessions: readonly StoredSession[]): Pass
           lthr: profileInput.lthr,
           maxHr: profileInput.maxHr,
           ftpTest: intake.ftpTest ?? "twenty-minute",
+          settings: profileInput.settings,
         });
     const nextSecond = overloadWeeks(plan, counted, current, today);
     const stable = sameNumbers(nextSecond, noSecond) && sameDates(rebuilt.movedFrom, moved);
@@ -768,7 +769,7 @@ function withUpdate(
     }
     return {
       code: "settings-changed",
-      reason: "Your settings changed, so this session was recalculated.",
+      reason: "Your settings or your recent riding changed, so this session was recalculated.",
     };
   };
 

@@ -274,3 +274,38 @@ export const STRENGTH_NOTE =
   "Strength, 20 to 40 minutes, off the bike. Legs and core, 2 to 3 sets of 6 to 10 repetitions with a weight you can control. Choose your own exercises.";
 export const STRENGTH_NOTE_LIGHT =
   "Light strength, 20 minutes, off the bike. Legs and core, 2 sets of 6 to 8 repetitions, easy. Choose your own exercises.";
+
+/**
+ * Intensity balance (section 3b): the caps on hard work grow with the step; the content comes from the mix
+ * (`mix.ts`) and the sprint rides below. The hard-session budget, the rest days and the recovery weeks do not
+ * change.
+ */
+export const BALANCE_CAP_FACTOR = { base: 1, balanced: 1.5, high: 2 } as const;
+
+/** Easy rides with short sprints a loading week holds, per balance (section 7.5). */
+export const SPRINT_RIDES_PER_WEEK = { base: 0, balanced: 1, high: 2 } as const;
+
+/** Sprint rides: `[sprints, seconds]` per step; the step follows the phase (Base 1, Build 2, Peak 3). */
+export const SPRINT_RIDE_LADDER: Record<Level, readonly MainSet[]> = {
+  amateur: [
+    [4, 6],
+    [5, 6],
+    [6, 8],
+  ],
+  committed: [
+    [6, 8],
+    [6, 10],
+    [8, 10],
+  ],
+  "semi-pro": [
+    [8, 10],
+    [8, 10],
+    [10, 10],
+  ],
+};
+/** A sprint ride: easy riding first (it is the warm-up), a sprint every 4 minutes, easy riding to the end. */
+export const SPRINT_RIDE_LEAD_MINUTES = 20;
+export const SPRINT_RIDE_CYCLE_MINUTES = 4;
+export const SPRINT_RIDE_TAIL_MINUTES = 5;
+/** Easy rides shorter than this get no sprints. */
+export const SPRINT_RIDE_MIN_MINUTES = 40;

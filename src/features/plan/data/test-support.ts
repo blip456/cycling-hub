@@ -5,6 +5,7 @@ import * as weightApi from "@/features/weight/api";
 import type { WeightEntry } from "@/features/athlete";
 import { buildPlan, type Plan, type PlanInput } from "../engine";
 import * as api from "./api";
+import { DEFAULT_TRAINING_SETTINGS } from "../schemas";
 import { planFromRow, sessionFromRow, sessionInserts, toJson } from "./mapping";
 import type { PlanSession, StoredPlan } from "./types";
 
@@ -96,6 +97,7 @@ export function mockPlanApi(fixture: PlanFixture | null = planFixture()) {
     eventName: null,
     eventDate: null,
     availableDays: ["tue", "wed", "fri", "sat", "sun"],
+    training: DEFAULT_TRAINING_SETTINGS,
   });
   vi.mocked(api.savePlanProfile).mockResolvedValue(undefined);
   vi.mocked(api.fetchActiveWeightGoal).mockResolvedValue(null);

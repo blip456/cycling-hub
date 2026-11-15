@@ -12,14 +12,17 @@ import {
   RECOVERY_LONG_MIN,
   STRUCTURED_KINDS,
   floor5,
+  parseSprintSet,
   sessionLoad,
   sessionReason,
   sessionSteps,
   sessionTitle,
   stepContext,
+  zone2Percent,
   type ChangeReason,
   type FtpTestKind,
   type Plan,
+  type PlanSettings,
   type SessionKind,
   type Week,
 } from "../engine";
@@ -56,6 +59,8 @@ export type RebuildInput = {
   lthr?: number | null | undefined;
   maxHr?: number | null | undefined;
   ftpTest: FtpTestKind;
+  /** The PO's training settings: sessions that are reshaped keep the Zone 2 target. */
+  settings?: PlanSettings | undefined;
 };
 
 export type Rebuilt = {
@@ -178,7 +183,13 @@ export function rebuildFuture(input: RebuildInput): Rebuilt {
     working.has(date) || frozenDates.has(date) || counted.some((r) => r.date === date);
 
   const context = (indoor: boolean) =>
-    stepContext({ ftp: input.ftp, lthr: input.lthr, maxHr: input.maxHr, indoor });
+    stepContext({
+      ftp: input.ftp,
+      lthr: input.lthr,
+      maxHr: input.maxHr,
+      indoor,
+      zone2Percent: zone2Percent(input.settings),
+    });
 
   /** The session with another kind and/or length, steps and title rebuilt by the engine's library. */
   const reshape = (
@@ -195,6 +206,8 @@ export function rebuildFuture(input: RebuildInput): Rebuilt {
       durationMin,
       ...(s.ladderStep !== null && kind === s.kind ? { ladderStep: s.ladderStep } : {}),
       longBlocks: blocks ? s.ladderStep : null,
+      // A shortened sprint ride keeps its sprints as far as the time allows (section 7.5).
+      sprintRide: kind === "endurance" && s.kind === "endurance" ? parseSprintSet(s.mainSet) : null,
       ftpTest: input.ftpTest,
       context: context(s.indoor),
     });

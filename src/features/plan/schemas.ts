@@ -1,5 +1,14 @@
 import { z } from "zod";
 import { brusselsDate, isIsoDate, LIMITS as ATHLETE_LIMITS } from "@/features/athlete";
+import {
+  HISTORY_STATS,
+  INTENSITY_BALANCES,
+  SETTING_LIMITS,
+  ZONE2,
+  type HistoryStat,
+  type IntensityBalance,
+  type PlanSettings,
+} from "./engine";
 
 /**
  * Zod schemas for what the training plan adds to the profile (P60, P62, P65, P66) and for the weight goal
@@ -166,3 +175,126 @@ export const weeklyRateCapSchema = z
     PLAN_LIMITS.weeklyRateCap.max,
     `The cap can be at most ${PLAN_LIMITS.weeklyRateCap.max} % a week.`,
   );
+
+// ---- training settings (P96 to P98) ------------------------------------------------------------------
+
+/**
+ * The training settings of the profile. A null number means "the level's own value" (for the Zone 2 target:
+ * the default of 65 %), so nothing has to be filled in. The Zone 2 band (56 to 75 % of FTP) is the Coggan
+ * zone and is not a setting: only the target inside it is.
+ */
+export type TrainingSettings = {
+  /** Where inside Zone 2 easy and long rides aim, percent of FTP; null: 65. */
+  zone2TargetPercent: number | null;
+  /** Longest long ride in minutes; null: the level maximum. */
+  maxLongRideMin: number | null;
+  /** Most hours in a normal week; null: the level maximum. */
+  maxWeeklyHours: number | null;
+  /** Summary of the weekly hours of the last 24 weeks for week 1 of a plan. */
+  historyStat: HistoryStat;
+  /** How much of the riding is hard (P99); base-focused is the original plan. */
+  intensityBalance: IntensityBalance;
+};
+
+export const DEFAULT_HISTORY_STAT: HistoryStat = "median";
+export const DEFAULT_INTENSITY_BALANCE: IntensityBalance = "base";
+
+export const DEFAULT_TRAINING_SETTINGS: TrainingSettings = {
+  zone2TargetPercent: null,
+  maxLongRideMin: null,
+  maxWeeklyHours: null,
+  historyStat: DEFAULT_HISTORY_STAT,
+  intensityBalance: DEFAULT_INTENSITY_BALANCE,
+};
+
+/** The Zone 2 target in percent of FTP: whole percents inside the Coggan band (56 to 75). */
+export const zone2TargetSchema = z
+  .number("Enter the target as a number.")
+  .int("Use a whole number.")
+  .min(ZONE2.min, `The target must be at least ${ZONE2.min} % (the bottom of Zone 2).`)
+  .max(ZONE2.max, `The target can be at most ${ZONE2.max} % (the top of Zone 2).`);
+
+/** Longest long ride in minutes: 90 to 480, in steps of 5. */
+export const maxLongRideSchema = z
+  .number("Enter the minutes as a number.")
+  .min(
+    SETTING_LIMITS.maxLongRideMin.min,
+    `The long ride limit must be at least ${SETTING_LIMITS.maxLongRideMin.min} minutes.`,
+  )
+  .max(
+    SETTING_LIMITS.maxLongRideMin.max,
+    `The long ride limit can be at most ${SETTING_LIMITS.maxLongRideMin.max} minutes.`,
+  )
+  .refine(
+    (minutes) => Number.isInteger(minutes / SETTING_LIMITS.maxLongRideMin.step),
+    "Use steps of 5 minutes.",
+  );
+
+/** Most hours in a normal week: 3 to 25, in half hours. */
+export const maxWeeklyHoursSchema = z
+  .number("Enter the hours as a number.")
+  .min(
+    SETTING_LIMITS.maxHoursPerWeek.min,
+    `The weekly limit must be at least ${SETTING_LIMITS.maxHoursPerWeek.min} hours.`,
+  )
+  .max(
+    SETTING_LIMITS.maxHoursPerWeek.max,
+    `The weekly limit can be at most ${SETTING_LIMITS.maxHoursPerWeek.max} hours.`,
+  )
+  .refine((hours) => Number.isInteger(hours * 2), "Use whole or half hours.");
+
+export const historyStatSchema = z.enum(HISTORY_STATS, "Choose median or average.");
+
+export const intensityBalanceSchema = z.enum(
+  INTENSITY_BALANCES,
+  "Choose base-focused, balanced or high-intensity.",
+);
+
+/** The settings as the engine takes them: the values that are set, nothing for the defaults. */
+export function planSettingsOf(settings: TrainingSettings): PlanSettings {
+  return {
+    ...(settings.zone2TargetPercent !== null
+      ? { zone2TargetPercent: settings.zone2TargetPercent }
+      : {}),
+    ...(settings.maxLongRideMin !== null ? { maxLongRideMin: settings.maxLongRideMin } : {}),
+    ...(settings.maxWeeklyHours !== null ? { maxHoursPerWeek: settings.maxWeeklyHours } : {}),
+    ...(settings.intensityBalance !== DEFAULT_INTENSITY_BALANCE
+      ? { intensityBalance: settings.intensityBalance }
+      : {}),
+  };
+}
+
+/** The settings columns of a profile row, as the app uses them. A value outside its limits reads as not set. */
+export function trainingSettingsFromRow(row: {
+  zone2_target_percent: number | null;
+  max_long_ride_min: number | null;
+  max_weekly_hours: number | null;
+  ride_history_stat: string | null;
+  intensity_balance: string | null;
+}): TrainingSettings {
+  const valid = <T>(schema: z.ZodType<T>, value: number | null): T | null => {
+    if (value === null) return null;
+    const parsed = schema.safeParse(value);
+    return parsed.success ? parsed.data : null;
+  };
+  const stat = historyStatSchema.safeParse(row.ride_history_stat);
+  const balance = intensityBalanceSchema.safeParse(row.intensity_balance);
+  return {
+    zone2TargetPercent: valid(zone2TargetSchema, row.zone2_target_percent),
+    maxLongRideMin: valid(maxLongRideSchema, row.max_long_ride_min),
+    maxWeeklyHours: valid(maxWeeklyHoursSchema, row.max_weekly_hours),
+    historyStat: stat.success ? stat.data : DEFAULT_HISTORY_STAT,
+    intensityBalance: balance.success ? balance.data : DEFAULT_INTENSITY_BALANCE,
+  };
+}
+
+/** The columns of a settings save: null for a default, so the database holds only what the PO chose. */
+export function trainingSettingsToColumns(settings: TrainingSettings) {
+  return {
+    zone2_target_percent: settings.zone2TargetPercent,
+    max_long_ride_min: settings.maxLongRideMin,
+    max_weekly_hours: settings.maxWeeklyHours,
+    ride_history_stat: settings.historyStat,
+    intensity_balance: settings.intensityBalance,
+  };
+}

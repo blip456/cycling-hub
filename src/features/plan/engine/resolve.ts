@@ -5,6 +5,7 @@ import { planStructure, type PlanStructure } from "./calendar";
 import { MIN_AVAILABLE_DAYS } from "./constants";
 import { clampHours, scoreLevel } from "./level";
 import { purposePair, type PurposePair } from "./mix";
+import { settingsNotice } from "./settings";
 import type { LevelResult, Notice, PlanInput, Warning } from "./types";
 
 export type ResolvedInput = {
@@ -28,7 +29,7 @@ export function hasUsableFtp(ftp: number | null | undefined): ftp is number {
 export function resolveInput(input: PlanInput): ResolvedInput {
   const { intake } = input;
   const levelResult = scoreLevel(intake.levelAnswers, intake.hoursPerWeek, intake.levelOverride);
-  const hoursPerWeek = clampHours(levelResult.level, intake.hoursPerWeek);
+  const hoursPerWeek = clampHours(levelResult.level, intake.hoursPerWeek, input.settings);
   const today: IsoDate = isIsoDate(input.today) ? input.today : "1970-01-05";
   const days = dayIndices(intake.availableDays);
   const structure = planStructure({
@@ -75,6 +76,9 @@ export function resolveInput(input: PlanInput): ResolvedInput {
       message: `${intake.hoursPerWeek} hours a week is outside the range for the ${levelResult.level} level, so the plan uses ${hoursPerWeek} hours.`,
     });
   }
+
+  const applied = settingsNotice(levelResult.level, input.settings);
+  if (applied) notices.push(applied);
 
   return {
     levelResult,
