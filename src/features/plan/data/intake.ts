@@ -250,6 +250,8 @@ export type IntakeContext = {
   availableDays: readonly Weekday[];
   /** Environment of the profile; null when it is not set (the intake asks). */
   profileEnvironment: RidingEnvironment | null;
+  /** What the rides of the last 3 months suggest for level question L2; undefined without enough rides. */
+  suggestedHours?: { answer: 0 | 1 | 2 | 3; hours: number };
   /**
    * Set when an existing plan is edited: the plan keeps this start date (its first day), so the start
    * question is not asked and an event has to fit between this date and the end of the plan's twelfth week.

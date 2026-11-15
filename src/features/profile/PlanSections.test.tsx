@@ -3,7 +3,13 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fakeAuth, fakeSession, renderWithProviders } from "@/test/render";
 import { EMPTY_PROFILE, fetchProfile, saveProfileSection, type Profile } from "./api";
+import { fetchRides, type Ride } from "@/features/rides/api";
 import { ProfilePage } from "./ProfilePage";
+
+vi.mock("@/features/rides/api", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  fetchRides: vi.fn(),
+}));
 
 vi.mock("./api", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
@@ -86,7 +92,7 @@ describe("Profile: what the plan adds (R1, R1b)", () => {
     useStore({ ...PLANNED, weeklyHours: null, ridingEnvironment: null });
     renderPage();
     await user.click(await screen.findByRole("button", { name: "Edit Training week" }));
-    await user.type(screen.getByLabelText("Average hours per week"), "7,5");
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "7,5");
     await user.click(screen.getByRole("radio", { name: "Indoor" }));
     await user.click(screen.getByRole("button", { name: "Save" }));
     await waitFor(() => {
@@ -104,7 +110,7 @@ describe("Profile: what the plan adds (R1, R1b)", () => {
     const user = userEvent.setup();
     renderPage();
     await user.click(await screen.findByRole("button", { name: "Edit Training week" }));
-    const hours = screen.getByLabelText("Average hours per week");
+    const hours = screen.getByLabelText("Hours you want to train per week");
     await user.clear(hours);
     await user.type(hours, "30");
     await user.click(screen.getByRole("button", { name: "Save" }));
@@ -336,6 +342,59 @@ describe("Profile: what the plan adds (R1, R1b)", () => {
       await user.click(screen.getByRole("button", { name: "Save" }));
       expect(await screen.findByRole("alert")).toHaveTextContent("Not saved");
       expect(screen.getByLabelText("Event name")).toHaveValue("Winter sportive");
+    });
+  });
+
+  describe("level question about hours (L2)", () => {
+    /** One ride of `hours` hours on the Wednesday of each of the 13 complete weeks before this one. */
+    function weeklyRides(hours: number): Ride[] {
+      const now = new Date();
+      const monday = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) -
+          ((now.getUTCDay() + 6) % 7) * 86_400_000,
+      );
+      return Array.from({ length: 13 }, (_, i) => {
+        const day = new Date(monday.getTime() - (i + 1) * 7 * 86_400_000 + 2 * 86_400_000);
+        return {
+          id: `ride-${String(i)}`,
+          start_local: `${day.toISOString().slice(0, 10)}T09:00:00`,
+          moving_time_s: hours * 3600,
+          average_watts: null,
+          commute: false,
+        } as unknown as Ride;
+      });
+    }
+
+    it("starts from the rides of the last 3 months and says so", async () => {
+      useStore({ ...PLANNED, levelAnswers: null, level: null });
+      vi.mocked(fetchRides).mockResolvedValue(weeklyRides(6));
+      const user = userEvent.setup();
+      renderPage();
+      await user.click(await screen.findByRole("button", { name: "Answer the questions" }));
+      expect(await screen.findByRole("radio", { name: "4 to 7" })).toBeChecked();
+      expect(screen.getByText(/Filled in from your rides: about 6 h a week/)).toBeInTheDocument();
+    });
+
+    it("lets the answer be changed and then only shows what the rides say", async () => {
+      useStore({ ...PLANNED, levelAnswers: null, level: null });
+      vi.mocked(fetchRides).mockResolvedValue(weeklyRides(6));
+      const user = userEvent.setup();
+      renderPage();
+      await user.click(await screen.findByRole("button", { name: "Answer the questions" }));
+      await user.click(await screen.findByRole("radio", { name: "8 to 11" }));
+      expect(screen.getByRole("radio", { name: "8 to 11" })).toBeChecked();
+      expect(
+        screen.getByText("Your rides show about 6 h a week over the last 3 months."),
+      ).toBeInTheDocument();
+    });
+
+    it("keeps a saved answer and leaves the question open without rides", async () => {
+      vi.mocked(fetchRides).mockResolvedValue(weeklyRides(6));
+      const user = userEvent.setup();
+      renderPage();
+      await user.click(await screen.findByRole("button", { name: "Edit Level" }));
+      // PLANNED answered L2 with 2 ("8 to 11"): the rides do not replace it.
+      expect(await screen.findByRole("radio", { name: "8 to 11" })).toBeChecked();
     });
   });
 });

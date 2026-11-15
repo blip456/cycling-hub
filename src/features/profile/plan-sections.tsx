@@ -1,8 +1,13 @@
-import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
 import { Button, TextField } from "@/components/ui";
 import { brusselsDate } from "@/features/athlete";
-import type { Level } from "@/features/plan/engine";
+import { toAdaptRide } from "@/features/plan/adaptation/stored";
+import { usePlanProfile } from "@/features/plan/data/hooks";
+import { intakeToday } from "@/features/plan/data/intake";
+import { suggestedHoursAnswer, type Level } from "@/features/plan/engine";
+import { useRides } from "@/features/rides/hooks";
 import {
+  DEFAULT_HISTORY_STAT,
   planProfileSchema,
   TRAINING_PURPOSES,
   trainingPurposesSchema,
@@ -237,6 +242,16 @@ const LEVEL_OPTIONS = [
   { value: "semi-pro", label: LEVEL_LABEL["semi-pro"] },
 ] as const;
 
+/** Index of the hours question (L2) in the level questions. */
+const HOURS_QUESTION = 1;
+
+function hoursHint(suggested: { hours: number }, same: boolean): string {
+  const hours = String(Math.round(suggested.hours * 10) / 10);
+  return same
+    ? `Filled in from your rides: about ${hours} h a week over the last 3 months. Change it if that is not right.`
+    : `Your rides show about ${hours} h a week over the last 3 months.`;
+}
+
 function LevelForm({ profile, onDone, report }: FormProps) {
   const [answers, setAnswers] = useState<(number | null)[]>(
     profile.levelAnswers ?? LEVEL_QUESTIONS.map(() => null),
@@ -250,6 +265,24 @@ function LevelForm({ profile, onDone, report }: FormProps) {
   const [error, setError] = useState<string | undefined>();
   const formRef = useRef<HTMLFormElement>(null);
   const { mutate, isPending } = useSaveProfileSection();
+
+  // L2 starts from the rides of the last 3 months, once, and only while the question is still open.
+  const rides = useRides();
+  const planProfile = usePlanProfile();
+  const stat = planProfile.data?.training.historyStat ?? DEFAULT_HISTORY_STAT;
+  const suggested = useMemo(
+    () => suggestedHoursAnswer((rides.data ?? []).map(toAdaptRide), intakeToday(), stat),
+    [rides.data, stat],
+  );
+  const hoursTouched = useRef(false);
+  useEffect(() => {
+    if (!suggested || hoursTouched.current) return;
+    setAnswers((current) =>
+      current[HOURS_QUESTION] === null
+        ? current.map((a, i) => (i === HOURS_QUESTION ? suggested.answer : a))
+        : current,
+    );
+  }, [suggested]);
 
   useEffect(() => {
     formRef.current?.querySelector("input")?.focus();
@@ -299,8 +332,12 @@ function LevelForm({ profile, onDone, report }: FormProps) {
           }
           onChange={(value) => {
             setError(undefined);
+            if (index === HOURS_QUESTION) hoursTouched.current = true;
             setAnswers((current) => current.map((a, i) => (i === index ? Number(value) : a)));
           }}
+          {...(index === HOURS_QUESTION && suggested
+            ? { helper: hoursHint(suggested, answers[index] === suggested.answer) }
+            : {})}
         />
       ))}
       {error ? <FieldError role="alert">{error}</FieldError> : null}
