@@ -64,7 +64,10 @@ export function ChangeList({
                   {formatDay(change.date)}
                 </th>
                 <td className="px-3 py-2.5">{before(change)}</td>
-                <td className="px-3 py-2.5">{now(change)}</td>
+                <td className="px-3 py-2.5">
+                  {now(change)}
+                  {change.detail ? <span className="block text-muted">{change.detail}</span> : null}
+                </td>
                 <td className="py-2.5 pl-3">{change.reason}</td>
               </tr>
             ))}
@@ -89,7 +92,10 @@ export function ChangeList({
             </div>
             <div className="flex gap-2">
               <dt className="w-14 shrink-0 text-muted">Now</dt>
-              <dd className="min-w-0">{now(change)}</dd>
+              <dd className="min-w-0">
+                {now(change)}
+                {change.detail ? <span className="block text-muted">{change.detail}</span> : null}
+              </dd>
             </div>
             <div className="flex gap-2">
               <dt className="w-14 shrink-0 text-muted">Why</dt>

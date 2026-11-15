@@ -22,6 +22,7 @@ import {
 } from "../engine";
 import { between, dayLabel, plus } from "./dates";
 import { effectiveness, struggledStructured, type EffectivenessReport } from "./effectiveness";
+import { updateEffect } from "./effect";
 import { hashText } from "./hash";
 import { matchRides } from "./match";
 import {
@@ -52,6 +53,7 @@ import type {
   StatusUpdate,
   StoredSession,
   UndoPlan,
+  UpdateEffect,
 } from "./types";
 import { STALLED_NO_ROOM_NOTICE, weightState, type WeightState } from "./weight-state";
 
@@ -114,6 +116,8 @@ export type EvaluateOutcome =
 /** The "Plan updated" notice: the engine's `PlanUpdate`, with a reason per change and the trigger. */
 export type AdaptationUpdate = Omit<PlanUpdate, "changes"> & {
   changes: AdaptChange[];
+  /** What the update does to the weeks it touched (hours, load, hard work). */
+  effect: UpdateEffect | null;
   /** The notice text of the status card (R3). */
   message: string;
 };
@@ -819,6 +823,7 @@ function withUpdate(
   const update: AdaptationUpdate = {
     reasons: REASON_PRIORITY.filter((code) => codes.has(code)),
     changes,
+    effect: updateEffect(input.sessions, settled, new Set(changes.map((c) => c.date))),
     message,
     previousFingerprint: input.lastFingerprint ?? "",
   };

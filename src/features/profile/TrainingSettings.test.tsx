@@ -5,6 +5,12 @@ import { fakeAuth, fakeSession, renderWithProviders } from "@/test/render";
 import { EMPTY_PROFILE, fetchProfile, saveProfileSection, type Profile } from "./api";
 import { ProfilePage } from "./ProfilePage";
 
+const run = vi.fn();
+vi.mock("@/features/plan/adaptation/runner", async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  createRunner: () => ({ run }),
+}));
+
 vi.mock("./api", async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
   fetchProfile: vi.fn(),
@@ -40,6 +46,7 @@ const region = () => screen.findByRole("region", { name: "Training settings" });
 describe("Profile: training settings (P96 to P98)", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    run.mockResolvedValue({ status: "no-plan" });
     useStore(COMMITTED);
   });
 
@@ -271,5 +278,59 @@ describe("Profile: training settings (P96 to P98)", () => {
       expect(vi.mocked(saveProfileSection)).toHaveBeenCalled();
     });
     expect(savedTraining()?.intensityBalance).toBe("base");
+  });
+
+  describe("the answer after saving (P100)", () => {
+    async function saveZone2() {
+      const user = userEvent.setup();
+      renderPage();
+      await user.click(await screen.findByRole("button", { name: "Change training settings" }));
+      await user.type(screen.getByLabelText("Zone 2 target"), "70");
+      await user.click(screen.getByRole("button", { name: "Save" }));
+    }
+    const done = (outcome: string, change: unknown = null) => ({
+      status: "done",
+      outcome,
+      view: {},
+      changeId: null,
+      change,
+    });
+
+    it("evaluates the plan at once and says when no session changes", async () => {
+      run.mockResolvedValue(done("unchanged"));
+      await saveZone2();
+      const card = await screen.findByText("Plan not changed");
+      expect(card.closest("[role=status]")).toHaveTextContent(
+        "Your settings are saved. No session in your plan changes with them.",
+      );
+      expect(run).toHaveBeenCalledTimes(1);
+      expect(run.mock.calls[0]?.[1]).toBeUndefined();
+    });
+
+    it("leaves the announcement to the Plan updated card when sessions changed", async () => {
+      run.mockResolvedValue(done("recalculated", { id: "c1" }));
+      await saveZone2();
+      await waitFor(() => {
+        expect(run).toHaveBeenCalled();
+      });
+      expect(screen.queryByText("Plan not changed")).not.toBeInTheDocument();
+      expect(screen.queryByText("Plan not updated")).not.toBeInTheDocument();
+    });
+
+    it("says the settings are saved when there is no plan yet", async () => {
+      await saveZone2();
+      const card = await screen.findByText("Settings saved");
+      expect(card.closest("[role=status]")).toHaveTextContent("You have no plan yet.");
+    });
+
+    it("says the plan could not be updated, and that the settings are saved", async () => {
+      run.mockResolvedValue({ status: "failed", error: new Error("down") });
+      await saveZone2();
+      expect(await screen.findByText("Plan not updated")).toBeInTheDocument();
+      expect(screen.getByText("Reason: down")).toBeInTheDocument();
+      expect(
+        screen.getByText(/Your settings are saved, but the plan could not be updated/),
+      ).toBeVisible();
+    });
   });
 });

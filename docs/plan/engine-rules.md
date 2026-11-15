@@ -553,6 +553,10 @@ a match.
 6. Compare old and new future sessions. If something changed in kind, minutes, main set or day, store the
    change as a "Plan updated" notice with reasons, and keep the old version for **Undo**. If only watts
    changed because of a new FTP, the notice says "Targets updated for your new FTP".
+   The notice also keeps **what each change is** (a target change says "Steady endurance: 65 % to 72 % of FTP
+   (163 W to 180 W)"), **the effect on the weeks it touched** (planned time, load, hard sessions and minutes
+   above 105 % FTP before and after, per week and in total) and **the training settings and the 24-week hours in
+   effect** (P100). Older updates have none of these and show as before.
 7. Store the new fingerprint.
 
 ### Never changed

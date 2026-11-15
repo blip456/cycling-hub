@@ -2,24 +2,104 @@ import { useEffect, useState } from "react";
 import { Button, EmptyState } from "@/components/ui";
 import { useMediaQuery } from "@/lib/use-media-query";
 import { ChangeList } from "../adaptation/ChangeList";
-import { formatUpdated } from "../adaptation/format";
+import { effectSentence, formatUpdated, settingsSummary } from "../adaptation/format";
 import { undoableChange, usePlanChanges } from "../adaptation/hooks";
 import { useSeenUpdate } from "../adaptation/seen";
 import { useUndoFlow } from "../adaptation/use-undo-flow";
 import type { PlanChange } from "../adaptation/changes";
+import type { UpdateEffect } from "../adapt";
 import { GRID_QUERY, usePlanLoadErrorCard } from "../components/page-hooks";
 import { PlanLoadError, PlanSkeleton } from "../components/parts";
 import { NoPlanState } from "../components/NoPlan";
 import { usePlan } from "../data";
 
 function Header({ change }: { change: PlanChange }) {
+  const effect = effectSentence(change.payload.effect);
+  const inputs = change.payload.inputs;
   return (
     <div className="rounded-lg bg-surface px-4 py-3.5 text-body">
       <p className="font-semibold">Updated {formatUpdated(change.createdAt)}</p>
       <p className="mt-0.5">{change.message}</p>
+      {effect ? <p className="mt-0.5">{effect}</p> : null}
+      {inputs ? (
+        <p className="mt-0.5 text-muted">
+          Training settings in effect: {settingsSummary(inputs.settings)}.
+          {inputs.recentAverageHours !== null
+            ? ` Your recent riding: ${inputs.recentAverageHours.toFixed(1)} h a week.`
+            : ""}
+        </p>
+      ) : null}
       {change.undoneAt ? (
         <p className="mt-0.5 text-muted">Undone {formatUpdated(change.undoneAt)}.</p>
       ) : null}
+    </div>
+  );
+}
+
+function hours(minutes: number): string {
+  const total = Math.round(minutes);
+  return `${String(Math.floor(total / 60))} h ${String(total % 60).padStart(2, "0")}`;
+}
+
+/** What the update does to each week it touched: riding time, load, hard sessions and VO2 minutes. */
+function EffectTable({ effect, label }: { effect: UpdateEffect; label: string }) {
+  const rows = [
+    ...effect.weeks.map((w) => ({
+      key: `week-${String(w.week)}`,
+      name: `Week ${String(w.week)}`,
+      ...w,
+    })),
+    ...(effect.weeks.length > 1 ? [{ key: "total", name: "Total", week: 0, ...effect.total }] : []),
+  ];
+  const pair = (before: number, after: number, format: (n: number) => string) =>
+    before === after ? format(after) : `${format(before)} to ${format(after)}`;
+  return (
+    <div className="overflow-x-auto rounded-lg bg-surface px-4 py-1">
+      <table className="w-full text-left text-body">
+        <caption className="sr-only">{label}</caption>
+        <thead className="text-caption text-muted">
+          <tr>
+            <th scope="col" className="py-2 pr-3 font-semibold">
+              Week
+            </th>
+            <th scope="col" className="px-3 py-2 font-semibold">
+              Riding
+            </th>
+            <th scope="col" className="px-3 py-2 font-semibold">
+              Load
+            </th>
+            <th scope="col" className="px-3 py-2 font-semibold">
+              Hard sessions
+            </th>
+            <th scope="col" className="py-2 pl-3 font-semibold">
+              Above 105 % FTP
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.key} className="border-t border-border align-top">
+              <th scope="row" className="py-2.5 pr-3 font-semibold">
+                {row.name}
+              </th>
+              <td className="px-3 py-2.5">{pair(row.before.minutes, row.after.minutes, hours)}</td>
+              <td className="px-3 py-2.5">
+                {pair(row.before.load, row.after.load, (n) => String(Math.round(n)))}
+              </td>
+              <td className="px-3 py-2.5">
+                {pair(row.before.hard, row.after.hard, (n) => String(n))}
+              </td>
+              <td className="py-2.5 pl-3">
+                {pair(
+                  row.before.aboveMinutes,
+                  row.after.aboveMinutes,
+                  (n) => `${String(Math.round(n))} min`,
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -58,12 +138,24 @@ export function ChangesPage() {
       </h2>
       {!latest ? (
         <EmptyState>
-          No plan updates yet. When a missed session, a ride or a new FTP changes your plan, you see
-          here what moved and why.
+          No plan updates yet. When a missed session, a ride, a new FTP, a training setting or
+          Re-plan now changes your plan, you see here what moved, why and what it does to your
+          weeks.
         </EmptyState>
       ) : (
         <>
           <Header change={latest} />
+          {latest.payload.effect ? (
+            <section aria-labelledby="plan-effect" className="flex flex-col gap-1.5">
+              <h3 id="plan-effect" className="text-body-lg font-semibold">
+                What it does to your weeks
+              </h3>
+              <EffectTable
+                effect={latest.payload.effect}
+                label={`Effect of the update of ${formatUpdated(latest.createdAt)} on the weeks it changed`}
+              />
+            </section>
+          ) : null}
           <ChangeList
             changes={latest.payload.changes}
             table={desktop}

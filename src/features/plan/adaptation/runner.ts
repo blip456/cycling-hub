@@ -17,7 +17,7 @@
  * then the inverse diff, then the fingerprint, then `undone_at`: a failure after the pin cannot flip the
  * plan back to the update, and a failure before it leaves the update in place with Undo still on offer.
  */
-import { buildPlan, type Intake, type Plan } from "../engine";
+import { buildPlan, type Intake, type Plan, type PlanInput } from "../engine";
 import type { IsoDate } from "@/features/athlete";
 import type {
   AdaptationUpdate,
@@ -213,7 +213,7 @@ export function createRunner(api: RunnerApi): Runner {
       }
 
       let change: PlanChange | null = null;
-      if (result.update) change = await insertChange(inputs, result.update, result);
+      if (result.update) change = await insertChange(inputs, result.update, result, profileInput);
 
       const weeks = skeletonOf().weeks.length;
       await api.writePlan(inputs.plan.id, {
@@ -241,6 +241,7 @@ export function createRunner(api: RunnerApi): Runner {
     inputs: RunnerInputs,
     update: AdaptationUpdate,
     result: ReturnType<typeof evaluatePlan>,
+    profileInput: PlanInput,
   ): Promise<PlanChange> {
     const payload: ChangePayload = {
       version: 1,
@@ -250,6 +251,11 @@ export function createRunner(api: RunnerApi): Runner {
       fingerprint: result.fingerprint,
       undo: result.undo,
       before: { ftp: inputs.plan.ftp, intake: inputs.plan.intake, weeks: inputs.plan.weeks },
+      ...(update.effect ? { effect: update.effect } : {}),
+      inputs: {
+        settings: profileInput.settings ?? {},
+        recentAverageHours: profileInput.adjustments?.recentAverageHours ?? null,
+      },
     };
     const id = await api.insertChange({
       planId: inputs.plan.id,

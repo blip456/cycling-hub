@@ -116,3 +116,28 @@ describe("the runner with an intensity balance", () => {
     expect(again.status === "done" && again.outcome).toBe("unchanged");
   });
 });
+
+describe("what an update stores for the PO to see (P100)", () => {
+  it("keeps what each target change is, the effect on the weeks and the settings in effect", async () => {
+    const db = fakeDb(EXAMPLE_B);
+    addHistory(db, TODAY);
+    db.profile = {
+      ...db.profile,
+      training: { ...db.profile.training, zone2TargetPercent: 72, intensityBalance: "balanced" },
+    };
+    const api = fakeApi(db);
+    await createRunner(api).run(TODAY);
+    const payload = api.db.changes[0]?.payload;
+    expect(payload?.inputs?.settings).toEqual({
+      zone2TargetPercent: 72,
+      intensityBalance: "balanced",
+    });
+    expect(payload?.effect?.weeks.length).toBeGreaterThan(0);
+    // The plan has a VO2 max session and sprints now: more hard minutes, the same riding time.
+    const total = payload?.effect?.total;
+    expect(total?.after.aboveMinutes).toBeGreaterThan(total?.before.aboveMinutes ?? 0);
+    const targets = payload?.changes.filter((c) => c.change === "targets") ?? [];
+    expect(targets.length).toBeGreaterThan(0);
+    expect(targets.every((c) => /\d+ % to 72 % of FTP/.test(c.detail ?? ""))).toBe(true);
+  });
+});

@@ -326,6 +326,8 @@ export type SessionChange = {
   change: "added" | "removed" | "kind" | "minutes" | "main-set" | "day" | "targets";
   before: { kind: SessionKind; durationMin: number; mainSet: string | null } | null;
   after: { kind: SessionKind; durationMin: number; mainSet: string | null } | null;
+  /** For a "targets" change: what moved, e.g. "Steady endurance: 65 % to 72 % of FTP (163 W to 180 W)". */
+  detail?: string;
 };
 
 /** A stored "Plan updated" notice: what changed and why. Built by the adaptation part from two plans. */

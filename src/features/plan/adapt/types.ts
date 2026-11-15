@@ -109,3 +109,24 @@ export type UndoPlan = {
   /** Store this as "undone": the same inputs are not recalculated until an input changes. */
   undoneFingerprint: string;
 };
+
+/** What one week holds, for the before and after of an update. */
+export type WeekMetrics = {
+  /** Planned minutes of the week, without the event. */
+  minutes: number;
+  /** Planned load. */
+  load: number;
+  /** Hard sessions: structured, or a long ride with blocks. */
+  hard: number;
+  /** Minutes of work above 105 % FTP. */
+  aboveMinutes: number;
+};
+
+/** A week that an update changed, before and after. */
+export type UpdateWeek = { week: number; before: WeekMetrics; after: WeekMetrics };
+
+/** The effect of an update on the weeks it touched (not on the weeks that stay as they are). */
+export type UpdateEffect = {
+  weeks: UpdateWeek[];
+  total: { before: WeekMetrics; after: WeekMetrics };
+};
