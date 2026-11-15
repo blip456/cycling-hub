@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
-import { TextField } from "@/components/ui";
+import { Button, TextField } from "@/components/ui";
 import { HISTORY_WEEKS, LEVEL_SETTINGS, SETTING_LIMITS, ZONE2 } from "@/features/plan/engine";
 import type { HistoryStat } from "@/features/plan/engine";
 import {
@@ -68,6 +68,34 @@ function Suffix({ children }: { children: string }) {
   );
 }
 
+/**
+ * "Reset to default" under a field: puts the field back to what the plan uses without it. It is on for every
+ * field that holds a value of its own, and off (nothing to reset) when the field is already at the default.
+ */
+function ResetButton({
+  field,
+  atDefault,
+  onReset,
+}: {
+  field: string;
+  atDefault: boolean;
+  onReset: () => void;
+}) {
+  return (
+    <div className="-mt-3">
+      <Button
+        type="button"
+        variant="secondary"
+        disabled={atDefault}
+        aria-label={`Reset ${field} to default`}
+        onClick={onReset}
+      >
+        Reset to default
+      </Button>
+    </div>
+  );
+}
+
 function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () => void }) {
   const { training } = profile;
   const limits = levelLimits(profile);
@@ -80,6 +108,11 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
   const longRideRef = useRef<HTMLInputElement>(null);
   const hoursRef = useRef<HTMLInputElement>(null);
   const { mutate, isPending } = useSaveProfileSection();
+  const clearError = (field: Field) => {
+    setErrors((current) =>
+      Object.fromEntries(Object.entries(current).filter(([key]) => key !== field)),
+    );
+  };
 
   useEffect(() => {
     zone2Ref.current?.focus();
@@ -150,6 +183,15 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
         autoComplete="off"
         trailing={<Suffix>%</Suffix>}
       />
+      <ResetButton
+        field="Zone 2 target"
+        atDefault={zone2.trim() === ""}
+        onReset={() => {
+          setZone2("");
+          clearError("zone2");
+          zone2Ref.current?.focus();
+        }}
+      />
       <TextField
         ref={longRideRef}
         label="Longest long ride"
@@ -162,6 +204,15 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
         inputMode="numeric"
         autoComplete="off"
         trailing={<Suffix>min</Suffix>}
+      />
+      <ResetButton
+        field="Longest long ride"
+        atDefault={longRide.trim() === ""}
+        onReset={() => {
+          setLongRide("");
+          clearError("longRide");
+          longRideRef.current?.focus();
+        }}
       />
       <TextField
         ref={hoursRef}
@@ -176,6 +227,15 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
         autoComplete="off"
         trailing={<Suffix>h</Suffix>}
       />
+      <ResetButton
+        field="Most hours in a week"
+        atDefault={hours.trim() === ""}
+        onReset={() => {
+          setHours("");
+          clearError("hours");
+          hoursRef.current?.focus();
+        }}
+      />
       <RadioGroup
         legend="Your recent weekly hours"
         options={HISTORY_OPTIONS}
@@ -183,6 +243,14 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
         onChange={setHistory}
         error={errors.history}
         helper={`Week 1 of the plan starts from the hours you rode per week over the last ${String(HISTORY_WEEKS)} full weeks, and this follows your rides as they come in. Choose how those weeks are summarised.`}
+      />
+      <ResetButton
+        field="recent weekly hours"
+        atDefault={history === DEFAULT_HISTORY_STAT}
+        onReset={() => {
+          setHistory(DEFAULT_HISTORY_STAT);
+          clearError("history");
+        }}
       />
       <FormButtons
         saving={isPending}

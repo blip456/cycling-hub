@@ -169,4 +169,56 @@ describe("Profile: training settings (P96 to P98)", () => {
     expect(await screen.findByText("Something went wrong. Try again.")).toBeInTheDocument();
     expect(screen.getByLabelText("Zone 2 target")).toHaveValue("70");
   });
+
+  it("resets each field to its default, and only offers it when the field has a value", async () => {
+    const user = userEvent.setup();
+    useStore({
+      ...COMMITTED,
+      training: {
+        zone2TargetPercent: 70,
+        maxLongRideMin: 300,
+        maxWeeklyHours: null,
+        historyStat: "average",
+      },
+    });
+    renderPage();
+    await user.click(await screen.findByRole("button", { name: "Edit Training settings" }));
+
+    expect(
+      screen.getByRole("button", { name: "Reset Most hours in a week to default" }),
+    ).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Reset Zone 2 target to default" }));
+    expect(screen.getByLabelText("Zone 2 target")).toHaveValue("");
+    expect(screen.getByLabelText("Zone 2 target")).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Reset Zone 2 target to default" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Reset Longest long ride to default" }));
+    await user.click(screen.getByRole("button", { name: "Reset recent weekly hours to default" }));
+    expect(screen.getByRole("radio", { name: /Median/ })).toBeChecked();
+
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => {
+      expect(saveProfileSection).toHaveBeenCalledWith(expect.any(String), {
+        section: "training",
+        training: {
+          zone2TargetPercent: null,
+          maxLongRideMin: null,
+          maxWeeklyHours: null,
+          historyStat: "median",
+        },
+      });
+    });
+  });
+
+  it("lets a field with an error be reset, which clears the error", async () => {
+    const user = userEvent.setup();
+    renderPage();
+    await user.click(await screen.findByRole("button", { name: "Change training settings" }));
+    await user.type(screen.getByLabelText("Zone 2 target"), "80");
+    await user.click(screen.getByRole("button", { name: "Save" }));
+    expect(screen.getByLabelText("Zone 2 target")).toBeInvalid();
+    await user.click(screen.getByRole("button", { name: "Reset Zone 2 target to default" }));
+    expect(screen.getByLabelText("Zone 2 target")).toBeValid();
+    expect(screen.getByLabelText("Zone 2 target")).toHaveValue("");
+  });
 });
