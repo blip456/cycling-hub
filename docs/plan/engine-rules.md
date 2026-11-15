@@ -5,7 +5,7 @@ the biggest risk of this sprint (see the risks in [`../backlog.md`](../backlog.m
 every rule and every number. The worked examples are in [`example-plans.md`](example-plans.md).
 
 Decisions this follows: P40 (Coggan zones), P58 to P67 (rule-based plan, 12 weeks, intake, missed
-sessions, indoor / outdoor, calendar, no power data, purposes, event with taper, summaries; P96 to P98: 24-week ride history, Zone 2 target and level limits as settings). Working
+sessions, indoor / outdoor, calendar, no power data, purposes, event with taper, summaries; P96 to P99: 24-week ride history, Zone 2 target, level limits, intensity balance and sprint rides as settings). Working
 defaults Q-E2-9 to Q-E2-16 are assumptions until the PO corrects them.
 
 ## How to read this page
@@ -126,6 +126,7 @@ plan without settings keeps its fingerprint.
 | Longest long ride        | Level: 180 / 270 / 330 minutes | 90 to 480 minutes, steps of 5   | The upper limit of the long ride (the level minimum is kept).                                       |
 | Most hours in a week     | Level: 6 / 10 / 16 h           | 3 to 25 h, half hours           | The upper limit H is clamped to; it replaces the level maximum (the level minimum is kept).          |
 | Recent weekly hours      | Median                         | Median or average               | How the last 24 weeks are summarised for week 1 (section 5).                                         |
+| Intensity balance        | Base-focused                   | Base-focused, balanced, high    | How much of the riding is hard: the VO2 max sessions, the sprint rides and the caps (below, P99).     |
 
 - The Zone 2 target applies to every Z2 step, indoors (exact watts) and outdoors (the band stays 56 to 75 %).
   Recovery (50 %), warm-up, rests and all other zones keep their own targets. The planned load of Z2 time rises
@@ -136,6 +137,24 @@ plan without settings keeps its fingerprint.
 - **The long ride is a share of the week** (weight 2.8 of about 7.6 for a committed rider, so about 36 %). A higher
   long ride maximum only matters when the week's hours give a long ride that long: an amateur at 6 h gets about
   130 minutes at the peak, far below the 180-minute maximum. To get longer long rides, raise the hours first.
+- **Intensity balance (P99)** has three fixed steps; the hard-session budget (1 / 2 / 3), no hard days in a row,
+  the rest day, the recovery weeks and the taper do not change.
+
+  | Step          | Hard sessions (loading weeks)                                                                      | Sprint rides                  | Caps on quality and above-threshold minutes |
+  | ------------- | -------------------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------- |
+  | Base-focused  | The purpose mix of section 8, unchanged                                                            | none                          | x 1                                         |
+  | Balanced      | From Build: Q2 is VO2 max when the week has none yet (an amateur with one slot: every other week)  | 1 a week                      | x 1.5                                       |
+  | High          | Q1 is VO2 max from week 1; from Build Q2 is VO2 max too (a sprint Q2 stays)                        | 2 a week                      | x 2                                         |
+
+  Only endurance and speed as main purpose give up their Q1, and a Q2 that serves weight loss is left alone.
+  The step is a lever on the mix, not on the minutes: weekly hours do not change. Measured on the example plans
+  (committed 8 h endurance, amateur 4 h, semi-pro 13 h), the minutes above 105 % FTP in loading weeks are
+  **0 % / 3.6 % / 9.5 %** (committed), **0 % / 2.3 % / 5.4 %** (amateur) and **0 % / 2.6 % / 6.8 %** (semi-pro)
+  for base-focused / balanced / high. That is well below the "20 % hard" of the polarized trials: the ladders
+  (section 7.3) limit a VO2 max session to 10 to 25 minutes of work, and the budget limits the sessions. Treat
+  the steps as more and less, not as a match for a published ratio. The evidence: polarized or mixed training is
+  at least as good as high-intensity-heavy training for trained riders over 6 to 12 weeks (moderate); nothing
+  tests a plan dominated by VO2 max at 8 to 10 hours a week (weak), which is why High carries that warning.
 - A plain fact is shown when a setting differs from the default ("Your training settings apply: ...").
 - Not settings (yet): the growth caps (+8 / +10 % hours, +10 % long ride, +15 % load), the quality and
   above-threshold caps, the number of rides, the ladders and the level itself (that one is chosen in the level
@@ -352,6 +371,26 @@ starts at step 1 and moves up one step each loading week the type is used.
 - Long ride with blocks (semi-pro): tempo blocks at step 1 of the tempo ladder in Build and step 2 in Peak.
 
 ### 7.4 Indoor and outdoor are in section 10; matching in section 11.
+
+### 7.5 Sprint rides (P99)
+
+With the balance on balanced or high, one (balanced) or two (high) easy endurance rides of a loading week are
+sprint rides. It stays an **easy ride** (kind endurance, slot easy): it is not a hard session, does not count in
+the budget or the no-back-to-back rule, and is never placed in a recovery, taper or test week.
+
+- **Structure:** 20 minutes steady Zone 2 (the warm-up), then a sprint every 4 minutes (all-out for 6 to 10
+  seconds, easy spinning for the rest of the 4 minutes), then Zone 2 to the end (at least 5 minutes).
+- **Sets** (sprints x seconds), by phase Base / Build / Peak (high is one step further, at most the last):
+  amateur 4x6, 5x6, 6x8; committed 6x8, 6x10, 8x10; semi-pro 8x10, 8x10, 10x10. Amateurs get sprint rides (not the
+  sprint sessions of section 7.3) because they are short, fully rested and part of an easy ride.
+- **Fit:** the ride needs 40 minutes or more; with less time the set has fewer sprints (at least 2), else it is a
+  plain endurance ride. Shortened rides (extra rides, cap fixes) keep their sprints as far as time allows.
+- **Placement:** an easy endurance ride of 40 minutes or more, not on the day after a hard day when another day is
+  free (the sprints are done on fresh legs); two sprint rides are never on consecutive days.
+- The sprints count as work steps above 105 % FTP (a few seconds each), so they show in the above-threshold
+  minutes. The title is "Endurance ride with sprints 6 x 8 s". The Strava title keeps it (a targeted ride).
+- **Evidence:** short sprints raise power and aerobic markers with little time (Gibala 2006, recreational
+  riders, 2 weeks). No trial puts sprints inside an easy ride for amateurs, so this is a coaching convention (C).
 
 ## 8. Purposes
 
@@ -602,6 +641,9 @@ switches from the working default Q-E2-15: include weight, include goals, and an
 | `HISTORY_WEEKS`            | 24 complete weeks; median (or average)   | PO    | P96; at least 2 weeks with rides                            |
 | `ZONE2.default`            | 65 % of FTP, setting 56 to 75 %          | C / PO | P97; the band 56 to 75 % is fixed (P40)                    |
 | `SETTING_LIMITS`           | long ride 90 to 480 min, hours 3 to 25 h | PO    | P98; replace the level maximums                             |
+| `BALANCE_CAP_FACTOR`       | 1 / 1.5 / 2 (base, balanced, high)       | M     | P99; on the quality and above-threshold caps                |
+| `SPRINT_RIDES_PER_WEEK`    | 0 / 1 / 2                                | M     | P99; easy rides with sprints                                |
+| `SPRINT_RIDE_LADDER`       | 4x6 to 10x10 s by level and phase        | M / C | P99; section 7.5                                            |
 | `LOADING_GROWTH`           | +8 % a week (target)                     | C     | Inside the usual 5 to 10 % guideline                        |
 | `HOURS_GROWTH_CAP`         | +10 %                                    | C     | C2                                                          |
 | `LOAD_GROWTH_CAP`          | +15 %                                    | M     | C3                                                          |

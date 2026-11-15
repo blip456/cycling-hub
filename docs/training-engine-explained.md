@@ -20,7 +20,7 @@ The engine is a **pure function**. This means: the same inputs always give the s
 - **Heart rate reference.** LTHR (lactate threshold heart rate) or max heart rate. Without it, sessions show watts only.
 - **Intake answers.** Five level questions, hours per week, ranked goals ("purposes"), indoor/outdoor/both, available weekdays, an optional event (name, date, expected duration), and an optional target weight and date.
 - **Ride history.** Imported rides. They are matched to sessions, used to re-plan, and set where week 1 starts (the last 24 weeks, see section 5).
-- **Training settings.** Four optional settings on the Profile page: the Zone 2 target, the longest long ride, the most hours in a week, and median or average for the ride history.
+- **Training settings.** Five optional settings on the Profile page: the Zone 2 target, the longest long ride, the most hours in a week, median or average for the ride history, and the intensity balance.
 - **Weight log.** Used only for the weight-loss rules.
 
 **What comes out:** a `Plan` with weeks, sessions, notices and warnings. Plans are stored in `training_plans` and `planned_sessions`. Plan updates are logged in `plan_changes`.
@@ -83,11 +83,13 @@ This is like **TSS** (Training Stress Score), where one hour at FTP is 100. It u
 
 ### Training settings
 
-You can move four numbers without changing a rule (`engine/settings.ts`, rules section 3b):
+You can move these settings without changing a rule (`engine/settings.ts`, rules section 3b):
 
 - **Zone 2 target.** Zone 2 is 56 to 75 percent of FTP. That band is a fact and does not move. The plan aims at 65 percent by default, which is the lower middle of the band. You can choose any whole number from 56 to 75 (70 is the middle of the upper half). It applies to every Zone 2 step: endurance rides, the long ride and the easy riding inside hard sessions. Example, FTP 250 W: 65 percent is 163 W, 72 percent is 180 W, and the band stays 140 to 188 W.
 - **Longest long ride** (90 to 480 minutes) and **most hours in a week** (3 to 25) replace the maximums of your level (long ride 180, 270 or 330 minutes; hours 6, 10 or 16). Raising the hours maximum lets your hours per week go above the range of your level. Raising only the long ride maximum often changes nothing, because the long ride is a share of the week (about 36 percent): a 6 hour amateur week gives a long ride of about 130 minutes, far below the 180 minute maximum. Raise the hours first.
 - **Median or average** for the ride history (see "Your real riding sets week 1" in section 5).
+- **Intensity balance.** Base-focused is the plan as described below. **Balanced** adds one VO2 max session a week from the Build phase and one easy ride a week with a few short sprints. **High-intensity** makes the first hard session VO2 max from week 1, adds a second VO2 max session from Build, and puts sprints in two easy rides a week. The number of hard sessions, the rest days and the recovery weeks stay the same; the limits on hard work (quality and above-threshold minutes) are 1.5 or 2 times higher. Measured on the example plans, the time above 105 percent of FTP goes from 0 to about 2 to 4 percent (balanced) and 5 to 10 percent (high) of the week. That is less than the "20 percent hard" of the studies on polarized training, and no study tested a VO2 max dominated plan at 8 to 10 hours a week, so treat it as more or less, not as a published ratio.
+- **A sprint ride** is an easy endurance ride: 20 minutes at Zone 2, then a sprint every 4 minutes (all-out for 6 to 10 seconds, easy spinning for the rest of the 4 minutes), then Zone 2 to the end. It is not a hard session. Example, committed, 75 minutes, 6 sprints of 8 seconds.
 
 An empty field means the default. A short fact on the plan says which settings are in use.
 
