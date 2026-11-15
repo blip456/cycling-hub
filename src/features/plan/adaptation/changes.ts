@@ -66,7 +66,9 @@ const payloadSchema = z.object({
 
 /** The payload of a row, or null when the stored JSON is not in the expected shape (the row is then left out). */
 export function payloadFromJson(json: unknown): ChangePayload | null {
-  const parsed = payloadSchema.safeParse(json);
+  // The `changes` column must be a JSON array (check constraint `plan_changes_changes_check`), so the payload
+  // is stored as the one element of an array; a bare object is read too.
+  const parsed = payloadSchema.safeParse(Array.isArray(json) ? json[0] : json);
   if (!parsed.success) return null;
   const v = parsed.data;
   return {

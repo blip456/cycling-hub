@@ -100,7 +100,8 @@ export function createSupabaseRunnerApi(userId: string): RunnerApi {
     async insertChange({ planId, reason, payload }) {
       const { data, error } = await getSupabase()
         .from("plan_changes")
-        .insert({ plan_id: planId, reason, changes: toJson(payload), undone_at: null })
+        // The column is checked to be a JSON array (plan_changes_changes_check): the payload is its one element.
+        .insert({ plan_id: planId, reason, changes: [toJson(payload)], undone_at: null })
         .select("id")
         .single();
       if (error) throw new Error(error.message);
