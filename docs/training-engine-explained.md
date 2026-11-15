@@ -197,6 +197,8 @@ Code: `adapt/evaluate.ts` (`evaluatePlan`), `adapt/rebuild.ts`, `adapt/merge.ts`
 4. Otherwise call `buildPlan` again and rebuild only the **future** sessions.
 5. Store a "Plan updated" notice with reasons. The old version is kept for **Undo**.
 
+**What you see after an update.** The "Plan updated" card says in one sentence what the update does to the weeks it touched (for example "+1 h 10 min riding, load +4 %, +1 hard session"). The Changes page lists each changed session with before, now and why (a target change names the step and the new percent of FTP and watts), a table "What it does to your weeks" (riding time, load, hard sessions and minutes above 105 percent of FTP, before and after, per week and in total) and the training settings that were in effect. Saving training settings on the Profile page runs the evaluation at once and answers on that page, also when no session changes.
+
 **Never changed:** past sessions, done/missed/skipped sessions, today's session when a ride exists, manual matches, and the calendar skeleton (start date, recovery weeks, event, taper).
 
 **Missed and extra rides:**
