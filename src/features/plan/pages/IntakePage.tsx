@@ -12,7 +12,7 @@ import { Button } from "@/components/ui";
 import { useBaseline } from "@/features/baseline/hooks";
 import { useRides } from "@/features/rides/hooks";
 import { useMediaQuery, DESKTOP_QUERY } from "@/lib/use-media-query";
-import { buildPlan, recentWeeklyHours, type PlanSettings } from "../engine";
+import { buildPlan, recentWeeklyHours, suggestedHoursAnswer, type PlanSettings } from "../engine";
 import { toAdaptRide } from "../adaptation/stored";
 import { planSettingsOf } from "../schemas";
 import { currentIntake } from "../adaptation/inputs";
@@ -138,6 +138,7 @@ function IntakeForm({
   profileEnvironment,
   planSettings,
   recentAverageHours,
+  suggestedHours,
   hasExisting,
   edit,
 }: {
@@ -148,6 +149,8 @@ function IntakeForm({
   /** The training settings and the weekly hours of the last 24 weeks, for the plan the page builds. */
   planSettings: PlanSettings;
   recentAverageHours: number | undefined;
+  /** The L2 answer the rides of the last 3 months suggest. */
+  suggestedHours: { answer: 0 | 1 | 2 | 3; hours: number } | undefined;
   hasExisting: boolean;
   /** Set when the plan is edited (P81): the plan, and its answers as they are now. */
   edit?: { plan: StoredPlan; current: EditCurrent };
@@ -182,6 +185,7 @@ function IntakeForm({
       maxHr: baseline.maxHr,
       settings: planSettings,
       ...(recentAverageHours !== undefined ? { recentAverageHours } : {}),
+      ...(suggestedHours ? { suggestedHours } : {}),
       ...(edit ? { fixedStart: firstDayOf(edit.plan) } : {}),
     }),
     [
@@ -192,6 +196,7 @@ function IntakeForm({
       baseline,
       planSettings,
       recentAverageHours,
+      suggestedHours,
       edit,
     ],
   );
@@ -480,6 +485,17 @@ export function IntakePage({ edit = false }: { edit?: boolean }) {
         : undefined,
     [rides.data, training],
   );
+  const suggestedHours = useMemo(
+    () =>
+      training
+        ? suggestedHoursAnswer(
+            (rides.data ?? []).map(toAdaptRide),
+            intakeToday(),
+            training.historyStat,
+          )
+        : undefined,
+    [rides.data, training],
+  );
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const failed = baseline.isError || profile.isError || existing.isError;
   const retry = () => {
@@ -534,6 +550,7 @@ export function IntakePage({ edit = false }: { edit?: boolean }) {
       profileEnvironment={profile.data.ridingEnvironment}
       planSettings={planSettings}
       recentAverageHours={recentAverageHours}
+      suggestedHours={suggestedHours}
       hasExisting={existing.data !== null}
     />
   );

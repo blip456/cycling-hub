@@ -43,13 +43,15 @@ function Fieldset({
   legend,
   children,
   className = "",
+  describedBy,
 }: {
   legend: string;
   children: ReactNode;
   className?: string;
+  describedBy?: string | undefined;
 }) {
   return (
-    <fieldset className={className}>
+    <fieldset className={className} aria-describedby={describedBy}>
       <legend className="mb-1 text-caption font-semibold text-text">{legend}</legend>
       {children}
     </fieldset>
@@ -242,7 +244,24 @@ export function PurposesStep({
 
 // ---- step 2: level ---------------------------------------------------------------------------------
 
-export function LevelStep({ draft, change, errors }: StepProps) {
+/** Index of the hours question (L2) in the level questions. */
+const HOURS_QUESTION = 1;
+
+export function LevelStep({ draft, change, errors, ctx }: StepProps) {
+  const suggested = ctx.suggestedHours;
+  const prefilled = useRef(false);
+  const touched = useRef(false);
+
+  // L2 starts from the rides of the last 3 months, once, and only while the question is still open.
+  useEffect(() => {
+    if (prefilled.current || touched.current || !suggested) return;
+    if (draft.answers[HOURS_QUESTION] !== null) return;
+    prefilled.current = true;
+    change({
+      answers: draft.answers.map((a, i) => (i === HOURS_QUESTION ? suggested.answer : a)),
+    });
+  }, [suggested, draft.answers, change]);
+
   return (
     <div>
       <p className="mb-4 max-w-[60ch] text-body text-muted">
@@ -253,8 +272,13 @@ export function LevelStep({ draft, change, errors }: StepProps) {
         {LEVEL_QUESTIONS.map((q, qi) => {
           const key = `answer${String(qi)}` as "answer0";
           const error = errors[key];
+          const hint = qi === HOURS_QUESTION && suggested ? `${key}-hint` : undefined;
           return (
-            <Fieldset key={q.question} legend={q.question}>
+            <Fieldset
+              key={q.question}
+              legend={q.question}
+              describedBy={error ? `${key}-error` : hint}
+            >
               {q.answers.map((answer, ai) => (
                 <ChoiceRow
                   key={answer}
@@ -265,12 +289,23 @@ export function LevelStep({ draft, change, errors }: StepProps) {
                   invalid={error !== undefined && ai === 0}
                   describedBy={error ? `${key}-error` : undefined}
                   onChange={() => {
+                    if (qi === HOURS_QUESTION) touched.current = true;
                     change({ answers: draft.answers.map((a, i) => (i === qi ? ai : a)) });
                   }}
                 >
                   {answer}
                 </ChoiceRow>
               ))}
+              {hint && suggested ? (
+                <p id={hint} className="mt-1.5 text-caption text-muted">
+                  {draft.answers[qi] === suggested.answer
+                    ? "Filled in from your rides: "
+                    : "Your rides show "}
+                  about {String(Math.round(suggested.hours * 10) / 10)} h a week over the last 3
+                  months.
+                  {draft.answers[qi] === suggested.answer ? " Change it if that is not right." : ""}
+                </p>
+              ) : null}
               {error ? <FieldError id={`${key}-error`}>{error}</FieldError> : null}
             </Fieldset>
           );
@@ -301,12 +336,12 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
   return (
     <div className="flex max-w-[480px] flex-col gap-5">
       <TextField
-        label="Average hours per week"
+        label="Hours you want to train per week"
         inputMode="decimal"
         autoComplete="off"
         value={draft.hours}
         error={errors.hours}
-        helper="Everything you can train in a normal week, including the long ride. Between 1 and 25 hours, in half hours."
+        helper="What you plan to train in a normal week from now on, including the long ride. This is a target, not what you rode before. Between 1 and 25 hours, in half hours."
         onChange={(e) => {
           change({ hours: e.target.value });
         }}

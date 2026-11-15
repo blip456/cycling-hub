@@ -41,9 +41,10 @@ export function recentWeeklyHours(
   rides: readonly HistoryRide[],
   today: IsoDate,
   stat: HistoryStat,
+  weeks: number = HISTORY_WEEKS,
 ): number | undefined {
   const thisMonday = mondayOnOrBefore(today);
-  const first = plusDays(thisMonday, -7 * HISTORY_WEEKS);
+  const first = plusDays(thisMonday, -7 * weeks);
   const last = plusDays(thisMonday, -1);
   const minutesByWeek = new Map<IsoDate, number>();
   for (const ride of rides) {
@@ -63,4 +64,23 @@ export function recentWeeklyHours(
   const value =
     stat === "median" ? median(hours) : hours.reduce((sum, h) => sum + h, 0) / hours.length;
   return Math.round(value * 100) / 100;
+}
+
+/** Weeks behind "the last 3 months" in level question L2. */
+export const LEVEL_HOURS_WEEKS = 13;
+
+/**
+ * The answer to level question L2 ("How many hours a week did you ride in the last 3 months?") that the
+ * rides suggest: 0 under 4 h, 1 for 4 to under 8 h, 2 for 8 to under 12 h, 3 for 12 h or more. Undefined
+ * when the rides say too little (see `recentWeeklyHours`). It only pre-fills the question; the PO can change it.
+ */
+export function suggestedHoursAnswer(
+  rides: readonly HistoryRide[],
+  today: IsoDate,
+  stat: HistoryStat,
+): { answer: 0 | 1 | 2 | 3; hours: number } | undefined {
+  const hours = recentWeeklyHours(rides, today, stat, LEVEL_HOURS_WEEKS);
+  if (hours === undefined) return undefined;
+  const answer = hours >= 12 ? 3 : hours >= 8 ? 2 : hours >= 4 ? 1 : 0;
+  return { answer, hours };
 }

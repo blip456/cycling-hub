@@ -155,7 +155,7 @@ describe("the questions with the current answers", () => {
     expect(items[0]).toHaveTextContent("Speed");
     await next(user, "Next: Level", "Tell us about your riding");
     await next(user, "Next: Time and place", "How much time do you have?");
-    expect(screen.getByLabelText("Average hours per week")).toHaveValue("9.5");
+    expect(screen.getByLabelText("Hours you want to train per week")).toHaveValue("9.5");
   });
 
   it("fills the level, the time and place and the event, and shows the start date as fixed", async () => {
@@ -165,7 +165,7 @@ describe("the questions with the current answers", () => {
     const first = screen.getByRole("group", { name: "How long have you been riding regularly?" });
     expect(within(first).getByRole("radio", { name: "3 to 5 years" })).toBeChecked();
     await next(user, "Next: Time and place", "How much time do you have?");
-    expect(screen.getByLabelText("Average hours per week")).toHaveValue("8");
+    expect(screen.getByLabelText("Hours you want to train per week")).toHaveValue("8");
     expect(screen.getByText("Tue, Wed, Fri, Sat, Sun")).toBeInTheDocument();
     await next(user, "Next: Start and event", "When do you start?");
     expect(screen.getByText("Monday 28 Sep 2026")).toBeInTheDocument();
@@ -219,10 +219,10 @@ describe("validation is the one of the intake", () => {
     await openEdit(user);
     await next(user, "Next: Level", "Tell us about your riding");
     await next(user, "Next: Time and place", "How much time do you have?");
-    await user.clear(screen.getByLabelText("Average hours per week"));
+    await user.clear(screen.getByLabelText("Hours you want to train per week"));
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     expect(screen.getByText("Enter your hours per week.")).toBeInTheDocument();
-    await user.type(screen.getByLabelText("Average hours per week"), "26");
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "26");
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     expect(screen.getByText("Hours can be at most 25.")).toBeInTheDocument();
   });
@@ -283,8 +283,8 @@ describe("the summary", () => {
     await openEdit(user);
     await next(user, "Next: Level", "Tell us about your riding");
     await next(user, "Next: Time and place", "How much time do you have?");
-    await user.clear(screen.getByLabelText("Average hours per week"));
-    await user.type(screen.getByLabelText("Average hours per week"), "10");
+    await user.clear(screen.getByLabelText("Hours you want to train per week"));
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "10");
     await next(user, "Next: Start and event", "When do you start?");
     await next(user, "Review the summary", "Check your changes");
     const changes = screen.getByRole("region", { name: "What will change" });
@@ -328,8 +328,8 @@ describe("saving", () => {
     await openEdit(user);
     await next(user, "Next: Level", "Tell us about your riding");
     await next(user, "Next: Time and place", "How much time do you have?");
-    await user.clear(screen.getByLabelText("Average hours per week"));
-    await user.type(screen.getByLabelText("Average hours per week"), hours);
+    await user.clear(screen.getByLabelText("Hours you want to train per week"));
+    await user.type(screen.getByLabelText("Hours you want to train per week"), hours);
     await next(user, "Next: Start and event", "When do you start?");
     await next(user, "Review the summary", "Check your changes");
     await user.click(await screen.findByRole("button", { name: "Save changes" }));
@@ -500,8 +500,8 @@ describe("Undo", () => {
     await openEdit(user);
     await next(user, "Next: Level", "Tell us about your riding");
     await next(user, "Next: Time and place", "How much time do you have?");
-    await user.clear(screen.getByLabelText("Average hours per week"));
-    await user.type(screen.getByLabelText("Average hours per week"), "10");
+    await user.clear(screen.getByLabelText("Hours you want to train per week"));
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "10");
     await next(user, "Next: Start and event", "When do you start?");
     await next(user, "Review the summary", "Check your changes");
     await user.click(await screen.findByRole("button", { name: "Save changes" }));

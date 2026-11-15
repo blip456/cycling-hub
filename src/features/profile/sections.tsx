@@ -240,8 +240,8 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
       </fieldset>
       <TextField
         ref={hoursRef}
-        label="Average hours per week"
-        helper="Hours you can train in a normal week, from 1 to 25. Half hours are fine. Optional."
+        label="Hours you want to train per week"
+        helper="What you plan to train in a normal week from now on, from 1 to 25. This is a target, not what you rode before. Half hours are fine. Optional."
         error={errors.hours}
         value={hours}
         onChange={(e) => {
@@ -318,7 +318,7 @@ export function WeekSection({ profile, report }: SectionProps) {
             })}
           </ul>
           <div className="mt-2">
-            <ViewRow label="Average hours per week">
+            <ViewRow label="Hours you want to train per week">
               {profile.weeklyHours === null ? (
                 <NotSet />
               ) : (
