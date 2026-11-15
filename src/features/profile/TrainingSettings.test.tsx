@@ -327,6 +327,7 @@ describe("Profile: training settings (P96 to P98)", () => {
       run.mockResolvedValue({ status: "failed", error: new Error("down") });
       await saveZone2();
       expect(await screen.findByText("Plan not updated")).toBeInTheDocument();
+      expect(screen.getByText("Reason: down")).toBeInTheDocument();
       expect(
         screen.getByText(/Your settings are saved, but the plan could not be updated/),
       ).toBeVisible();

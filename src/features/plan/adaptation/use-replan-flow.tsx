@@ -52,9 +52,11 @@ export function usePlanRunFlow(mode: "replan" | "settings"): {
   const mutation = useRunPlan(mode);
   const [answer, setAnswer] = useState<Answer>(null);
   const { mutate } = mutation;
+  const [detail, setDetail] = useState<string | null>(null);
 
   useEffect(() => {
-    if (answer === null) return undefined;
+    // A failure stays until it is dismissed: the PO needs time to read why it failed.
+    if (answer === null || answer === "failed") return undefined;
     const timer = setTimeout(() => {
       setAnswer(null);
     }, FOLLOW_UP_MS);
@@ -65,11 +67,15 @@ export function usePlanRunFlow(mode: "replan" | "settings"): {
 
   const replan = useCallback(() => {
     setAnswer(null);
+    setDetail(null);
     mutate(undefined, {
       onSuccess: (outcome) => {
         setAnswer(outcome === "updated" ? null : outcome);
       },
-      onError: () => {
+      onError: (error) => {
+        // The reason as the database or the network gave it, so a failure can be traced.
+        console.error("Plan run failed:", error);
+        setDetail(error.message);
         setAnswer("failed");
       },
     });
@@ -88,6 +94,12 @@ export function usePlanRunFlow(mode: "replan" | "settings"): {
               <strong className="font-semibold">{message[0]}</strong>
               <br />
               {message[1]}
+              {answer === "failed" && detail ? (
+                <>
+                  <br />
+                  <span className="text-caption">Reason: {detail}</span>
+                </>
+              ) : null}
             </>
           ),
           onDismiss: () => {
