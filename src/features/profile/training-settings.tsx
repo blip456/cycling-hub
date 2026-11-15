@@ -391,8 +391,9 @@ export function TrainingSettingsSection({ profile, report }: SectionProps) {
               <span className="block text-caption text-muted">Set by your level</span>
             ) : null}
           </ViewRow>
-          <ViewRow label="Recent weekly hours">
-            {HISTORY_LABEL[training.historyStat]} of the last {HISTORY_WEEKS} weeks
+          <ViewRow label="Weekly hours basis">
+            <span>{HISTORY_LABEL[training.historyStat]}</span>
+            <span className="block text-caption text-muted">Of the last {HISTORY_WEEKS} weeks</span>
           </ViewRow>
           <p className="mt-1 text-caption text-muted">
             Saving updates the sessions that have not happened yet.
