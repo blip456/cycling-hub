@@ -5,7 +5,7 @@ the biggest risk of this sprint (see the risks in [`../backlog.md`](../backlog.m
 every rule and every number. The worked examples are in [`example-plans.md`](example-plans.md).
 
 Decisions this follows: P40 (Coggan zones), P58 to P67 (rule-based plan, 12 weeks, intake, missed
-sessions, indoor / outdoor, calendar, no power data, purposes, event with taper, summaries). Working
+sessions, indoor / outdoor, calendar, no power data, purposes, event with taper, summaries; P96 to P98: 24-week ride history, Zone 2 target and level limits as settings). Working
 defaults Q-E2-9 to Q-E2-16 are assumptions until the PO corrects them.
 
 ## How to read this page
@@ -43,7 +43,8 @@ defaults Q-E2-9 to Q-E2-16 are assumptions until the PO corrects them.
 | FTP                                  | Baseline (`ftp.ts`), zones from `powerZones(ftp)`                | All power targets                              | **No plan**: empty state "Plan needs a baseline" (item 9)     |
 | LTHR or max HR                       | Baseline, zones from `heartRateZones({ lthr, maxHr })`           | bpm ranges                                     | Sessions show watts only                                      |
 | Weight log, target weight, date      | `weight.ts` (`trend`, `summarize`); target from intake           | Weight loss rules (section 9)                  | Weight rules are off, the plan is built without them          |
-| Ride history                         | Imported rides: date, moving time, average power, average HR, tags | Week 1 volume, matching, warnings, re-planning | No history: week 1 starts at the default fraction             |
+| Ride history                         | Imported rides: date, moving time, average power, average HR, tags | Week 1 volume (last 24 weeks, section 5), matching, warnings, re-planning | No history: week 1 starts at the default fraction |
+| Training settings                    | Profile: Zone 2 target, long ride maximum, hours maximum, history statistic | Section 3b, section 5                | Level defaults; Zone 2 at 65 %; median                        |
 | Plan state                           | Session statuses, matches, last fingerprint                      | Re-evaluation (section 12)                     | New plan                                                      |
 
 Types reused from `src/features/athlete/`: `Weekday`, `IsoDate` and the date helpers (`dates.ts`), `Zone`
@@ -111,6 +112,34 @@ change it. The ride history never changes the level; it only lowers the starting
 | Third structured session             | No                | No                | Long ride with tempo blocks (Build, Peak) | M |
 
 Every level has at least one day without a ride (6 rides is the maximum) (C).
+
+## 3b. Training settings (P97, P98)
+
+Settings the PO can change on the Profile page. Every one is optional; empty means the default. They change
+numbers inside the rules and never switch a rule off. They enter the engine as `PlanInput.settings` and are part
+of the fingerprint only when they differ from the default, so changing one re-plans the future sessions and a
+plan without settings keeps its fingerprint.
+
+| Setting                  | Default                        | Allowed                         | What it changes                                                                                     |
+| ------------------------ | ------------------------------ | ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Zone 2 target            | 65 % of FTP                    | 56 to 75 %, whole percents      | The target of endurance, long ride, easy fill and easy gaps. **The band (56 to 75 %) does not move.** |
+| Longest long ride        | Level: 180 / 270 / 330 minutes | 90 to 480 minutes, steps of 5   | The upper limit of the long ride (the level minimum is kept).                                       |
+| Most hours in a week     | Level: 6 / 10 / 16 h           | 3 to 25 h, half hours           | The upper limit H is clamped to; it replaces the level maximum (the level minimum is kept).          |
+| Recent weekly hours      | Median                         | Median or average               | How the last 24 weeks are summarised for week 1 (section 5).                                         |
+
+- The Zone 2 target applies to every Z2 step, indoors (exact watts) and outdoors (the band stays 56 to 75 %).
+  Recovery (50 %), warm-up, rests and all other zones keep their own targets. The planned load of Z2 time rises
+  with the target (`minutes / 60 x (percent / 100)^2 x 100`); minutes and caps do not change.
+- A higher hours maximum lets H go above the level range. It does not change the level, the number of rides, the
+  structured budget or the minimum and maximum length of an easy or a structured ride, so the extra hours go to
+  the rides that have room (mostly the long ride, the largest share).
+- **The long ride is a share of the week** (weight 2.8 of about 7.6 for a committed rider, so about 36 %). A higher
+  long ride maximum only matters when the week's hours give a long ride that long: an amateur at 6 h gets about
+  130 minutes at the peak, far below the 180-minute maximum. To get longer long rides, raise the hours first.
+- A plain fact is shown when a setting differs from the default ("Your training settings apply: ...").
+- Not settings (yet): the growth caps (+8 / +10 % hours, +10 % long ride, +15 % load), the quality and
+  above-threshold caps, the number of rides, the ladders and the level itself (that one is chosen in the level
+  question and can be overridden).
 
 ## 4. The 12-week structure
 
@@ -183,8 +212,12 @@ never to more.
 | Recovery  | 70 % of the previous loading week                                                             | C     |
 | Taper     | Percent of H from the table in section 4                                                      | C     |
 
-`A` is the average weekly riding hours of the last 4 weeks, used only when at least 2 of those weeks have
-rides. This stops a rider who says 8 h but rides 2 h from starting at 6 h.
+`A` is the weekly riding hours of the **last 24 complete weeks** (Monday to Sunday, the running week is left
+out), as the **median** or the **average** of those weeks (setting, default median; P96). It is used only when at
+least 2 weeks have rides. Weeks before the first ride in the window are not counted (a new rider is not pulled
+down by empty weeks before riding), empty weeks after it are, and commute rides are left out. This stops a rider
+who says 8 h but rides 2 h from starting at 6 h, and lets a rider who rides 6 h start near that. `A` is
+recomputed at every re-evaluation; the fingerprint rounds it to a quarter hour, so small changes do not re-plan.
 
 H is a **full normal week**, so the plan average over 12 weeks is lower than H (the plans in
 [`example-plans.md`](example-plans.md) show about 82 to 86 %). Open question for the PO: or should H be the
@@ -566,6 +599,9 @@ switches from the working default Q-E2-15: include weight, include goals, and an
 | `PLAN_WEEKS`               | 12                                       | PO    | P59                                                         |
 | `START_FRACTION`           | 0.75 of H                                | M     | A gentle first week                                         |
 | `START_FROM_HISTORY`       | `1.10 x A`, clamp 0.60 to 0.90 of H      | M     | Do not start far above what the PO actually rides           |
+| `HISTORY_WEEKS`            | 24 complete weeks; median (or average)   | PO    | P96; at least 2 weeks with rides                            |
+| `ZONE2.default`            | 65 % of FTP, setting 56 to 75 %          | C / PO | P97; the band 56 to 75 % is fixed (P40)                    |
+| `SETTING_LIMITS`           | long ride 90 to 480 min, hours 3 to 25 h | PO    | P98; replace the level maximums                             |
 | `LOADING_GROWTH`           | +8 % a week (target)                     | C     | Inside the usual 5 to 10 % guideline                        |
 | `HOURS_GROWTH_CAP`         | +10 %                                    | C     | C2                                                          |
 | `LOAD_GROWTH_CAP`          | +15 %                                    | M     | C3                                                          |
