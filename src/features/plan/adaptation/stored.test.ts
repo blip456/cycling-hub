@@ -37,6 +37,10 @@ describe.each([
   ["B", EXAMPLE_B],
   ["C", EXAMPLE_C],
   ["D", EXAMPLE_D],
+  // Easy rides with sprints (rules section 7.5) must come back from the rows the way the engine wrote them.
+  ["A balanced", { ...EXAMPLE_A, settings: { intensityBalance: "balanced" as const } }],
+  ["B high", { ...EXAMPLE_B, settings: { intensityBalance: "high" as const } }],
+  ["C balanced", { ...EXAMPLE_C, settings: { intensityBalance: "balanced" as const } }],
 ])("example plan %s read back from rows", (_name, input) => {
   const { plan, stored } = roundTrip(input);
 

@@ -8,6 +8,7 @@ import type { Ride } from "@/features/rides/api";
 import * as weightApi from "@/features/weight/api";
 import { UNDO_MS } from "@/features/weight/use-weight-cards";
 import { mockViewport } from "@/test/match-media";
+import { DEFAULT_TRAINING_SETTINGS } from "./schemas";
 import { fakeAuth, fakeSession, renderWithProviders } from "@/test/render";
 import * as api from "./data/api";
 import { mockPlanApi, NOW, planFixture, PLAN_INPUT, TODAY } from "./data/test-support";
@@ -126,6 +127,7 @@ describe("loading, error and empty states", () => {
       eventName: null,
       eventDate: null,
       availableDays: ["mon"],
+      training: DEFAULT_TRAINING_SETTINGS,
     });
     vi.mocked(weightApi.fetchWeightEntries).mockResolvedValue([]);
     renderPage();

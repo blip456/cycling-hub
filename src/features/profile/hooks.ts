@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { planKeys } from "@/features/plan/data";
 import { useAuth } from "@/lib/auth/auth-context";
 import { fetchProfile, saveProfileSection, type Profile, type ProfilePatch } from "./api";
 import { fetchReminderSettings, saveReminderSettings, type ReminderSettings } from "./reminder-api";
@@ -40,6 +41,8 @@ function applyPatch(profile: Profile, patch: ProfilePatch): Profile {
       return { ...profile, levelAnswers: patch.levelAnswers, level: patch.level };
     case "event":
       return { ...profile, eventName: patch.eventName, eventDate: patch.eventDate };
+    case "training":
+      return { ...profile, training: patch.training };
     case "goal":
       return { ...profile, goal: patch.goal };
   }
@@ -56,7 +59,14 @@ export function useSaveProfileSection() {
         profile ? applyPatch(profile, patch) : profile,
       );
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: profileKeys.detail(userId) }),
+    onSettled: (_data, _error, patch) => {
+      // The training settings are an input of the plan: the plan's copy of the profile is refreshed, which
+      // also starts a re-evaluation (the other sections are read when the plan is next evaluated).
+      if (patch.section === "training") {
+        void queryClient.invalidateQueries({ queryKey: planKeys.profile(userId) });
+      }
+      return queryClient.invalidateQueries({ queryKey: profileKeys.detail(userId) });
+    },
   });
 }
 

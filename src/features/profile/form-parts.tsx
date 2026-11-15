@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { AlertIcon } from "@/components/icons";
 import { Button } from "@/components/ui";
 
-export type SectionId = "about" | "week" | "purposes" | "level" | "event" | "goal";
+export type SectionId = "about" | "week" | "purposes" | "level" | "event" | "training" | "goal";
 
 /** How a section tells the page that a save failed ("Not saved" card, P12) or is no longer relevant. */
 export type SaveReport = {

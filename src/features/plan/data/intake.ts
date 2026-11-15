@@ -18,6 +18,7 @@ import {
   type Intake,
   type Level,
   type PlanInput,
+  type PlanSettings,
   type Purpose,
 } from "../engine";
 import {
@@ -413,6 +414,10 @@ export type EngineContext = IntakeContext & {
   ftp: number | null;
   lthr: number | null;
   maxHr: number | null;
+  /** The PO's training settings (Zone 2 target, level limits); the plan is built with them. */
+  settings?: PlanSettings;
+  /** Weekly hours of the last 24 weeks (median or average); week 1 starts from it. */
+  recentAverageHours?: number;
 };
 
 /** The weight goal of a draft when both fields are filled and valid; null otherwise. */
@@ -458,7 +463,17 @@ export function engineInput(
     ...(hasWeightLoss(draft.purposes) && ctx.weightKg !== null ? { weightKg: ctx.weightKg } : {}),
     ...(goal ? { weightGoal: { targetKg: goal.targetKg, targetDate: goal.targetDate } } : {}),
   };
-  return { intake, today: ctx.today, ftp: ctx.ftp, lthr: ctx.lthr, maxHr: ctx.maxHr };
+  return {
+    intake,
+    today: ctx.today,
+    ftp: ctx.ftp,
+    lthr: ctx.lthr,
+    maxHr: ctx.maxHr,
+    ...(ctx.settings ? { settings: ctx.settings } : {}),
+    ...(ctx.recentAverageHours !== undefined
+      ? { adjustments: { recentAverageHours: ctx.recentAverageHours } }
+      : {}),
+  };
 }
 
 /** The profile fields a step saves when the PO moves on (so a refresh or a detour keeps the answers). */

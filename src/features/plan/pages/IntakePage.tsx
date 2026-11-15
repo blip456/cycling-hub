@@ -10,8 +10,11 @@ import {
 } from "@/components/status/status-context";
 import { Button } from "@/components/ui";
 import { useBaseline } from "@/features/baseline/hooks";
+import { useRides } from "@/features/rides/hooks";
 import { useMediaQuery, DESKTOP_QUERY } from "@/lib/use-media-query";
-import { buildPlan } from "../engine";
+import { buildPlan, recentWeeklyHours, type PlanSettings } from "../engine";
+import { toAdaptRide } from "../adaptation/stored";
+import { planSettingsOf } from "../schemas";
 import { currentIntake } from "../adaptation/inputs";
 import { EditChanges } from "../manage/EditChanges";
 import { useEditPlan } from "../manage/use-edit-plan";
@@ -133,6 +136,8 @@ function IntakeForm({
   baseline,
   availableDays,
   profileEnvironment,
+  planSettings,
+  recentAverageHours,
   hasExisting,
   edit,
 }: {
@@ -140,6 +145,9 @@ function IntakeForm({
   baseline: { ftp: number; lthr: number | null; maxHr: number | null };
   availableDays: EngineContext["availableDays"];
   profileEnvironment: EngineContext["profileEnvironment"];
+  /** The training settings and the weekly hours of the last 24 weeks, for the plan the page builds. */
+  planSettings: PlanSettings;
+  recentAverageHours: number | undefined;
   hasExisting: boolean;
   /** Set when the plan is edited (P81): the plan, and its answers as they are now. */
   edit?: { plan: StoredPlan; current: EditCurrent };
@@ -172,9 +180,20 @@ function IntakeForm({
       ftp: baseline.ftp,
       lthr: baseline.lthr,
       maxHr: baseline.maxHr,
+      settings: planSettings,
+      ...(recentAverageHours !== undefined ? { recentAverageHours } : {}),
       ...(edit ? { fixedStart: firstDayOf(edit.plan) } : {}),
     }),
-    [today, weight.weight?.kg, availableDays, profileEnvironment, baseline, edit],
+    [
+      today,
+      weight.weight?.kg,
+      availableDays,
+      profileEnvironment,
+      baseline,
+      planSettings,
+      recentAverageHours,
+      edit,
+    ],
   );
   const base = edit ? "/plan/edit" : "/plan/new";
 
@@ -446,6 +465,21 @@ export function IntakePage({ edit = false }: { edit?: boolean }) {
   const profile = usePlanProfile();
   const goal = useActiveWeightGoal();
   const existing = usePlan();
+  const rides = useRides();
+  // The rides are not waited for: without them the plan simply starts from the hours asked for.
+  const training = profile.data?.training;
+  const planSettings = useMemo(() => (training ? planSettingsOf(training) : {}), [training]);
+  const recentAverageHours = useMemo(
+    () =>
+      training
+        ? recentWeeklyHours(
+            (rides.data ?? []).map(toAdaptRide),
+            intakeToday(),
+            training.historyStat,
+          )
+        : undefined,
+    [rides.data, training],
+  );
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const failed = baseline.isError || profile.isError || existing.isError;
   const retry = () => {
@@ -498,6 +532,8 @@ export function IntakePage({ edit = false }: { edit?: boolean }) {
       }}
       availableDays={profile.data.availableDays}
       profileEnvironment={profile.data.ridingEnvironment}
+      planSettings={planSettings}
+      recentAverageHours={recentAverageHours}
       hasExisting={existing.data !== null}
     />
   );

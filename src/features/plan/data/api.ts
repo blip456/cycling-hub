@@ -4,12 +4,15 @@ import { getSupabase } from "@/lib/supabase/client";
 import type { Database } from "@/lib/supabase/database.types";
 import type { Intake, Plan } from "../engine";
 import {
+  DEFAULT_TRAINING_SETTINGS,
   levelAnswersFromStored,
   levelAnswersToStored,
   RIDING_ENVIRONMENTS,
   TRAINING_PURPOSES,
+  trainingSettingsFromRow,
   type RidingEnvironment,
   type TrainingPurpose,
+  type TrainingSettings,
 } from "../schemas";
 import {
   planFromRow,
@@ -157,6 +160,8 @@ export type PlanProfile = {
   eventName: string | null;
   eventDate: IsoDate | null;
   availableDays: Weekday[];
+  /** Training settings (P96 to P98); the plan reads them at every build and re-evaluation. */
+  training: TrainingSettings;
 };
 
 export const EMPTY_PLAN_PROFILE: PlanProfile = {
@@ -167,6 +172,7 @@ export const EMPTY_PLAN_PROFILE: PlanProfile = {
   eventName: null,
   eventDate: null,
   availableDays: [],
+  training: DEFAULT_TRAINING_SETTINGS,
 };
 
 const profileRow = z
@@ -178,6 +184,11 @@ const profileRow = z
     event_name: z.string().nullable(),
     event_date: z.string().nullable(),
     available_days: z.array(z.number()).nullable(),
+    zone2_target_percent: z.number().nullable(),
+    max_long_ride_min: z.number().nullable(),
+    max_weekly_hours: z.number().nullable(),
+    ride_history_stat: z.string().nullable(),
+    intensity_balance: z.string().nullable(),
   })
   .nullable();
 
@@ -185,7 +196,7 @@ export async function fetchPlanProfile(userId: string): Promise<PlanProfile> {
   const { data, error } = await getSupabase()
     .from("profiles")
     .select(
-      "riding_environment, weekly_hours, training_purposes, level_answers, event_name, event_date, available_days",
+      "riding_environment, weekly_hours, training_purposes, level_answers, event_name, event_date, available_days, zone2_target_percent, max_long_ride_min, max_weekly_hours, ride_history_stat, intensity_balance",
     )
     .eq("id", userId)
     .maybeSingle();
@@ -203,11 +214,12 @@ export async function fetchPlanProfile(userId: string): Promise<PlanProfile> {
     eventName: row.event_name,
     eventDate: row.event_date,
     availableDays: weekdaysFromDb(row.available_days),
+    training: trainingSettingsFromRow(row),
   };
 }
 
 /** The plan fields the intake may save (the days are saved on the Profile page only). */
-export type PlanProfilePatch = Partial<Omit<PlanProfile, "availableDays">>;
+export type PlanProfilePatch = Partial<Omit<PlanProfile, "availableDays" | "training">>;
 
 /** Saves the given plan fields; other profile columns stay as they are. */
 export async function savePlanProfile(userId: string, patch: PlanProfilePatch): Promise<void> {

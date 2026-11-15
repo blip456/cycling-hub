@@ -1,5 +1,6 @@
 import { LEVEL_SETTINGS } from "./constants";
-import type { Level, LevelAnswers, LevelResult } from "./types";
+import { levelSettingsFor } from "./settings";
+import type { Level, LevelAnswers, LevelResult, PlanSettings } from "./types";
 
 /** Sum of the five answers, 0 to 15 (section 3). */
 export function levelScore(answers: LevelAnswers): number {
@@ -48,9 +49,9 @@ export function scoreLevel(
   return { score, band, gated, level: override ?? gated };
 }
 
-/** H clamped to the hours range of the level. */
-export function clampHours(level: Level, hoursPerWeek: number): number {
-  const [min, max] = LEVEL_SETTINGS[level].hours;
+/** H clamped to the hours range of the level (the PO's hours maximum replaces the level maximum). */
+export function clampHours(level: Level, hoursPerWeek: number, settings?: PlanSettings): number {
+  const [min, max] = levelSettingsFor(level, settings).hours;
   const value = Number.isFinite(hoursPerWeek) ? hoursPerWeek : min;
   return Math.min(max, Math.max(min, value));
 }

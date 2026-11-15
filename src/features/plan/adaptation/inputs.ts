@@ -2,19 +2,20 @@
  * What the re-evaluation reads, as the data layer holds it, and the `EvaluateInput` built from it. Pure.
  *
  * The plan is evaluated against the inputs as they are now: the profile (days, hours, purposes, level,
- * event, environment), the active weight goal and the baseline. The stored plan only keeps what it was
+ * event, environment, training settings), the active weight goal, the baseline and the weekly hours ridden
+ * in the last 24 weeks (median or average, a setting). The stored plan only keeps what it was
  * built from (`training_plans.intake` and `ftp_w`), which is what a change is compared with to name its
  * reason ("new FTP", "days changed").
  */
 import type { IsoDate, WeightEntry } from "@/features/athlete";
 import type { Ride } from "@/features/rides/api";
 import type { EvaluateInput } from "../adapt";
-import type { Intake, PlanInput } from "../engine";
+import { recentWeeklyHours, type Intake, type PlanInput } from "../engine";
 import { purposesFromProfile } from "../data/intake";
 import type { PlanProfile, WeightGoalRecord } from "../data/api";
 import { firstDayOf } from "../data/model";
 import type { PlanSession, StoredPlan } from "../data/types";
-import { levelAnswersToStored } from "../schemas";
+import { levelAnswersToStored, planSettingsOf } from "../schemas";
 import { toAdaptRide, toStoredSessions } from "./stored";
 
 /** The baseline values the plan uses. */
@@ -91,17 +92,24 @@ export function buildEvaluateInput(
   inputs: RunnerInputs,
   today: IsoDate,
   edit?: Intake,
+  force?: boolean,
 ): Evaluation | null {
   const { plan, profile, goal, baseline } = inputs;
   const stored = plan.intake ?? edit ?? null;
   if (!stored) return null;
   const intake = edit ?? currentIntake(stored, profile, goal);
+  const rides = inputs.rides.map(toAdaptRide);
+  // Recomputed at every evaluation, so week 1's start follows what is really ridden (the fingerprint rounds
+  // it to a quarter hour, so small changes do not re-plan).
+  const recent = recentWeeklyHours(rides, today, profile.training.historyStat);
   const profileInput: PlanInput = {
     intake: { ...intake, startDate: firstDayOf(plan) },
     today,
     ftp: baseline.ftp ?? plan.ftp,
     lthr: baseline.lthr,
     maxHr: baseline.maxHr,
+    settings: planSettingsOf(profile.training),
+    ...(recent !== undefined ? { adjustments: { recentAverageHours: recent } } : {}),
   };
   return {
     profileInput,
@@ -112,13 +120,14 @@ export function buildEvaluateInput(
         previous: { ftp: plan.ftp, ...(plan.intake ? { intake: plan.intake } : {}) },
       },
       sessions: toStoredSessions(inputs.sessions, stored),
-      rides: inputs.rides.map(toAdaptRide),
+      rides,
       weightEntries: inputs.weights,
       profileInput,
       today,
       lastFingerprint: plan.fingerprint,
       undoneFingerprint: plan.undoneFingerprint,
       ...(edit ? { edited: true } : {}),
+      ...(force ? { force: true } : {}),
     },
   };
 }

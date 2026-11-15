@@ -11,6 +11,7 @@ import type { PlanProfile, WeightGoalRecord } from "../data/api";
 import { planFromRow, sessionFromRow, sessionInserts, toJson } from "../data/mapping";
 import type { PlanSession, StoredPlan } from "../data/types";
 import { purposesToProfile } from "../data/intake";
+import { DEFAULT_TRAINING_SETTINGS } from "../schemas";
 import type { PlanChange } from "./changes";
 import { contentColumns } from "./rows";
 import type { RunnerApi } from "./runner";
@@ -90,6 +91,7 @@ export function fakeDb(input: PlanInput): FakeDb {
       eventName: intake.event?.name ?? null,
       eventDate: intake.event?.date ?? null,
       availableDays: [...intake.availableDays],
+      training: DEFAULT_TRAINING_SETTINGS,
     },
     baseline: { ftp: input.ftp, lthr: input.lthr ?? null, maxHr: input.maxHr ?? null },
   };

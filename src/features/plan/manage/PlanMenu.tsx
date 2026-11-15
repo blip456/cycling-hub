@@ -5,6 +5,7 @@ import { ChevronRightIcon } from "@/components/icons";
 import { ConfirmDialog } from "@/features/rides/detail/ConfirmDialog";
 import { dangerSolidButtonClass } from "@/features/rides/detail/danger-button";
 import type { StoredPlan } from "../data";
+import { useReplanFlow } from "../adaptation/use-replan-flow";
 import { useRemovePlan } from "./use-remove-plan";
 
 const itemClass =
@@ -75,7 +76,7 @@ function RemoveDialog({
 }
 
 /**
- * The plan options on the Plan page and the Overview: Edit plan and Remove plan. A button that opens a short list
+ * The plan options on the Plan page and the Overview: Edit plan, Re-plan now and Remove plan. A button that opens a short list
  * (not an ARIA menu: plain links and buttons, so every key works as on any page). Escape closes it and gives the
  * focus back to the button; so does choosing "Remove plan" and then "Keep plan".
  */
@@ -83,6 +84,7 @@ export function PlanMenu({ plan }: { plan: StoredPlan }) {
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const remove = useRemovePlan();
+  const replanFlow = useReplanFlow();
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listId = useId();
@@ -142,6 +144,20 @@ export function PlanMenu({ plan }: { plan: StoredPlan }) {
             >
               Edit plan
             </Link>
+          </li>
+          <li>
+            <button
+              type="button"
+              className={itemClass}
+              aria-disabled={replanFlow.isPending}
+              onClick={() => {
+                setOpen(false);
+                buttonRef.current?.focus();
+                if (!replanFlow.isPending) replanFlow.replan();
+              }}
+            >
+              {replanFlow.isPending ? "Re-planning" : "Re-plan now"}
+            </button>
           </li>
           <li>
             <button

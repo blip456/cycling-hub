@@ -30,6 +30,17 @@ type Derived = Pick<PlannedSession, "mainSet" | "ladderStep">;
 /** The main set as the plan writes it ("3x15", sprints "6x8s") and its step on the ladder, from the steps. */
 function derive(kind: PlanSession["kind"], steps: readonly Step[], level: Level): Derived {
   if (kind === "openers") return { mainSet: "3x1", ladderStep: null };
+  if (kind === "endurance") {
+    // An easy ride with sprints (section 7.5): the work steps are the sprints.
+    const sprints = steps.filter((s) => s.kind === "work");
+    const first = sprints[0];
+    return first
+      ? {
+          mainSet: `${String(sprints.length)}x${String(Math.round(first.durationSec))}s`,
+          ladderStep: null,
+        }
+      : { mainSet: null, ladderStep: null };
+  }
   const ladderKind = kind === "long" ? "tempo" : kind;
   if (!isLadderKind(ladderKind)) return { mainSet: null, ladderStep: null };
   const work = steps.filter((s) => s.kind === "work");

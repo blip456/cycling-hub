@@ -218,3 +218,35 @@ export function undoableChange(
   if (!latest || latest.undoneAt !== null || latest.payload.undo === null) return null;
   return latest.payload.fingerprint === fingerprint ? latest : null;
 }
+
+/** What a "Re-plan now" did, for the screen that asked. */
+export type ReplanOutcome = "updated" | "unchanged" | "blocked" | "no-plan";
+
+/**
+ * Re-plan now: re-evaluates the plan even when its inputs did not change, so the future sessions are rebuilt
+ * with the current engine. A change is stored like any update (the "Plan updated" card with Undo shows it);
+ * `unchanged` means the plan already matches the engine.
+ */
+export function useReplan() {
+  const queryClient = useQueryClient();
+  const userId = useAuth().session?.user.id ?? "";
+  return useMutation<ReplanOutcome>({
+    mutationFn: async () => {
+      const today = brusselsDate();
+      if (today === null) throw new Error("No date");
+      const result = await runnerFor(queryClient, userId).run(today, { replan: true });
+      if (result.status === "failed") throw result.error;
+      if (result.status === "no-plan") return "no-plan";
+      queryClient.setQueryData<AdaptationView | null>(adaptationKeys.view(), result.view);
+      if (result.outcome === "blocked") return "blocked";
+      return result.change ? "updated" : "unchanged";
+    },
+    onSettled: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: planKeys.active() }),
+        queryClient.invalidateQueries({ queryKey: planKeys.sessionsAll() }),
+        queryClient.invalidateQueries({ queryKey: [...planKeys.all, "changes"] }),
+      ]);
+    },
+  });
+}

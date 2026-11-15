@@ -7,6 +7,10 @@ import { allocateMinutes, assignDays, type AllocationItem, type Slot } from "./a
 import { floor5, initialBudgetState, weekBudget, type BudgetState } from "./budget";
 import { plusDays, type WeekSkeleton } from "./calendar";
 import {
+  SPRINT_RIDES_PER_WEEK,
+  SPRINT_RIDE_LADDER,
+  SPRINT_RIDE_MIN_MINUTES,
+  type MainSet,
   EVENT_MINUTES,
   HOURS_PER_RIDE,
   INDOOR_EASY_MAX,
@@ -40,6 +44,7 @@ import {
   testMinutes,
 } from "./library";
 import { hardMix, hasSecondSlot, longRideHasBlocks } from "./mix";
+import { intensityBalance, levelSettingsFor, zone2Percent } from "./settings";
 import { resolveInput, hasUsableFtp } from "./resolve";
 import {
   ENGINE_VERSION,
@@ -72,6 +77,8 @@ type Draft = {
   held: boolean;
   /** A cap fix lowered the set. */
   loweredByCap: boolean;
+  /** Sprints of an easy endurance ride (section 7.5); null for a plain ride. */
+  sprints: MainSet | null;
 };
 
 type State = {
@@ -141,7 +148,9 @@ export function buildPlan(input: PlanInput): Plan {
   const { levelResult, hoursPerWeek, purposes, structure } = resolved;
   const { intake } = input;
   const level = levelResult.level;
-  const settings = LEVEL_SETTINGS[level];
+  const settings = levelSettingsFor(level, input.settings);
+  const zone2 = zone2Percent(input.settings);
+  const balance = intensityBalance(input.settings);
   const fingerprint = inputFingerprint(input);
   const warnings: Warning[] = [...resolved.blocked, ...structure.warnings];
   const notices: Notice[] = [...resolved.notices, ...structure.notices];
@@ -170,7 +179,11 @@ export function buildPlan(input: PlanInput): Plan {
   const holdWeeks = new Set(adjustments.holdWeeks ?? []);
   const noSecond = new Set(adjustments.noSecondHardWeeks ?? []);
   const extraEasy = new Set(adjustments.extraEasyRideWeeks ?? []);
-  const missed = new Set((adjustments.missedStructured ?? []).map((m) => `${m.week}:${m.kind}`));
+  const missed = new Set(
+    [...(adjustments.missedStructured ?? []), ...(adjustments.struggledStructured ?? [])].map(
+      (m) => `${m.week}:${m.kind}`,
+    ),
+  );
   const ftpTest = intake.ftpTest ?? "twenty-minute";
   const eventDate = structure.event?.date ?? null;
   const openersDate =
@@ -208,6 +221,7 @@ export function buildPlan(input: PlanInput): Plan {
       lthr: input.lthr,
       maxHr: input.maxHr,
       indoor: d.indoor,
+      zone2Percent: zone2,
     });
     if (context.heartRate === null) flags.hrMissing = true;
     if (d.kind === "event") {
@@ -238,6 +252,7 @@ export function buildPlan(input: PlanInput): Plan {
       durationMin: d.minutes,
       ...(d.wantedStep !== null ? { ladderStep: d.wantedStep } : {}),
       longBlocks: d.longBlocks,
+      sprintRide: d.kind === "endurance" ? d.sprints : null,
       ftpTest,
       context,
     });
@@ -277,6 +292,7 @@ export function buildPlan(input: PlanInput): Plan {
         hasTest: sk?.hasTest ?? false,
         purpose: structured || blocks ? d.purpose : null,
         longBlocks: blocks,
+        sprintRide: kind === "endurance" && result.mainSet !== null,
         steppedDown: lowered,
         held: d.held && structured,
         indoor: d.indoor,
@@ -345,6 +361,7 @@ export function buildPlan(input: PlanInput): Plan {
       purposes,
       phase: sk.phase === "taper" ? "peak" : sk.phase,
       week: sk.type === "loading" ? sk.number : 0,
+      balance,
     });
     let q1Kind: SessionKind;
     let q1Purpose: Purpose | null = mix.q1.purpose;
@@ -512,6 +529,7 @@ export function buildPlan(input: PlanInput): Plan {
         indoor,
         held: weightHold && (a.slot === "q1" || a.slot === "q2"),
         loweredByCap: false,
+        sprints: null,
       };
     });
     if (openersHere) {
@@ -527,6 +545,7 @@ export function buildPlan(input: PlanInput): Plan {
         indoor: false,
         held: false,
         loweredByCap: false,
+        sprints: null,
       });
     }
     if (eventHere && structure.event) {
@@ -542,6 +561,7 @@ export function buildPlan(input: PlanInput): Plan {
         indoor: false,
         held: false,
         loweredByCap: false,
+        sprints: null,
       });
     }
 
@@ -568,9 +588,11 @@ export function buildPlan(input: PlanInput): Plan {
           indoor: isIndoor(dates[day] ?? sk.startDate, "endurance"),
           held: false,
           loweredByCap: false,
+          sprints: null,
         });
       }
     }
+    placeSprintRides(drafts, sk);
     drafts.sort((a, b) => (a.date < b.date ? -1 : 1));
     return {
       drafts,
@@ -580,6 +602,42 @@ export function buildPlan(input: PlanInput): Plan {
       chain: budget.chain,
       grew: budget.grew,
     };
+  }
+
+  /**
+   * Easy rides with short sprints (section 7.5): balanced puts sprints on one easy endurance ride of a loading
+   * week, high on two (never on consecutive days). A ride the day after a hard day comes last, so the sprints
+   * are done on fresh legs. The set follows the phase (Base, Build, Peak), one step further for high.
+   */
+  function placeSprintRides(drafts: Draft[], sk: WeekSkeleton): void {
+    const count = SPRINT_RIDES_PER_WEEK[balance];
+    if (count === 0 || sk.type !== "loading" || sk.hasTest) return;
+    const ladder = SPRINT_RIDE_LADDER[level];
+    const phaseStep = sk.phase === "build" ? 1 : sk.phase === "peak" ? 2 : 0;
+    const set = ladder[Math.min(ladder.length - 1, phaseStep + (balance === "high" ? 1 : 0))];
+    if (!set) return;
+    const hardDates = new Set(
+      drafts
+        .filter(
+          (d) => STRUCTURED_KINDS.includes(d.kind) || (d.slot === "long" && d.longBlocks !== null),
+        )
+        .map((d) => d.date),
+    );
+    const eligible = drafts
+      .filter(
+        (d) => d.slot === "easy" && d.kind === "endurance" && d.minutes >= SPRINT_RIDE_MIN_MINUTES,
+      )
+      .sort((a, b) => (a.date < b.date ? -1 : 1));
+    const fresh = eligible.filter((d) => !hardDates.has(plusDays(d.date, -1)));
+    const chosen: Draft[] = [];
+    for (const d of [...fresh, ...eligible.filter((e) => !fresh.includes(e))]) {
+      if (chosen.length >= count) break;
+      const next = plusDays(d.date, 1);
+      const before = plusDays(d.date, -1);
+      if (chosen.some((c) => c.date === next || c.date === before)) continue;
+      chosen.push(d);
+    }
+    for (const d of chosen) d.sprints = set;
   }
 
   // Caps C3, C5 and C6: lower the longest main set one step (section 5); never below step 1.
