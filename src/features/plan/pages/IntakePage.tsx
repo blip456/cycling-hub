@@ -12,7 +12,15 @@ import { Button } from "@/components/ui";
 import { useBaseline } from "@/features/baseline/hooks";
 import { useRides } from "@/features/rides/hooks";
 import { useMediaQuery, DESKTOP_QUERY } from "@/lib/use-media-query";
-import { buildPlan, recentWeeklyHours, type PlanSettings } from "../engine";
+import {
+  buildPlan,
+  levelSuggestions,
+  recentWeeklyHours,
+  suggestTargetHours,
+  type LevelSuggestion,
+  type NumberSuggestion,
+  type PlanSettings,
+} from "../engine";
 import { toAdaptRide } from "../adaptation/stored";
 import { planSettingsOf } from "../schemas";
 import { currentIntake } from "../adaptation/inputs";
@@ -138,6 +146,7 @@ function IntakeForm({
   profileEnvironment,
   planSettings,
   recentAverageHours,
+  suggestions,
   hasExisting,
   edit,
 }: {
@@ -148,6 +157,11 @@ function IntakeForm({
   /** The training settings and the weekly hours of the last 24 weeks, for the plan the page builds. */
   planSettings: PlanSettings;
   recentAverageHours: number | undefined;
+  /** What the rides suggest for the level questions and the hours per week. */
+  suggestions: {
+    level: readonly (LevelSuggestion | undefined)[];
+    targetHours: NumberSuggestion | undefined;
+  };
   hasExisting: boolean;
   /** Set when the plan is edited (P81): the plan, and its answers as they are now. */
   edit?: { plan: StoredPlan; current: EditCurrent };
@@ -182,6 +196,8 @@ function IntakeForm({
       maxHr: baseline.maxHr,
       settings: planSettings,
       ...(recentAverageHours !== undefined ? { recentAverageHours } : {}),
+      levelSuggestions: suggestions.level,
+      ...(suggestions.targetHours ? { suggestedTargetHours: suggestions.targetHours } : {}),
       ...(edit ? { fixedStart: firstDayOf(edit.plan) } : {}),
     }),
     [
@@ -192,6 +208,7 @@ function IntakeForm({
       baseline,
       planSettings,
       recentAverageHours,
+      suggestions,
       edit,
     ],
   );
@@ -480,6 +497,21 @@ export function IntakePage({ edit = false }: { edit?: boolean }) {
         : undefined,
     [rides.data, training],
   );
+  const suggestions = useMemo(() => {
+    const list = (rides.data ?? []).map(toAdaptRide);
+    const today = intakeToday();
+    return training
+      ? {
+          level: levelSuggestions(
+            list,
+            today,
+            training.historyStat,
+            baseline.baseline?.ftp?.value ?? null,
+          ),
+          targetHours: suggestTargetHours(list, today, training.historyStat),
+        }
+      : { level: [], targetHours: undefined };
+  }, [rides.data, training, baseline.baseline?.ftp?.value]);
   const desktop = useMediaQuery(DESKTOP_QUERY);
   const failed = baseline.isError || profile.isError || existing.isError;
   const retry = () => {
@@ -534,6 +566,7 @@ export function IntakePage({ edit = false }: { edit?: boolean }) {
       profileEnvironment={profile.data.ridingEnvironment}
       planSettings={planSettings}
       recentAverageHours={recentAverageHours}
+      suggestions={suggestions}
       hasExisting={existing.data !== null}
     />
   );

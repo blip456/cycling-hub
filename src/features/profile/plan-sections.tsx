@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
 import { Button, TextField } from "@/components/ui";
 import { brusselsDate } from "@/features/athlete";
-import type { Level } from "@/features/plan/engine";
+import { useHistoryRides } from "@/features/plan/adaptation/use-history";
+import { levelSuggestions, suggestionText, type Level } from "@/features/plan/engine";
+import { useBaseline } from "@/features/baseline/hooks";
 import {
   planProfileSchema,
   TRAINING_PURPOSES,
@@ -251,6 +253,24 @@ function LevelForm({ profile, onDone, report }: FormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const { mutate, isPending } = useSaveProfileSection();
 
+  // Open questions start from the rides of the last 3 months, once each, and only until the PO answers.
+  const history = useHistoryRides();
+  const { baseline } = useBaseline();
+  const ftp = baseline?.ftp?.value ?? null;
+  const suggestions = useMemo(
+    () => levelSuggestions(history.rides, history.today, history.stat, ftp),
+    [history.rides, history.today, history.stat, ftp],
+  );
+  const touched = useRef(new Set<number>());
+  useEffect(() => {
+    setAnswers((current) =>
+      current.map((a, i) => {
+        const suggestion = suggestions[i];
+        return a === null && suggestion && !touched.current.has(i) ? suggestion.answer : a;
+      }),
+    );
+  }, [suggestions]);
+
   useEffect(() => {
     formRef.current?.querySelector("input")?.focus();
   }, []);
@@ -299,8 +319,17 @@ function LevelForm({ profile, onDone, report }: FormProps) {
           }
           onChange={(value) => {
             setError(undefined);
+            touched.current.add(index);
             setAnswers((current) => current.map((a, i) => (i === index ? Number(value) : a)));
           }}
+          {...(suggestions[index]
+            ? {
+                helper: suggestionText(
+                  suggestions[index].note,
+                  answers[index] === suggestions[index].answer,
+                ),
+              }
+            : {})}
         />
       ))}
       {error ? <FieldError role="alert">{error}</FieldError> : null}

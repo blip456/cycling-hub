@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { HISTORY_WEEKS, recentWeeklyHours, type HistoryRide } from "./history";
+import {
+  HISTORY_WEEKS,
+  recentWeeklyHours,
+  suggestedHoursAnswer,
+  type HistoryRide,
+} from "./history";
 
 /** Monday 2026-11-16: the complete weeks before it end on Sunday 2026-11-15. */
 const TODAY = "2026-11-18";
@@ -61,5 +66,29 @@ describe("weekly riding hours of the last 24 weeks (rules section 5)", () => {
     const days = ["2026-11-16", "2026-11-18", "2026-11-22"] as const;
     const values = days.map((day) => recentWeeklyHours(rides, day, "median"));
     expect(new Set(values).size).toBe(1);
+  });
+});
+
+describe("suggestedHoursAnswer (level question L2)", () => {
+  const weeks = (hours: number) => Array.from({ length: 13 }, (_, i) => weekRide(i + 1, hours));
+
+  it.each([
+    [3, 0],
+    [4, 1],
+    [7.5, 1],
+    [8, 2],
+    [11.5, 2],
+    [12, 3],
+  ] as const)("%s hours a week gives answer %s", (hours, answer) => {
+    expect(suggestedHoursAnswer(weeks(hours), TODAY, "median")?.answer).toBe(answer);
+  });
+
+  it("only looks at the last 13 weeks", () => {
+    const old = Array.from({ length: 11 }, (_, i) => weekRide(i + 14, 14));
+    expect(suggestedHoursAnswer([...weeks(5), ...old], TODAY, "median")?.answer).toBe(1);
+  });
+
+  it("gives nothing without enough rides", () => {
+    expect(suggestedHoursAnswer([], TODAY, "median")).toBeUndefined();
   });
 });

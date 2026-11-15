@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import * as baselineApi from "@/features/baseline/api";
+import * as ridesApi from "@/features/rides/api";
 import * as weightApi from "@/features/weight/api";
 import { mockViewport } from "@/test/match-media";
 import { fakeAuth, fakeSession, renderWithProviders } from "@/test/render";
@@ -29,6 +30,10 @@ vi.mock("@/features/baseline/api", async (importOriginal) => ({
   ...(await importOriginal<typeof baselineApi>()),
   fetchCurrentBaseline: vi.fn(),
   fetchBaselineEntries: vi.fn(),
+}));
+vi.mock("@/features/rides/api", async (importOriginal) => ({
+  ...(await importOriginal<typeof ridesApi>()),
+  fetchRides: vi.fn(),
 }));
 vi.mock("@/features/weight/api", async (importOriginal) => ({
   ...(await importOriginal<typeof weightApi>()),
@@ -329,6 +334,32 @@ describe("step 2: level", () => {
     ).toHaveFocus();
   });
 
+  it("starts the hours question from the rides of the last 3 months and lets it be changed", async () => {
+    const monday = new Date(NOW);
+    monday.setUTCDate(monday.getUTCDate() - ((monday.getUTCDay() + 6) % 7));
+    const rides = Array.from({ length: 13 }, (_, i) => {
+      const day = new Date(monday.getTime() - (i + 1) * 7 * 86_400_000 + 2 * 86_400_000);
+      return {
+        id: `ride-${String(i)}`,
+        start_local: `${day.toISOString().slice(0, 10)}T09:00:00`,
+        moving_time_s: 6 * 3600,
+        average_watts: null,
+        commute: false,
+      } as unknown as ridesApi.Ride;
+    });
+    vi.mocked(ridesApi.fetchRides).mockResolvedValue(rides);
+    const user = setup();
+    renderIntake("/plan/new?step=2");
+    await screen.findByRole("heading", { name: "Tell us about your riding" });
+    expect(await screen.findByRole("radio", { name: "4 to 7 hours" })).toBeChecked();
+    expect(screen.getByText(/Filled in from your rides: about 6 h a week/)).toBeInTheDocument();
+    await choose(user, "How many hours a week did you ride in the last 3 months?", "8 to 11 hours");
+    expect(screen.getByRole("radio", { name: "8 to 11 hours" })).toBeChecked();
+    expect(
+      screen.getByText("From your rides: about 6 h a week over the last 3 months."),
+    ).toBeInTheDocument();
+  });
+
   it("saves the answers and goes on when all five are chosen", async () => {
     const user = setup();
     renderIntake("/plan/new?step=2");
@@ -362,12 +393,12 @@ describe("step 3: time and place", () => {
     expect(screen.getByText("Both")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     expect(screen.getByText("Enter your hours per week.")).toBeInTheDocument();
-    expect(screen.getByLabelText("Average hours per week")).toHaveFocus();
-    await user.type(screen.getByLabelText("Average hours per week"), "26");
+    expect(screen.getByLabelText("Hours you want to train per week")).toHaveFocus();
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "26");
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     expect(screen.getByText("Hours can be at most 25.")).toBeInTheDocument();
-    await user.clear(screen.getByLabelText("Average hours per week"));
-    await user.type(screen.getByLabelText("Average hours per week"), "8");
+    await user.clear(screen.getByLabelText("Hours you want to train per week"));
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "8");
     expect(
       screen.getByText(/With 5 training days that is about 1 h 36 per session\./),
     ).toBeInTheDocument();
@@ -381,7 +412,7 @@ describe("step 3: time and place", () => {
     profile({ availableDays: ["mon"] });
     renderIntake("/plan/new?step=3");
     await screen.findByRole("heading", { name: "How much time do you have?" });
-    await user.type(screen.getByLabelText("Average hours per week"), "6");
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "6");
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     expect(
       screen.getByText("A plan needs at least 2 training days. Add days in your profile."),
@@ -393,7 +424,7 @@ describe("step 3: time and place", () => {
     profile();
     renderIntake("/plan/new?step=3");
     await screen.findByRole("heading", { name: "How much time do you have?" });
-    await user.type(screen.getByLabelText("Average hours per week"), "7.5");
+    await user.type(screen.getByLabelText("Hours you want to train per week"), "7.5");
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     expect(screen.getByText("Choose indoor, outdoor or both.")).toBeInTheDocument();
     await user.click(screen.getByRole("radio", { name: "Indoor" }));
@@ -737,7 +768,7 @@ describe("a full walk through the steps", () => {
     ] as const)
       await choose(user, group, answer);
     await user.click(screen.getByRole("button", { name: "Next: Time and place" }));
-    await user.type(await screen.findByLabelText("Average hours per week"), "5");
+    await user.type(await screen.findByLabelText("Hours you want to train per week"), "5");
     await user.click(screen.getByRole("button", { name: "Next: Start and event" }));
     await screen.findByRole("heading", { name: "When do you start?" });
     await user.click(screen.getByRole("button", { name: "Review the summary" }));

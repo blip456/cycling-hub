@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router";
 import { TextField } from "@/components/ui";
-import type { Purpose } from "../../engine";
+import { suggestionText, type Purpose } from "../../engine";
 import {
   EVENT_DURATION_OPTIONS,
   formatDuration,
@@ -21,6 +21,7 @@ import { RIDING_ENVIRONMENTS } from "../../schemas";
 import { ChevronDownIcon, ChevronUpIcon } from "../icons";
 import { ChoiceRow } from "../parts";
 import { linkClass } from "@/components/button-class";
+import { SuggestionHint } from "@/components/SuggestionHint";
 
 export type StepProps = {
   draft: IntakeDraft;
@@ -43,13 +44,15 @@ function Fieldset({
   legend,
   children,
   className = "",
+  describedBy,
 }: {
   legend: string;
   children: ReactNode;
   className?: string;
+  describedBy?: string | undefined;
 }) {
   return (
-    <fieldset className={className}>
+    <fieldset className={className} aria-describedby={describedBy}>
       <legend className="mb-1 text-caption font-semibold text-text">{legend}</legend>
       {children}
     </fieldset>
@@ -242,7 +245,20 @@ export function PurposesStep({
 
 // ---- step 2: level ---------------------------------------------------------------------------------
 
-export function LevelStep({ draft, change, errors }: StepProps) {
+export function LevelStep({ draft, change, errors, ctx }: StepProps) {
+  const suggestions = ctx.levelSuggestions;
+  const touched = useRef(new Set<number>());
+
+  // Open questions start from the rides of the last 3 months, once each, and only until the PO answers.
+  useEffect(() => {
+    if (!suggestions) return;
+    const next = draft.answers.map((a, i) => {
+      const suggestion = suggestions[i];
+      return a === null && suggestion && !touched.current.has(i) ? suggestion.answer : a;
+    });
+    if (next.some((a, i) => a !== draft.answers[i])) change({ answers: next });
+  }, [suggestions, draft.answers, change]);
+
   return (
     <div>
       <p className="mb-4 max-w-[60ch] text-body text-muted">
@@ -253,8 +269,14 @@ export function LevelStep({ draft, change, errors }: StepProps) {
         {LEVEL_QUESTIONS.map((q, qi) => {
           const key = `answer${String(qi)}` as "answer0";
           const error = errors[key];
+          const suggestion = suggestions?.[qi];
+          const hint = suggestion ? `${key}-hint` : undefined;
           return (
-            <Fieldset key={q.question} legend={q.question}>
+            <Fieldset
+              key={q.question}
+              legend={q.question}
+              describedBy={error ? `${key}-error` : hint}
+            >
               {q.answers.map((answer, ai) => (
                 <ChoiceRow
                   key={answer}
@@ -265,12 +287,18 @@ export function LevelStep({ draft, change, errors }: StepProps) {
                   invalid={error !== undefined && ai === 0}
                   describedBy={error ? `${key}-error` : undefined}
                   onChange={() => {
+                    touched.current.add(qi);
                     change({ answers: draft.answers.map((a, i) => (i === qi ? ai : a)) });
                   }}
                 >
                   {answer}
                 </ChoiceRow>
               ))}
+              {hint && suggestion ? (
+                <p id={hint} className="mt-1.5 text-caption text-muted">
+                  {suggestionText(suggestion.note, draft.answers[qi] === suggestion.answer)}
+                </p>
+              ) : null}
               {error ? <FieldError id={`${key}-error`}>{error}</FieldError> : null}
             </Fieldset>
           );
@@ -301,17 +329,32 @@ export function TimeStep({ draft, change, errors, ctx }: StepProps) {
   return (
     <div className="flex max-w-[480px] flex-col gap-5">
       <TextField
-        label="Average hours per week"
+        label="Hours you want to train per week"
         inputMode="decimal"
         autoComplete="off"
         value={draft.hours}
         error={errors.hours}
-        helper="Everything you can train in a normal week, including the long ride. Between 1 and 25 hours, in half hours."
+        helper="What you plan to train in a normal week from now on, including the long ride. This is a target, not what you rode before. Between 1 and 25 hours, in half hours."
         onChange={(e) => {
           change({ hours: e.target.value });
         }}
         trailing={<span className="pr-3.5 text-body text-muted">h</span>}
       />
+      {ctx.suggestedTargetHours ? (
+        <SuggestionHint
+          id="hours-suggestion"
+          {...(draft.hours.trim() !== String(ctx.suggestedTargetHours.value)
+            ? {
+                actionLabel: `Use ${String(ctx.suggestedTargetHours.value)} h`,
+                onUse: () => {
+                  change({ hours: String(ctx.suggestedTargetHours?.value ?? "") });
+                },
+              }
+            : {})}
+        >
+          From your rides: {ctx.suggestedTargetHours.note}.
+        </SuggestionHint>
+      ) : null}
       {perSession !== null && days > 0 ? (
         <p role="status" className="-mt-3 text-caption text-muted">
           With {days} training {days === 1 ? "day" : "days"} that is about{" "}

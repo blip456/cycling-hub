@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState, type SubmitEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type SubmitEvent } from "react";
+import { SuggestionHint } from "@/components/SuggestionHint";
 import { TextField } from "@/components/ui";
+import { useHistoryRides } from "@/features/plan/adaptation/use-history";
+import { suggestTargetHours } from "@/features/plan/engine";
 import { Checkbox } from "@/features/rides/list/controls";
 import { LIMITS, profileSchema, WEEKDAYS, type Weekday } from "@/features/athlete";
 import { planProfileSchema, type RidingEnvironment } from "@/features/plan/schemas";
@@ -170,6 +173,11 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
   const legendRef = useRef<HTMLFieldSetElement>(null);
   const hoursRef = useRef<HTMLInputElement>(null);
   const { mutate, isPending } = useSaveProfileSection();
+  const history = useHistoryRides();
+  const suggestedHours = useMemo(
+    () => suggestTargetHours(history.rides, history.today, history.stat),
+    [history.rides, history.today, history.stat],
+  );
 
   useEffect(() => {
     legendRef.current?.querySelector("input")?.focus();
@@ -240,8 +248,8 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
       </fieldset>
       <TextField
         ref={hoursRef}
-        label="Average hours per week"
-        helper="Hours you can train in a normal week, from 1 to 25. Half hours are fine. Optional."
+        label="Hours you want to train per week"
+        helper="What you plan to train in a normal week from now on, from 1 to 25. This is a target, not what you rode before. Half hours are fine. Optional."
         error={errors.hours}
         value={hours}
         onChange={(e) => {
@@ -255,6 +263,21 @@ function WeekForm({ profile, onDone, report }: SectionProps & { onDone: () => vo
           </span>
         }
       />
+      {suggestedHours ? (
+        <SuggestionHint
+          id="hours-suggestion"
+          {...(hours.trim() !== String(suggestedHours.value)
+            ? {
+                actionLabel: `Use ${String(suggestedHours.value)} h`,
+                onUse: () => {
+                  setHours(String(suggestedHours.value));
+                },
+              }
+            : {})}
+        >
+          From your rides: {suggestedHours.note}.
+        </SuggestionHint>
+      ) : null}
       <RadioGroup
         legend="Where do you ride?"
         options={ENVIRONMENT_OPTIONS}
@@ -318,7 +341,7 @@ export function WeekSection({ profile, report }: SectionProps) {
             })}
           </ul>
           <div className="mt-2">
-            <ViewRow label="Average hours per week">
+            <ViewRow label="Hours you want to train per week">
               {profile.weeklyHours === null ? (
                 <NotSet />
               ) : (
