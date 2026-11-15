@@ -99,6 +99,40 @@ function summary(session: SessionData): NonNullable<SessionChange["before"]> {
   return { kind: session.kind, durationMin: session.durationMin, mainSet: session.mainSet };
 }
 
+/**
+ * What a "targets" change is, in one line: the longest step whose target moved, with percent of FTP and
+ * watts, or heart rate when only that moved. Without a matching step list it says so plainly.
+ */
+export function targetsDetail(before: SessionData, after: SessionData): string {
+  if (before.steps.length !== after.steps.length) return "Targets changed.";
+  let best: { index: number; seconds: number } | null = null;
+  before.steps.forEach((step, index) => {
+    const next = after.steps[index];
+    if (!next) return;
+    const moved =
+      step.target.percentFtp !== next.target.percentFtp ||
+      step.target.watts.target !== next.target.watts.target;
+    if (moved && (best === null || step.durationSec > best.seconds)) {
+      best = { index, seconds: step.durationSec };
+    }
+  });
+  const found = best as { index: number; seconds: number } | null;
+  if (found === null) return "Heart rate targets changed.";
+  const from = before.steps[found.index];
+  const to = after.steps[found.index];
+  if (!from || !to) return "Targets changed.";
+  const percent =
+    from.target.percentFtp !== to.target.percentFtp
+      ? `${String(from.target.percentFtp)} % to ${String(to.target.percentFtp)} % of FTP`
+      : null;
+  const watts =
+    from.target.watts.target !== null && to.target.watts.target !== null
+      ? `${String(from.target.watts.target)} W to ${String(to.target.watts.target)} W`
+      : null;
+  const what = [percent, percent && watts ? `(${watts})` : watts].filter(Boolean).join(" ");
+  return `${to.label}: ${what}`;
+}
+
 function targetsOf(session: SessionData): string {
   return canonical(session.steps.map((step) => [step.target, step.heartRate]));
 }
@@ -125,7 +159,13 @@ export function describeChange(
   else if (before.durationMin !== after.durationMin) change = "minutes";
   else if (targetsOf(before) !== targetsOf(after)) change = "targets";
   if (change === null) return null;
-  return { date: after.date, change, before: summary(before), after: summary(after) };
+  return {
+    date: after.date,
+    change,
+    before: summary(before),
+    after: summary(after),
+    ...(change === "targets" ? { detail: targetsDetail(before, after) } : {}),
+  };
 }
 
 /**

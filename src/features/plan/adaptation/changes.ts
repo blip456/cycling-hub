@@ -3,8 +3,8 @@
  * has `reason` (the notice text), `changes` and `undone_at`; everything an Undo needs lives in `changes`.
  */
 import { z } from "zod";
-import type { AdaptChange, UndoPlan } from "../adapt";
-import type { ChangeReason, Intake } from "../engine";
+import type { AdaptChange, UndoPlan, UpdateEffect } from "../adapt";
+import type { ChangeReason, Intake, PlanSettings } from "../engine";
 import { intakeFromJson } from "../data/mapping";
 
 export type ChangePayload = {
@@ -20,6 +20,10 @@ export type ChangePayload = {
   undo: UndoPlan | null;
   /** The inputs the plan was built from before this update, put back by Undo (`weeks` since edits). */
   before: { ftp: number; intake: Intake | null; weeks?: number };
+  /** What the update did to the weeks it touched (hours, load, hard work); missing on older updates. */
+  effect?: UpdateEffect;
+  /** The training settings and the 24-week hours the plan was built with in this update; missing on older ones. */
+  inputs?: { settings: PlanSettings; recentAverageHours: number | null };
 };
 
 /** One stored update as the screens read it. */
@@ -51,6 +55,13 @@ const payloadSchema = z.object({
     })
     .nullable(),
   before: z.object({ ftp: z.number(), intake: z.unknown(), weeks: z.number().optional() }),
+  effect: z.custom<UpdateEffect>((v) => typeof v === "object" && v !== null).optional(),
+  inputs: z
+    .object({
+      settings: z.custom<PlanSettings>((v) => typeof v === "object" && v !== null),
+      recentAverageHours: z.number().nullable(),
+    })
+    .optional(),
 });
 
 /** The payload of a row, or null when the stored JSON is not in the expected shape (the row is then left out). */
@@ -70,5 +81,7 @@ export function payloadFromJson(json: unknown): ChangePayload | null {
       intake: intakeFromJson(v.before.intake),
       ...(v.before.weeks !== undefined ? { weeks: v.before.weeks } : {}),
     },
+    ...(v.effect ? { effect: v.effect } : {}),
+    ...(v.inputs ? { inputs: v.inputs } : {}),
   };
 }

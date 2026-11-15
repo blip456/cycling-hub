@@ -228,13 +228,25 @@ export type ReplanOutcome = "updated" | "unchanged" | "blocked" | "no-plan";
  * `unchanged` means the plan already matches the engine.
  */
 export function useReplan() {
+  return useRunPlan("replan");
+}
+
+/**
+ * Runs the evaluation now and reports what it did. `replan` rebuilds even when nothing changed; `settings` is
+ * the run after the PO saved training settings (a normal run: the settings are an input, so a changed plan
+ * is stored as an update with the effect on the weeks, and an unchanged one is answered as "unchanged").
+ */
+export function useRunPlan(mode: "replan" | "settings") {
   const queryClient = useQueryClient();
   const userId = useAuth().session?.user.id ?? "";
   return useMutation<ReplanOutcome>({
     mutationFn: async () => {
       const today = brusselsDate();
       if (today === null) throw new Error("No date");
-      const result = await runnerFor(queryClient, userId).run(today, { replan: true });
+      const result = await runnerFor(queryClient, userId).run(
+        today,
+        mode === "replan" ? { replan: true } : undefined,
+      );
       if (result.status === "failed") throw result.error;
       if (result.status === "no-plan") return "no-plan";
       queryClient.setQueryData<AdaptationView | null>(adaptationKeys.view(), result.view);

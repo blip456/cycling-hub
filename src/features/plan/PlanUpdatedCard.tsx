@@ -6,6 +6,7 @@ import {
 } from "@/components/status/status-context";
 import { usePlan } from "./data";
 import { undoableChange, useAdaptationRunner, usePlanChanges } from "./adaptation/hooks";
+import { effectSentence } from "./adaptation/format";
 import { useSeenUpdate } from "./adaptation/seen";
 import { useUndoFlow } from "./adaptation/use-undo-flow";
 
@@ -24,6 +25,7 @@ export function PlanUpdatedCard() {
 
   const newest = changes.data?.[0];
   const unseen = newest && newest.undoneAt === null && newest.id !== seenId ? newest : null;
+  const effect = effectSentence(unseen?.payload.effect);
   const canUndo =
     unseen !== null && undoableChange(changes.data, plan.data?.fingerprint)?.id === unseen.id;
 
@@ -38,6 +40,12 @@ export function PlanUpdatedCard() {
               <strong className="font-semibold">Plan updated</strong>
               <br />
               {unseen.message}
+              {effect ? (
+                <>
+                  <br />
+                  {effect}
+                </>
+              ) : null}
             </>
           ),
           action: (

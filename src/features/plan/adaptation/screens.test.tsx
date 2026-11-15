@@ -83,6 +83,51 @@ function change(over: Partial<PlanChange> = {}): PlanChange {
   };
 }
 
+/** An update with what it does to the weeks, a target detail and the settings in effect (P100). */
+function changeWithEffect(): PlanChange {
+  const base = change();
+  return {
+    ...base,
+    message: "2 sessions changed because your settings or recent riding changed.",
+    payload: {
+      ...base.payload,
+      changes: [
+        {
+          date: "2026-10-30",
+          change: "targets",
+          before: { kind: "long", durationMin: 135, mainSet: null },
+          after: { kind: "long", durationMin: 135, mainSet: null },
+          detail: "Steady endurance: 65 % to 72 % of FTP (163 W to 180 W)",
+          reasonCode: "settings-changed",
+          reason: "Your settings or your recent riding changed, so this session was recalculated.",
+        },
+      ],
+      effect: {
+        weeks: [
+          {
+            week: 2,
+            before: { minutes: 385, load: 296, hard: 2, aboveMinutes: 0 },
+            after: { minutes: 385, load: 318, hard: 2, aboveMinutes: 0 },
+          },
+          {
+            week: 3,
+            before: { minutes: 415, load: 323, hard: 2, aboveMinutes: 0 },
+            after: { minutes: 415, load: 347, hard: 3, aboveMinutes: 20 },
+          },
+        ],
+        total: {
+          before: { minutes: 800, load: 619, hard: 4, aboveMinutes: 0 },
+          after: { minutes: 800, load: 665, hard: 5, aboveMinutes: 20 },
+        },
+      },
+      inputs: {
+        settings: { zone2TargetPercent: 72, intensityBalance: "balanced" },
+        recentAverageHours: 6.4,
+      },
+    },
+  };
+}
+
 function renderRoutes(path: string) {
   return renderWithProviders(
     <>
@@ -134,6 +179,15 @@ describe("Plan updated card (R3)", () => {
     expect(screen.queryByRole("link", { name: "See changes" })).not.toBeInTheDocument();
   });
 
+  it("says what the update does to the weeks in one sentence", async () => {
+    vi.mocked(adaptApi.fetchPlanChanges).mockResolvedValue([changeWithEffect()]);
+    renderRoutes("/plan");
+    const card = await screen.findByRole("status");
+    expect(card).toHaveTextContent(
+      "In the 2 weeks that changed: load +7 %, +1 hard session, +20 min above 105 % of FTP.",
+    );
+  });
+
   it("offers no Undo when the plan has moved on", async () => {
     const stale = change();
     stale.payload.fingerprint = "someone-else";
@@ -173,6 +227,38 @@ describe("Plan changes page (R4)", () => {
     expect(screen.getByText("Restores the plan as it was before Wed 28 Oct.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Undo all" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Earlier updates (1)" })).toBeInTheDocument();
+  });
+
+  it("shows what each change is, what the update does to the weeks and the settings in effect", async () => {
+    vi.mocked(adaptApi.fetchPlanChanges).mockResolvedValue([changeWithEffect()]);
+    renderRoutes("/plan/changes");
+    expect(
+      await screen.findByText("Steady endurance: 65 % to 72 % of FTP (163 W to 180 W)"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Training settings in effect: Zone 2 at 72 % of FTP, balanced intensity. Your recent riding: 6.4 h a week.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "What it does to your weeks" })).toBeInTheDocument();
+    const table = screen.getByRole("table", { name: /Effect of the update/ });
+    const rows = within(table).getAllByRole("row");
+    expect(rows).toHaveLength(4); // header, week 2, week 3, total
+    const week3 = within(rows[2] as HTMLElement);
+    expect(week3.getByRole("rowheader")).toHaveTextContent("Week 3");
+    expect(week3.getByText("323 to 347")).toBeInTheDocument();
+    expect(week3.getByText("2 to 3")).toBeInTheDocument();
+    expect(week3.getByText("0 min to 20 min")).toBeInTheDocument();
+    expect(within(rows[3] as HTMLElement).getByRole("rowheader")).toHaveTextContent("Total");
+  });
+
+  it("shows no weeks table for an older update without an effect", async () => {
+    vi.mocked(adaptApi.fetchPlanChanges).mockResolvedValue([change()]);
+    renderRoutes("/plan/changes");
+    await screen.findByText("Updated Wed 28 Oct, 09:12");
+    expect(
+      screen.queryByRole("heading", { name: "What it does to your weeks" }),
+    ).not.toBeInTheDocument();
   });
 
   it("uses a table with header cells on desktop", async () => {

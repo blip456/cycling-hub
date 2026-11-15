@@ -15,6 +15,7 @@ import {
 import type { Profile } from "./api";
 import { FormButtons, ViewRow, type SaveReport } from "./form-parts";
 import { useSaveProfileSection } from "./hooks";
+import { usePlanRunFlow } from "@/features/plan/adaptation/use-replan-flow";
 import { SAVE_FAILED } from "./labels";
 import { RadioGroup } from "./RadioGroup";
 import { SectionCard } from "./SectionCard";
@@ -125,7 +126,12 @@ function ResetButton({
   );
 }
 
-function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () => void }) {
+function TrainingForm({
+  profile,
+  onDone,
+  onSaved,
+  report,
+}: SectionProps & { onDone: () => void; onSaved: () => void }) {
   const { training } = profile;
   const limits = levelLimits(profile);
   const [zone2, setZone2] = useState(training.zone2TargetPercent?.toString() ?? "");
@@ -192,6 +198,7 @@ function TrainingForm({ profile, onDone, report }: SectionProps & { onDone: () =
       {
         onSuccess: () => {
           report.clear("training");
+          onSaved();
           onDone();
         },
         onError: () => {
@@ -337,6 +344,8 @@ function limitView(
 /** P96 to P98: the Zone 2 target, the limits of the level and how the ride history is summarised. */
 export function TrainingSettingsSection({ profile, report }: SectionProps) {
   const [editing, setEditing] = useState(false);
+  // After a save the plan is evaluated at once; the answer (also "nothing changes") stays on this page.
+  const { replan: apply } = usePlanRunFlow("settings");
   const { training } = profile;
   const limits = levelLimits(profile);
   const longRide = limitView(
@@ -394,6 +403,7 @@ export function TrainingSettingsSection({ profile, report }: SectionProps) {
         <TrainingForm
           profile={profile}
           report={report}
+          onSaved={apply}
           onDone={() => {
             setEditing(false);
           }}

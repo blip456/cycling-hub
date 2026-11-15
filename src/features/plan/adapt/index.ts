@@ -31,6 +31,7 @@ export {
   sameSession,
   sessionData,
 } from "./merge";
+export { updateEffect } from "./effect";
 export { rampBackCaps, rebuildFuture } from "./rebuild";
 export { weightState, STALLED_NO_ROOM_NOTICE } from "./weight-state";
 export type { WeightCheck, WeightState, WeightStateGoal, WeightStateKind } from "./weight-state";
