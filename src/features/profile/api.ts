@@ -2,12 +2,16 @@ import { z } from "zod";
 import { weekdaysFromDb, weekdaysToDb, type Weekday } from "@/features/athlete";
 import type { Level } from "@/features/plan/engine";
 import {
+  DEFAULT_TRAINING_SETTINGS,
   levelAnswersFromStored,
   levelAnswersToStored,
   RIDING_ENVIRONMENTS,
   TRAINING_PURPOSES,
+  trainingSettingsFromRow,
+  trainingSettingsToColumns,
   type RidingEnvironment,
   type TrainingPurpose,
+  type TrainingSettings,
 } from "@/features/plan/schemas";
 import { getSupabase } from "@/lib/supabase/client";
 
@@ -30,6 +34,8 @@ export type Profile = {
   /** The optional event (P66): both or neither. */
   eventName: string | null;
   eventDate: string | null;
+  /** Training settings (P96 to P98): Zone 2 target, level limits, how the ride history is summarised. */
+  training: TrainingSettings;
 };
 
 export const EMPTY_PROFILE: Profile = {
@@ -44,6 +50,7 @@ export const EMPTY_PROFILE: Profile = {
   level: null,
   eventName: null,
   eventDate: null,
+  training: DEFAULT_TRAINING_SETTINGS,
 };
 
 /** The profile sections; each one is saved on its own (H2). */
@@ -58,6 +65,7 @@ export type ProfilePatch =
   | { section: "purposes"; trainingPurposes: TrainingPurpose[] }
   | { section: "level"; levelAnswers: number[]; level: Level }
   | { section: "event"; eventName: string | null; eventDate: string | null }
+  | { section: "training"; training: TrainingSettings }
   | { section: "goal"; goal: string | null };
 
 /** The database spells the top level `semi_pro`, the engine `semi-pro`. */
@@ -91,11 +99,15 @@ const profileRow = z
     level_answers: z.unknown(),
     event_name: z.string().nullable(),
     event_date: z.string().nullable(),
+    zone2_target_percent: z.number().nullable(),
+    max_long_ride_min: z.number().nullable(),
+    max_weekly_hours: z.number().nullable(),
+    ride_history_stat: z.string().nullable(),
   })
   .nullable();
 
 const PROFILE_COLUMNS =
-  "display_name, birth_year, available_days, goal, riding_environment, weekly_hours, training_purposes, level, level_answers, event_name, event_date";
+  "display_name, birth_year, available_days, goal, riding_environment, weekly_hours, training_purposes, level, level_answers, event_name, event_date, zone2_target_percent, max_long_ride_min, max_weekly_hours, ride_history_stat";
 
 /** The profile of the signed-in user (RLS: own row only). No row yet is an empty profile. */
 export async function fetchProfile(userId: string): Promise<Profile> {
@@ -119,6 +131,7 @@ export async function fetchProfile(userId: string): Promise<Profile> {
     level: levelFromDb(row.level),
     eventName: row.event_name,
     eventDate: row.event_date,
+    training: trainingSettingsFromRow(row),
   };
 }
 
@@ -143,6 +156,8 @@ function columns(patch: ProfilePatch) {
       };
     case "event":
       return { event_name: patch.eventName, event_date: patch.eventDate };
+    case "training":
+      return trainingSettingsToColumns(patch.training);
     case "goal":
       return { goal: patch.goal };
   }

@@ -106,9 +106,30 @@ export const STRUCTURED_KINDS: readonly SessionKind[] = [
   "test",
 ];
 
+/**
+ * Training settings the PO can change (section 3b of the rules). Each one is optional: missing means the
+ * default of the level. They never change the zone bands, only where inside them a target sits and how far
+ * the level limits reach.
+ */
+export type PlanSettings = {
+  /** Percent of FTP the Zone 2 steps (endurance, long ride, easy fill) aim for. Inside the band 56 to 75. */
+  zone2TargetPercent?: number;
+  /** Longest long ride in minutes. Replaces the level maximum. */
+  maxLongRideMin?: number;
+  /** Most hours in a normal week (H is clamped to it). Replaces the level maximum. */
+  maxHoursPerWeek?: number;
+};
+
+/** How the weekly riding hours of the last 24 weeks are summarised (section 5). */
+export const HISTORY_STATS = ["median", "average"] as const;
+export type HistoryStat = (typeof HISTORY_STATS)[number];
+
 /** Hold, stalled and missed-session state the adaptation part feeds back in (sections 9, 12, 13). */
 export type PlanAdjustments = {
-  /** Average weekly riding hours of the last 4 weeks, when at least 2 of them have rides. */
+  /**
+   * Weekly riding hours of the last 24 weeks, as the median or the average (`recentWeeklyHours`), when at
+   * least 2 of those weeks have rides.
+   */
   recentAverageHours?: number;
   /** Weeks (1-based) where the weight is falling faster than the cap: hours held, sets a step down. */
   holdWeeks?: readonly number[];
@@ -134,6 +155,8 @@ export type PlanInput = {
   /** Heart rate references. Without either, sessions show watts only. */
   lthr?: number | null;
   maxHr?: number | null;
+  /** Training settings of the PO (Zone 2 target, level limits). Missing: the level defaults. */
+  settings?: PlanSettings;
   adjustments?: PlanAdjustments;
 };
 
@@ -247,6 +270,7 @@ export type NoticeCode =
   | "indoor-limit"
   | "no-heart-rate"
   | "history-start"
+  | "settings-applied"
   | "caps-applied";
 
 /** A plain fact about how the plan was built. Shown on the intake summary or plan overview. */

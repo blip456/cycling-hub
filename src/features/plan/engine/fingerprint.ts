@@ -1,5 +1,6 @@
 /** The input fingerprint (section 12): a stable string of exactly the inputs that change the plan. */
 import { resolveInput } from "./resolve";
+import { normalizeSettings } from "./settings";
 import { ENGINE_VERSION, type PlanInput } from "./types";
 
 function round1(value: number): number {
@@ -16,6 +17,7 @@ export function canonicalInput(input: PlanInput): string {
   const resolved = resolveInput(input);
   const { intake } = input;
   const adjustments = input.adjustments ?? {};
+  const settings = normalizeSettings(input.settings);
   const sorted = (values: readonly number[] | undefined): number[] =>
     [...new Set(values ?? [])].sort((a, b) => a - b);
   const canonical = {
@@ -40,6 +42,8 @@ export function canonicalInput(input: PlanInput): string {
             cap: intake.weightRateCapPercent ?? null,
           }
         : null,
+    // Only when a setting differs from the default, so plans without settings keep their fingerprint.
+    ...(Object.keys(settings).length > 0 ? { settings } : {}),
     adjust: {
       average:
         adjustments.recentAverageHours === undefined

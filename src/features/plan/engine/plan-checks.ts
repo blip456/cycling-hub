@@ -10,7 +10,8 @@ import {
   weekdayIndex,
   zoneForValue,
 } from "@/features/athlete";
-import { LEVEL_SETTINGS, QUALITY_PERCENT } from "./constants";
+import { QUALITY_PERCENT } from "./constants";
+import { levelSettingsFor } from "./settings";
 import { hardBudget } from "./mix";
 import {
   STRUCTURED_KINDS,
@@ -35,7 +36,7 @@ function ownMinutes(week: Week): number {
 export function checkPlan(plan: Plan, input: PlanInput): string[] {
   const out: string[] = [];
   if (plan.status !== "ok") return out;
-  const settings = LEVEL_SETTINGS[plan.level];
+  const settings = levelSettingsFor(plan.level, input.settings);
   const available = new Set(input.intake.availableDays);
   const hMinutes = plan.hoursPerWeek * 60;
   const ftp = input.ftp ?? 0;

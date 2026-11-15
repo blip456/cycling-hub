@@ -26,7 +26,10 @@ export function editDb(): FakeDb {
 export async function wireDb(db: FakeDb): Promise<FakeApi> {
   const runnerApi = fakeApi(db);
   await createRunner(runnerApi).run(TODAY);
+  // The plan was built before the rides existed, so this first run brings it in line with them (week 1
+  // follows the real riding, P96). That update is part of the setup, not of what the tests look at.
   runnerApi.writes.length = 0;
+  db.changes.length = 0;
 
   vi.mocked(api.fetchActivePlan).mockImplementation(() => Promise.resolve(db.plan));
   vi.mocked(api.fetchPlanSessions).mockImplementation(() =>

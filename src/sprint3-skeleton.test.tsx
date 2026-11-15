@@ -25,6 +25,12 @@ vi.mock("@/features/profile/api", async (importOriginal) => ({
     level: null,
     eventName: null,
     eventDate: null,
+    training: {
+      zone2TargetPercent: null,
+      maxLongRideMin: null,
+      maxWeeklyHours: null,
+      historyStat: "median",
+    },
   })),
 }));
 

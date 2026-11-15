@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_TRAINING_SETTINGS } from "@/features/plan/schemas";
 import { fakeAuth, fakeSession, renderWithProviders } from "@/test/render";
 import { EMPTY_PROFILE, fetchProfile, saveProfileSection, type Profile } from "./api";
 import { ProfilePage } from "./ProfilePage";
@@ -23,6 +24,7 @@ const FILLED: Profile = {
   level: null,
   eventName: null,
   eventDate: null,
+  training: DEFAULT_TRAINING_SETTINGS,
 };
 
 function renderPage() {

@@ -40,6 +40,7 @@ import {
   testMinutes,
 } from "./library";
 import { hardMix, hasSecondSlot, longRideHasBlocks } from "./mix";
+import { levelSettingsFor, zone2Percent } from "./settings";
 import { resolveInput, hasUsableFtp } from "./resolve";
 import {
   ENGINE_VERSION,
@@ -141,7 +142,8 @@ export function buildPlan(input: PlanInput): Plan {
   const { levelResult, hoursPerWeek, purposes, structure } = resolved;
   const { intake } = input;
   const level = levelResult.level;
-  const settings = LEVEL_SETTINGS[level];
+  const settings = levelSettingsFor(level, input.settings);
+  const zone2 = zone2Percent(input.settings);
   const fingerprint = inputFingerprint(input);
   const warnings: Warning[] = [...resolved.blocked, ...structure.warnings];
   const notices: Notice[] = [...resolved.notices, ...structure.notices];
@@ -212,6 +214,7 @@ export function buildPlan(input: PlanInput): Plan {
       lthr: input.lthr,
       maxHr: input.maxHr,
       indoor: d.indoor,
+      zone2Percent: zone2,
     });
     if (context.heartRate === null) flags.hrMissing = true;
     if (d.kind === "event") {

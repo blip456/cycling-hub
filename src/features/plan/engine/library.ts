@@ -24,6 +24,7 @@ import {
   type LadderKind,
   type MainSet,
 } from "./constants";
+import { ZONE2 } from "./settings";
 import type {
   FtpTestKind,
   Level,
@@ -43,6 +44,8 @@ export type StepContext = {
   heartRate: HeartRateZoneSet | null;
   /** Indoor sessions have exact watts and a longer warm-up. */
   indoor: boolean;
+  /** Where inside Zone 2 the easy and long steps aim, percent of FTP (a setting). Default 65. */
+  zone2Percent?: number;
 };
 
 export function stepContext(input: {
@@ -50,11 +53,13 @@ export function stepContext(input: {
   lthr?: number | null | undefined;
   maxHr?: number | null | undefined;
   indoor: boolean;
+  zone2Percent?: number | undefined;
 }): StepContext {
   return {
     ftp: input.ftp,
     heartRate: heartRateZones({ lthr: input.lthr, maxHr: input.maxHr }),
     indoor: input.indoor,
+    ...(input.zone2Percent !== undefined ? { zone2Percent: input.zone2Percent } : {}),
   };
 }
 
@@ -125,7 +130,11 @@ function makeStep(
     heartRate?: boolean;
   },
 ): Step {
-  const percent = input.percent ?? input.spec.percent;
+  // The easy and long steps are Zone 2: the PO's setting picks where inside the band they aim. The band
+  // (56 to 75 %) is the zone itself and never moves.
+  const isZone2 = input.spec === SPECS.endurance || input.spec === SPECS.long;
+  const percent =
+    input.percent ?? (isZone2 ? (ctx.zone2Percent ?? ZONE2.default) : input.spec.percent);
   const zones: Zone[] | null = powerZones(ctx.ftp);
   let watts: StepTarget["watts"];
   let powerZone: number | null;

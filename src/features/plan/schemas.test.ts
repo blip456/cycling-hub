@@ -1,13 +1,19 @@
 import { describe, expect, it } from "vitest";
 import {
+  DEFAULT_TRAINING_SETTINGS,
   levelAnswersFromStored,
   levelAnswersSchema,
   levelAnswersToStored,
+  maxLongRideSchema,
+  maxWeeklyHoursSchema,
   planProfileSchema,
+  planSettingsOf,
   trainingPurposesSchema,
+  trainingSettingsFromRow,
   weeklyHoursSchema,
   weeklyRateCapSchema,
   weightGoalSchema,
+  zone2TargetSchema,
 } from "./schemas";
 
 const now = new Date("2026-10-29T12:00:00Z");
@@ -149,5 +155,72 @@ describe("level answers storage", () => {
     expect(levelAnswersFromStored(null)).toBeNull();
     expect(levelAnswersFromStored([1, 2, 0, 3, 1])).toBeNull();
     expect(levelAnswersFromStored({ experience: 1 })).toBeNull();
+  });
+});
+
+describe("training settings (P96 to P98)", () => {
+  it("keeps the Zone 2 target inside the Coggan band, in whole percents", () => {
+    expect(zone2TargetSchema.safeParse(56).success).toBe(true);
+    expect(zone2TargetSchema.safeParse(70).success).toBe(true);
+    expect(zone2TargetSchema.safeParse(75).success).toBe(true);
+    expect(zone2TargetSchema.safeParse(55).success).toBe(false);
+    expect(zone2TargetSchema.safeParse(76).success).toBe(false);
+    expect(zone2TargetSchema.safeParse(70.5).success).toBe(false);
+    expect(zone2TargetSchema.safeParse(Number.NaN).success).toBe(false);
+  });
+
+  it("limits the long ride to 90 to 480 minutes in steps of 5 and the week to 3 to 25 half hours", () => {
+    expect(maxLongRideSchema.safeParse(240).success).toBe(true);
+    expect(maxLongRideSchema.safeParse(85).success).toBe(false);
+    expect(maxLongRideSchema.safeParse(485).success).toBe(false);
+    expect(maxLongRideSchema.safeParse(243).success).toBe(false);
+    expect(maxWeeklyHoursSchema.safeParse(8.5).success).toBe(true);
+    expect(maxWeeklyHoursSchema.safeParse(2.5).success).toBe(false);
+    expect(maxWeeklyHoursSchema.safeParse(26).success).toBe(false);
+    expect(maxWeeklyHoursSchema.safeParse(8.2).success).toBe(false);
+  });
+
+  it("reads a row: nothing set is the default, a value outside its limits is not set", () => {
+    const empty = {
+      zone2_target_percent: null,
+      max_long_ride_min: null,
+      max_weekly_hours: null,
+      ride_history_stat: null,
+    };
+    expect(trainingSettingsFromRow(empty)).toEqual(DEFAULT_TRAINING_SETTINGS);
+    expect(DEFAULT_TRAINING_SETTINGS.historyStat).toBe("median");
+    expect(
+      trainingSettingsFromRow({
+        zone2_target_percent: 70,
+        max_long_ride_min: 240,
+        max_weekly_hours: 9.5,
+        ride_history_stat: "average",
+      }),
+    ).toEqual({
+      zone2TargetPercent: 70,
+      maxLongRideMin: 240,
+      maxWeeklyHours: 9.5,
+      historyStat: "average",
+    });
+    expect(
+      trainingSettingsFromRow({
+        zone2_target_percent: 99,
+        max_long_ride_min: 5,
+        max_weekly_hours: 40,
+        ride_history_stat: "mode",
+      }),
+    ).toEqual(DEFAULT_TRAINING_SETTINGS);
+  });
+
+  it("gives the engine only the values that are set", () => {
+    expect(planSettingsOf(DEFAULT_TRAINING_SETTINGS)).toEqual({});
+    expect(
+      planSettingsOf({
+        zone2TargetPercent: 70,
+        maxLongRideMin: null,
+        maxWeeklyHours: 9,
+        historyStat: "average",
+      }),
+    ).toEqual({ zone2TargetPercent: 70, maxHoursPerWeek: 9 });
   });
 });

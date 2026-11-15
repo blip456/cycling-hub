@@ -7,6 +7,7 @@ import { useProfile } from "./hooks";
 import type { SaveReport, SectionId } from "./form-parts";
 import { EventSection, LevelSection, PurposesSection } from "./plan-sections";
 import { AboutSection, GoalSection, WeekSection } from "./sections";
+import { TrainingSettingsSection } from "./training-settings";
 
 /**
  * H1 to H3: the athlete profile (P44), edited section by section. Everything is optional and nothing
@@ -83,6 +84,7 @@ export function ProfilePage() {
         <WeekSection profile={data} report={report} />
         <PurposesSection profile={data} report={report} />
         <LevelSection profile={data} report={report} />
+        <TrainingSettingsSection profile={data} report={report} />
         <EventSection profile={data} report={report} />
         <GoalSection profile={data} report={report} />
       </div>
