@@ -19,6 +19,8 @@ pnpm 10, Node 22. Setup and flows: [README.md](README.md). Rules for changes:
 - Branch from `dev`: `<type>/<kebab-case>` with type `feat fix hotfix chore docs refactor test ci`
   (`scripts/branch-name.mjs`). In a Claude Code session the suggested `claude/*` branch is allowed.
 - Conventional Commits, scopes from `commitlint.config.js`; the PR title is the changelog line.
+- A pull request is opened only from a work branch into `dev`, the default branch. Never open one into
+  `main` or any other branch, and never from `dev` or `main`; `main` is the PO's call.
 - Never push to `main` or `dev`, never force-push shared branches, never merge release PRs or mark a
   sprint done: that is the PO's call after testing.
 - Before pushing: `pnpm lint && pnpm format:check && pnpm typecheck && pnpm test && pnpm build`.
